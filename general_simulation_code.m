@@ -1,3 +1,5 @@
+%% General simulation code
+
 % Code to replicate results in Figure 2 of Mongillo et al's. 2008 
 % Synaptic Theory of Working Memory Paper, which models working memory as a 
 % property of calcium-mediated short term synaptic facilitation, in a 
@@ -6,32 +8,31 @@
 % Version 2 
 % (Elsa Marianelli, contactable at zcbtetm@ucl.ac.uk)
 
-
 %% current problems 
 % 1) memory cells firing for whole duration of reactivaiton signal unlike
 % in paper figure
 % 2) anything past 0.85 multiplication of excitatory signal essentially
 % breaks model --> why does recurrent system have to be balanced out at the
 % beggining 
-% 3) 
+% 3) set up to have 3 memories overlapping
 %% set up
 % Define simulation parameters (p) and get input times (in)... 
 [p, in]  = get_params(2, ...   %to multiply number of neurones by
-                    3000, ...  %simulation length (ms)
-                    1.15, ...  %selective stimulation contrast factor
+                    2000, ...  %simulation length (ms)
+                    1.05, ...  %selective stimulation contrast factor
                     1.005,...  %reactivating signal contrast factor
                     0.85, ...  %to multiply excitatory signal 
                     .9,   ...  % SD of external current sigma
                     300,  ...  %initial stimulation length 
-                    250);       %reactivation length
+                    10);      %reactivation length
 
 % Generate memory for network (M)
 [M] = get_memory(p);
 
 % Assign Neurons to memories (mems)
 % generate synaptic connectivity matrix (C) and synaptic strength matrix (J)...
-[C, J, mems] = connectivity_matrix(M, p);
-
+[C, J, mems] = connectivity_matrix(M, p, 0.25, 'BC'); %0.25 is the degree of overlap with each 
+                                                % initial memory pattern(to overlap odour C with odours A and B)
 %% Simulate the dynamics
 
 %  should think about having two options - one where we log everything (for debugging, which uses a lot more memory) and one where we only keep the
@@ -43,8 +44,8 @@ x           = ones(p.Ne, p.Ne);
 ref_p       = zeros(p.N,1);
 delays      = randi([1 5], p.N, p.N).*C;
 delay_window      = zeros(p.N, p.N, 5);
-for t       = 1 : p.SimLength
 
+for t       = 1 : p.SimLength
     % get updated synaptic efficacy for excitatory-to-excitatory connections (which display short term plasticity)
     M.U_log(:,:, t) = u;
     M.X_log(:,:, t) = x;  
@@ -57,10 +58,23 @@ for t       = 1 : p.SimLength
     % period or reactivation period
     activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.simulation});
     M.Iext(horzcat(mems{activeMems})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.SCF;                 
+    
+    % for when the reloading the same memory 
+    % activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.reactivation});
+    % M.Iext(horzcat(mems{activeMems})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.RCF;                 
+    % M.Iext_log(:, t) = M.Iext;
+    % for when reloading a different memory 
     activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.reactivation});
-    M.Iext(horzcat(mems{activeMems})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.RCF;                 
+    if activeMems == 1
+        M.Iext(horzcat(mems{2})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.SCF; %EM: why horzcat? why sum activae mems if its a logical   
+    else
+    end
+                                    % x by 2 to generate index for memory
+                                    % pattern used for odour B? not really
+                                    % sure how this has been re written so
+                                    % need to check
     M.Iext_log(:, t) = M.Iext;
-  
+
     % The membrane potential in the next time step is dictated by its value in this timestep, and the externally applied current
     M.V_log(:, t) = M.Irec;
     tau_const   = 1./[p.tau_e*ones(p.Ne,1) ; p.tau_i*ones(p.Ni,1)];
@@ -112,9 +126,9 @@ end
 
 %% plotting output
 fs = 10;
-ns = 5;
+ns = 6;
 subplot(ns, 1, 1)
-for m=1:1
+for m=1:2
     x = M.V_log(mems{m}, :);
     x(x==0)=NaN;
     x = nanmean(x, 1);
@@ -147,39 +161,59 @@ av_x_memory = av_x(idx, :);
 av_x_memory = mean(av_x_memory, 1);
 
 plot(1:p.SimLength,av_u_memory,'b')
-ylabel('synaptic variables','FontSize',fs)
+ylabel('pattern A','FontSize',fs)
+hold on
+plot(1:p.SimLength,av_x_memory,'r')
+legend('u', 'x' ,'Location','southeast')
+%u and x for second memory 
+subplot(ns,1,3)
+av_u = mean(M.U_log, 1); av_u = squeeze(av_u);
+idx = mems{2}; 
+av_u_memory = av_u(idx, :); 
+av_u_memory = mean(av_u_memory, 1);
+
+av_x = mean(M.X_log, 1); av_x = squeeze(av_x);
+idx = mems{2}; 
+av_x_memory = av_x(idx, :); 
+av_x_memory = mean(av_x_memory, 1);
+
+plot(1:p.SimLength,av_u_memory,'b')
+ylabel('pattern B','FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
 
 %plot recurrent current log 
-subplot(ns, 1, 3)
+subplot(ns, 1, 4)
 av_i = mean(M.Irec_log, 1); 
 plot(1:p.SimLength, av_i)
 ylabel('recurent','FontSize',fs)
-subplot(ns, 1, 4)
+subplot(ns, 1, 5)
 av_e = mean(M.Iext_log, 1); 
 plot(1:p.SimLength, av_e)
 ylabel('external','FontSize',fs)
+color_ops = { 'k', 'r'};
 
 %plotting raster
-subplot(ns, 1, 5)
-tVec = 1:p.SimLength;
-spikeMat = M.spikelog(mems{m}, :);
-hold all; 
-for trialCount = 1:size(spikeMat,1)
-    if sum(spikeMat(trialCount, :)) == 0
-        continue
-    else
-        spikePos = tVec(find(spikeMat(trialCount, :)));
-        for spikeCount = 1:length(spikePos)
-            plot([spikePos(spikeCount) spikePos(spikeCount)], ...
-            [trialCount-0.4 trialCount+0.4], 'k');
+subplot(ns, 1, 6)
+for m = 1:2
+    tVec = 1:p.SimLength;
+    spikeMat = M.spikelog(mems{m}, :);
+    hold all; 
+    for trialCount = 1:size(spikeMat,1)
+        if sum(spikeMat(trialCount, :)) == 0
+            continue
+        else
+            spikePos = tVec(find(spikeMat(trialCount, :)));
+            for spikeCount = 1:length(spikePos)
+                plot([spikePos(spikeCount) spikePos(spikeCount)], ...
+                [trialCount-0.4 trialCount+0.4], color_ops{m});
+            end
         end
     end
+    hold on;
 end
-hold on;
-spikeMat = M.spikelog; spikeMat(mems{m},:) = [];
+spikeMat = M.spikelog; spikeMat(mems{1},:) = [];spikeMat(mems{2},:) = [];
 spikeMat = spikeMat(randperm(size(spikeMat,1)),:);
 spikeMat = spikeMat(1:p.N/10, :);
 for trialCount = 1:size(spikeMat,1)

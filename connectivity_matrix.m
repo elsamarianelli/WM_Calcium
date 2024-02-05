@@ -1,15 +1,31 @@
-function [C, J, mems] = connectivity_matrix(M, p)
+function [C, J, mems] = connectivity_matrix(M, p, degree_overlap, pattern_order)
 
 J = M.J; C = M.C;
 cells       = 1 : p.Ne;                       % List of all Neurons
 mems        = cell(p.p_m,1);                  % Array of Neurons in each memory
-for i       = 1 : p.p_m
 
-    % Assign a random selection of remaining unassigned Neurons to that
-    % memory
-    cells   = cells(randperm(length(cells)));
-    mems{i} = sort(cells(1:p.f*p.Ne));
-    cells(ismember(cells,mems{i})) = [];
+cells   = cells(randperm(length(cells)));
+pattern_A = sort(cells(1:p.f*p.Ne));
+cells(ismember(cells,pattern_A)) = [];
+cells   = cells(randperm(length(cells)));
+pattern_B = sort(cells(1:p.f*p.Ne));
+cells(ismember(cells,pattern_B)) = [];
+% pattern C overlapping with patterns A and B
+AC_overlap = pattern_A(1:(length(pattern_A)*degree_overlap));
+BC_overlap = pattern_B(1:(length(pattern_B)*degree_overlap));
+cells   = cells(randperm(length(cells)));
+non_overlap = sort(cells(1:(p.f*p.Ne)*(1-degree_overlap*2)));
+pattern_C = [AC_overlap, BC_overlap, non_overlap];
+
+if strcmp(pattern_order,'AB')
+    mems{1} = pattern_A; mems{2} = pattern_B;
+elseif  strcmp(pattern_order,'BC')
+    mems{1} = pattern_B; mems{2} = pattern_C;
+elseif  strcmp(pattern_order,'AC')
+    mems{1} = pattern_A; mems{2} = pattern_C;
+end
+
+for i       = 1 : p.p_m
     
     % Generate synaptic connections from that memory to all other Neurons
     for j   = 1 : p.N
@@ -49,4 +65,4 @@ J(cells,p.Ne+1:p.N)                 = p.J_ie * C(cells,p.Ne+1:p.N); clear cells
 J(p.Ne+1:p.N,1:p.Ne)                    = p.J_ei * C(p.Ne+1:p.N,1:p.Ne);
 J(p.Ne+1:p.N,p.Ne+1:p.N)                = p.J_ii * C(p.Ne+1:p.N,p.Ne+1:p.N);
 
-end
+endend
