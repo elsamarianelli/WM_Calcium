@@ -1,5 +1,3 @@
-%% General simulation code
-
 % Code to replicate results in Figure 2 of Mongillo et al's. 2008 
 % Synaptic Theory of Working Memory Paper, which models working memory as a 
 % property of calcium-mediated short term synaptic facilitation, in a 
