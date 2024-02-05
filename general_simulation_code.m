@@ -15,15 +15,16 @@
 % breaks model --> why does recurrent system have to be balanced out at the
 % beggining 
 % 3) set up to have 3 memories overlapping
+% 4) not sure time from initial or reactition length makes a difference...
 %% set up
 % Define simulation parameters (p) and get input times (in)... 
-[p, in]  = get_params(2, ...   %to multiply number of neurones by
+[p, in]  = get_params(3, ...   %to multiply number of neurones by
                     2000, ...  %simulation length (ms)
                     1.05, ...  %selective stimulation contrast factor
-                    1.005,...  %reactivating signal contrast factor
+                    1.015,...  %reactivating signal contrast factor
                     0.85, ...  %to multiply excitatory signal 
                     .9,   ...  % SD of external current sigma
-                    300,  ...  %initial stimulation length 
+                    100,  ...  %initial stimulation length 
                     10);      %reactivation length
 
 % Generate memory for network (M)
@@ -31,8 +32,8 @@
 
 % Assign Neurons to memories (mems)
 % generate synaptic connectivity matrix (C) and synaptic strength matrix (J)...
-[C, J, mems] = connectivity_matrix(M, p, 0.25, 'BC'); %0.25 is the degree of overlap with each 
-                                                % initial memory pattern(to overlap odour C with odours A and B)
+[C, J, mems, first_input, second_input] = connectivity_matrix(M, p, 0.25, 'AC'); %0.25 is the degree of overlap with each 
+                                                                                 % initial memory pattern(to overlap odour C with odours A and B)
 %% Simulate the dynamics
 
 %  should think about having two options - one where we log everything (for debugging, which uses a lot more memory) and one where we only keep the
@@ -161,7 +162,7 @@ av_x_memory = av_x(idx, :);
 av_x_memory = mean(av_x_memory, 1);
 
 plot(1:p.SimLength,av_u_memory,'b')
-ylabel('pattern A','FontSize',fs)
+ylabel(first_input,'FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
@@ -178,7 +179,7 @@ av_x_memory = av_x(idx, :);
 av_x_memory = mean(av_x_memory, 1);
 
 plot(1:p.SimLength,av_u_memory,'b')
-ylabel('pattern B','FontSize',fs)
+ylabel(second_input,'FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
@@ -192,9 +193,10 @@ subplot(ns, 1, 5)
 av_e = mean(M.Iext_log, 1); 
 plot(1:p.SimLength, av_e)
 ylabel('external','FontSize',fs)
-color_ops = { 'k', 'r'};
 
 %plotting raster
+color_ops = { 'k', 'r'};
+
 subplot(ns, 1, 6)
 for m = 1:2
     tVec = 1:p.SimLength;
@@ -229,3 +231,4 @@ for trialCount = 1:size(spikeMat,1)
 end
 ylim([0 size(spikeMat, 1)+1]);
 xlim([0 p.SimLength])
+ylabel('spike log','FontSize',fs)

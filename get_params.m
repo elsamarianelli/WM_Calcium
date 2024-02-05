@@ -6,8 +6,8 @@ function [p, in] = get_params(factor, simlength, SCF, RCF, ex_fact, sigma, sim_t
     p.Ni      = 20.*factor;                   % Number of inhibitory neurons
     p.N       = p.Ne + p.Ni;                  % Total number of neurons
     p.f       = 0.1;                          % Coding level
-    p.p_m     = 5;                            % Number of memories (non-overlapping)
-    p.c       = 0.25;                         % Probability of synaptic contact
+    p.p_m     = 3;                            % Number of memories (non-overlapping)
+    p.c       = 0.2;                          % Probability of synaptic contact
     p.J_ie    = 0.135;                        % synaptic efficacy E-->I
     p.J_ei    = 0.25;                         % synaptic efficacy I-->E
     p.J_ii    = 0.20;                         % synaptic efficacy I-->I
@@ -29,5 +29,5 @@ function [p, in] = get_params(factor, simlength, SCF, RCF, ex_fact, sigma, sim_t
     %% input details 
     % times that memory is 'on', ms
     in.simulation = [300 (300+sim_time)];
-    in.reactivation = [1300 (1300+react_time)];
+    in.reactivation = [800 (800+react_time)];
 end

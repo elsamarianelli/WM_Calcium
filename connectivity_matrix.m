@@ -1,9 +1,11 @@
-function [C, J, mems] = connectivity_matrix(M, p, degree_overlap, pattern_order)
+function [C, J, mems, first_input, second_input] = connectivity_matrix(M, p, degree_overlap, pattern_order)
 
 J = M.J; C = M.C;
 cells       = 1 : p.Ne;                       % List of all Neurons
 mems        = cell(p.p_m,1);                  % Array of Neurons in each memory
 
+% generating seperate patterns for memory input 1 and 2 for 3 different
+% odours, order can be choses in function
 cells   = cells(randperm(length(cells)));
 pattern_A = sort(cells(1:p.f*p.Ne));
 cells(ismember(cells,pattern_A)) = [];
@@ -25,6 +27,7 @@ elseif  strcmp(pattern_order,'AC')
     mems{1} = pattern_A; mems{2} = pattern_C;
 end
 
+first_input = pattern_order(1); second_input = pattern_order(2);
 for i       = 1 : p.p_m
     
     % Generate synaptic connections from that memory to all other Neurons
@@ -65,4 +68,4 @@ J(cells,p.Ne+1:p.N)                 = p.J_ie * C(cells,p.Ne+1:p.N); clear cells
 J(p.Ne+1:p.N,1:p.Ne)                    = p.J_ei * C(p.Ne+1:p.N,1:p.Ne);
 J(p.Ne+1:p.N,p.Ne+1:p.N)                = p.J_ii * C(p.Ne+1:p.N,p.Ne+1:p.N);
 
-endend
+end
