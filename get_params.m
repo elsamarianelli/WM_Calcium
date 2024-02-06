@@ -1,4 +1,4 @@
-function [p, in] = get_params(factor, simlength, SCF, RCF, ex_fact, sigma, sim_time, react_time)
+function [p, in] = get_params(factor, simlength, SCF, RCF, ex_fact, sigma, delay_time, sim_time, react_time)
 %function to get all parameters and input tiems for memories as given in
 %Mongillo et al 2007 SOM paper
     %% parameters
@@ -6,12 +6,12 @@ function [p, in] = get_params(factor, simlength, SCF, RCF, ex_fact, sigma, sim_t
     p.Ni      = 20.*factor;                   % Number of inhibitory neurons
     p.N       = p.Ne + p.Ni;                  % Total number of neurons
     p.f       = 0.1;                          % Coding level
-    p.p_m     = 3;                            % Number of memories (non-overlapping)
+    p.p_m     = 2;                            % Number of memories (non-overlapping)
     p.c       = 0.2;                          % Probability of synaptic contact
     p.J_ie    = 0.135;                        % synaptic efficacy E-->I
     p.J_ei    = 0.25;                         % synaptic efficacy I-->E
     p.J_ii    = 0.20;                         % synaptic efficacy I-->I
-    p.J_b     = 0.1;                          % baseline level of E-->E synapses
+    p.J_b     = 0.10;                         % baseline level of E-->E synapses
     p.J_p     = 0.45;                         % potenitated level of E-->E synapses
     p.SPE     = 20;                           % spike emmision threshold
     p.Vr_e    = 16; p.Vr_i = 13;              % reset potentials
@@ -29,5 +29,5 @@ function [p, in] = get_params(factor, simlength, SCF, RCF, ex_fact, sigma, sim_t
     %% input details 
     % times that memory is 'on', ms
     in.simulation = [300 (300+sim_time)];
-    in.reactivation = [800 (800+react_time)];
+    in.reactivation = [300+delay_time (300+delay_time+react_time)];
 end

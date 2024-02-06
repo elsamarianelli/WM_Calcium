@@ -5,35 +5,34 @@
 % property of calcium-mediated short term synaptic facilitation, in a 
 % recurrent network of integrate-and-fire neurones.
 
-% Version 2 
+% Version 2
 % (Elsa Marianelli, contactable at zcbtetm@ucl.ac.uk)
 
 %% current problems 
 % 1) memory cells firing for whole duration of reactivaiton signal unlike
 % in paper figure
-% 2) anything past 0.85 multiplication of excitatory signal essentially
-% breaks model --> why does recurrent system have to be balanced out at the
-% beggining 
-% 3) set up to have 3 memories overlapping
-% 4) not sure time from initial or reactition length makes a difference...
+% 2) not sure time from initial or reactition length makes a
+% difference...response is too immediate
 %% set up
 % Define simulation parameters (p) and get input times (in)... 
-[p, in]  = get_params(3, ...   %to multiply number of neurones by
-                    2000, ...  %simulation length (ms)
-                    1.05, ...  %selective stimulation contrast factor
-                    1.015,...  %reactivating signal contrast factor
+[p, in]  = get_params(2, ...   %to multiply number of neurones by
+                    3000, ...  %simulation length (ms)
+                    1.15, ...  %selective stimulation contrast factor
+                    1.05,...  %reactivating signal contrast factor
                     0.85, ...  %to multiply excitatory signal 
-                    .9,   ...  % SD of external current sigma
-                    100,  ...  %initial stimulation length 
-                    10);      %reactivation length
+                    1,   ...  % SD of external current sigma
+                    1500, ... % time between 1st and 2nd pattern 
+                    350,  ...  %initial stimulation length 
+                    200);      %reactivation length
 
 % Generate memory for network (M)
 [M] = get_memory(p);
 
 % Assign Neurons to memories (mems)
 % generate synaptic connectivity matrix (C) and synaptic strength matrix (J)...
-[C, J, mems, first_input, second_input] = connectivity_matrix(M, p, 0.25, 'AC'); %0.25 is the degree of overlap with each 
-                                                                                 % initial memory pattern(to overlap odour C with odours A and B)
+[C, J, mems, first_input, second_input] = connectivity_matrix(M, p, 1/8, 'AB');  % 1/x = the degree to which the neural populations overlap
+                                                                                 % '--' can put in desired pattern order, AA for repeated patterns
+                                                                                 
 %% Simulate the dynamics
 
 %  should think about having two options - one where we log everything (for debugging, which uses a lot more memory) and one where we only keep the
@@ -58,17 +57,21 @@ for t       = 1 : p.SimLength
     % present memory with a contrast factor applied if in stimulation
     % period or reactivation period
     activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.simulation});
-    M.Iext(horzcat(mems{activeMems})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.SCF;                 
-    
-    % for when the reloading the same memory 
-    % activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.reactivation});
-    % M.Iext(horzcat(mems{activeMems})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.RCF;                 
-    % M.Iext_log(:, t) = M.Iext;
-    % for when reloading a different memory 
-    activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.reactivation});
-    if activeMems == 1
-        M.Iext(horzcat(mems{2})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.SCF; %EM: why horzcat? why sum activae mems if its a logical   
+    M.Iext(horzcat(mems{activeMems})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.SCF.*p.ex_fact;                 
+    % second excitation for whole netowrk 
+    if strcmp(first_input, second_input)
+        activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.reactivation});
+        if activeMems == 1
+            M.Iext(1:p.Ne) = normrnd(p.mu_e,p.sigma, p.Ne, 1).*p.ex_fact.*p.RCF;  
+            M.Iext(p.Ne+1:end) = normrnd(p.mu_i, p.sigma, p.Ni, 1).*p.ex_fact.*p.RCF;               
+            M.Iext_log(:, t) = M.Iext;
+        end
     else
+    % for when reloading a different memory 
+        activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.reactivation});
+        if activeMems == 1
+            M.Iext(horzcat(mems{2})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.SCF.*p.ex_fact; %EM: why horzcat? why sum activae mems if its a logical   
+        end
     end
                                     % x by 2 to generate index for memory
                                     % pattern used for odour B? not really
@@ -82,8 +85,8 @@ for t       = 1 : p.SimLength
     current     = -M.V + M.Irec + M.Iext;                              %(2)
     M.V         = M.V  + (tau_const .*current);
 
-    % Check if the Neuron has exceeded threshold - i.e. fired a spike and is not in refractory period
-    % EM: think this order makes more sense for updating RP? check with dan
+    % Check if the Neuron has exceeded threshold - i.e. fired a spike and
+    % is not in refractory period
     fired       = M.V > p.SPE & ref_p==0;
     % update refractory periods for this timestep
     ref_p(ref_p~=0) = ref_p(ref_p~=0) - 1; 
@@ -96,6 +99,7 @@ for t       = 1 : p.SimLength
     pre     = nonzeros(repmat(fired',p.N,1) .* repmat((1:p.N),p.N,1) .*C);
     post    = nonzeros(repmat(fired',p.N,1) .* repmat((1:p.N)',1,p.N) .*C);
     arrives = nonzeros(repmat(fired',p.N,1) .* delays .*C); %+t
+   
     %update next 5 time step spike logs, rolling window through spike log
     %to save memory EM: ?
     spike_at_synapse = delay_window(:, :, 1);
@@ -124,6 +128,9 @@ for t       = 1 : p.SimLength
     SE(1:p.Ne, 1:p.Ne) = SE_hat;                                      %(7)
     disp(t)
 end 
+
+
+
 
 %% plotting output
 fs = 10;

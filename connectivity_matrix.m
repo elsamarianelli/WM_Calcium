@@ -6,28 +6,29 @@ mems        = cell(p.p_m,1);                  % Array of Neurons in each memory
 
 % generating seperate patterns for memory input 1 and 2 for 3 different
 % odours, order can be choses in function
+
+%pattern A
+num_overlap_cells = (p.f*p.Ne).*degree_overlap;
 cells   = cells(randperm(length(cells)));
 pattern_A = sort(cells(1:p.f*p.Ne));
 cells(ismember(cells,pattern_A)) = [];
+% pattern B
+AB_overlap = pattern_A(1:num_overlap_cells);
 cells   = cells(randperm(length(cells)));
-pattern_B = sort(cells(1:p.f*p.Ne));
+non_overlap = sort(cells(1:(p.f*p.Ne)-num_overlap_cells));
+pattern_B = [AB_overlap, non_overlap];
 cells(ismember(cells,pattern_B)) = [];
-% pattern C overlapping with patterns A and B
-AC_overlap = pattern_A(1:(length(pattern_A)*degree_overlap));
-BC_overlap = pattern_B(1:(length(pattern_B)*degree_overlap));
+% pattern C 
+AC_overlap = pattern_A(end-num_overlap_cells+1:end);
+BC_overlap = pattern_B(end-num_overlap_cells+1:end);
 cells   = cells(randperm(length(cells)));
 non_overlap = sort(cells(1:(p.f*p.Ne)*(1-degree_overlap*2)));
 pattern_C = [AC_overlap, BC_overlap, non_overlap];
 
-if strcmp(pattern_order,'AB')
-    mems{1} = pattern_A; mems{2} = pattern_B;
-elseif  strcmp(pattern_order,'BC')
-    mems{1} = pattern_B; mems{2} = pattern_C;
-elseif  strcmp(pattern_order,'AC')
-    mems{1} = pattern_A; mems{2} = pattern_C;
-end
-
+mems{1} = eval(strcat('pattern', '_', pattern_order(1)));
+mems{2} = eval(strcat('pattern', '_', pattern_order(2)));
 first_input = pattern_order(1); second_input = pattern_order(2);
+
 for i       = 1 : p.p_m
     
     % Generate synaptic connections from that memory to all other Neurons
