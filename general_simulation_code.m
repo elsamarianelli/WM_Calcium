@@ -15,7 +15,7 @@
 % difference...response is too immediate
 %% set up
 % Define simulation parameters (p) and get input times (in)... 
-[p, in]  = get_params(2, ...   %to multiply number of neurones by
+[p, in]  = get_params(1, ...   %to multiply number of neurones by
                     3000, ...  %simulation length (ms)
                     1.15, ...  %selective stimulation contrast factor
                     1.05,...  %reactivating signal contrast factor
