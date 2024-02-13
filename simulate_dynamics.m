@@ -82,7 +82,7 @@ function [M, spike_slice] = simulate_dynamics(p, in, M, C, J, mems, first_input,
         ind = sub2ind([size(delay_window)], post, pre, arrives);
         delay_window(ind) = 1;
         % delay_window(post, pre, arrives) = 1;
-
+% 
         % update u and x parameters for E to E connections and use to update synaptic efficacy
         u = u + (((p.U -u)/p.tau_facil) + (p.U.*(1-u).*spike_at_synapse(1:p.Ne, 1:p.Ne)));          %(5)
         x = x + (((1-x)/p.tau_decay) - (u.*x.*spike_at_synapse(1:p.Ne, 1:p.Ne)));                   %(6)
@@ -100,5 +100,4 @@ function [M, spike_slice] = simulate_dynamics(p, in, M, C, J, mems, first_input,
     end 
     
     spike_slice = M.V_log(:, in.reactivation(2));
-
 end
