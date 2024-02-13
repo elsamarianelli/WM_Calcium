@@ -16,15 +16,15 @@
 
 %% set up
 % Define simulation parameters (p) and get input times (in)... 
-[p, in]  = get_params(2, ...   %to multiply number of neurones by
-                    1500, ...  %simulation length (ms)
+[p, in]  = get_params(4, ...   %to multiply number of neurones by
+                    2000, ...  %simulation length (ms)
                     1.15, ...  %selective stimulation contrast factor
                     1.05,...  %reactivating signal contrast factor
                     0.85, ...  %to multiply excitatory signal 
                     1,   ...  % SD of external current sigma
-                    500, ... % time between 1st and 2nd pattern 
-                    200,  ...  %initial stimulation length 
-                    100);      %reactivation length
+                    1000, ... % time between 1st and 2nd pattern 
+                    350,  ...  %initial stimulation length 
+                    40);      %reactivation length
 
 % Generate memory for network (M)
 [M] = get_memory(p);
