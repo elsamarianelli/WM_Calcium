@@ -21,13 +21,13 @@ function [p, in] = get_params(factor, simlength, SCF, RCF, ex_fact, sigma, delay
     p.sigma = sigma;                          %standard deviation of external current
     p.SimLength = simlength;                  %length of simulation (ms)
     p.tau_decay = 200;                        %recovery of synaptic resources 
-    p.tau_facil = 1500;                       %recovery time of utilisation factor 
+    p.tau_facil = 1000;                       %recovery time of utilisation factor 
     p.U = 0.2;                                %Baseline utilisation factor
     p.ex_fact = ex_fact;                      %factor by which excitatory input is multiplied by 
     p.SCF = SCF;                              %selective stimulation contrast factor
     p.RCF = RCF;                              %reactivating signal contrast factor
     %% input details 
     % times that memory is 'on', ms
-    in.simulation = [300 (300+sim_time)];
-    in.reactivation = [300+delay_time (300+delay_time+react_time)];
+    in.simulation = [500 (500+sim_time)];
+    in.reactivation = [500+delay_time (500+delay_time+react_time)];
 end

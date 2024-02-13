@@ -16,4 +16,8 @@ M.Iext_log    = zeros(p.N, p.SimLength);
 M.J_fired_log = zeros(p.N, p.SimLength);
 M.synapse_log = zeros(p.N, p.N, p.SimLength+5); 
 
+M.U_mem1_log  = zeros(1, p.SimLength);
+M.U_mem2_log  = zeros(1, p.SimLength);
+M.X_mem1_log  = zeros(1, p.SimLength);
+M.X_mem2_log  = zeros(1, p.SimLength);
 end

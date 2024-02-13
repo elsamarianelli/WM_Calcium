@@ -13,6 +13,7 @@
 % in paper figure
 % 2) not sure time from initial or reactition length makes a
 % difference...response is too immediate
+
 %% set up
 % Define simulation parameters (p) and get input times (in)... 
 [p, in]  = get_params(2, ...   %to multiply number of neurones by
@@ -21,118 +22,36 @@
                     1.05,...  %reactivating signal contrast factor
                     0.85, ...  %to multiply excitatory signal 
                     1,   ...  % SD of external current sigma
-                    1000, ... % time between 1st and 2nd pattern 
-                    350,  ...  %initial stimulation length 
-                    250);      %reactivation length
+                    800, ... % time between 1st and 2nd pattern 
+                    200,  ...  %initial stimulation length 
+                    100);      %reactivation length
 
 % Generate memory for network (M)
 [M] = get_memory(p);
 
 % Assign Neurons to memories (mems)
 % generate synaptic connectivity matrix (C) and synaptic strength matrix (J)...
-[C, J, mems, first_input, second_input] = connectivity_matrix(M, p, 1/8, 'AA');  % 1/x = the degree to which the neural populations overlap
-                                                                                 % '--' can put in desired pattern order, AA for repeated patterns
-                                                                                 
-%% Simulate the dynamics
+[C, J, mems, first_input, second_input] = connectivity_matrix(M, p, 1/8, 'AA'); 
+[M_new, slice] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input);
 
-%  should think about having two options - one where we log everything (for debugging, which uses a lot more memory) and one where we only keep the
-%  crucial outputs (but maybe we can deal with this later and just log everything for now)
-%initialise variables
-SE          = J;
-u           = p.U.*(ones(p.Ne, p.Ne));
-x           = ones(p.Ne, p.Ne); 
-ref_p       = zeros(p.N,1);
-delays      = randi([1 5], p.N, p.N).*C;
-delay_window      = zeros(p.N, p.N, 5);
-
-for t       = 1 : p.SimLength
-    % get updated synaptic efficacy for excitatory-to-excitatory connections (which display short term plasticity)
-    M.U_log(:,:, t) = u;
-    M.X_log(:,:, t) = x;  
-    
-    % get external inputs all the time (change strength to 1 for paper set up)
-    M.Iext(1:p.Ne) = normrnd(p.mu_e,p.sigma, p.Ne, 1).*p.ex_fact;  
-    M.Iext(p.Ne+1:end) = normrnd(p.mu_i, p.sigma, p.Ni, 1).*p.ex_fact; %(3)
-
-    % present memory with a contrast factor applied if in stimulation
-    % period or reactivation period
-    activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.simulation});
-    M.Iext(horzcat(mems{activeMems})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.SCF.*p.ex_fact;                 
-    % second excitation for whole netowrk 
-    if strcmp(first_input, second_input)
-        activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.reactivation});
-        if activeMems == 1
-            M.Iext(1:p.Ne) = normrnd(p.mu_e,p.sigma, p.Ne, 1).*p.ex_fact.*p.RCF;  
-            M.Iext(p.Ne+1:end) = normrnd(p.mu_i, p.sigma, p.Ni, 1).*p.ex_fact.*p.RCF;               
-            M.Iext_log(:, t) = M.Iext;
-        end
-    else
-    % for when reloading a different memory 
-        activeMems = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{in.reactivation});
-        if activeMems == 1
-            M.Iext(horzcat(mems{2})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.Ne).*p.SCF.*p.ex_fact; %EM: why horzcat? why sum activae mems if its a logical   
-        end
-    end
-                                    % x by 2 to generate index for memory
-                                    % pattern used for odour B? not really
-                                    % sure how this has been re written so
-                                    % need to check
-    M.Iext_log(:, t) = M.Iext;
-
-    % The membrane potential in the next time step is dictated by its value in this timestep, and the externally applied current
-    M.V_log(:, t) = M.Irec;
-    tau_const   = 1./[p.tau_e*ones(p.Ne,1) ; p.tau_i*ones(p.Ni,1)];
-    current     = -M.V + M.Irec + M.Iext;                              %(2)
-    M.V         = M.V  + (tau_const .*current);
-
-    % Check if the Neuron has exceeded threshold - i.e. fired a spike and
-    % is not in refractory period
-    fired       = M.V > p.SPE & ref_p==0;
-    % update refractory periods for this timestep
-    ref_p(ref_p~=0) = ref_p(ref_p~=0) - 1; 
-    % update refractory periods for cells which fire - V needs to be set to subrethsold reset potential Vr when refractory period ends
-    ref_p(fired) = p.ARP; 
-    % reset potentials for cells which fired
-    M.V(fired) = [p.Vr_e*ones(sum(fired(1:p.Ne)),1) ; p.Vr_i*ones(sum(fired(p.Ne+1:end)),1)];
-
-    % updating synapse log into future based on transmission delays
-    pre     = nonzeros(repmat(fired',p.N,1) .* repmat((1:p.N),p.N,1) .*C);
-    post    = nonzeros(repmat(fired',p.N,1) .* repmat((1:p.N)',1,p.N) .*C);
-    arrives = nonzeros(repmat(fired',p.N,1) .* delays .*C); %+t
-   
-    %update next 5 time step spike logs, rolling window through spike log
-    %to save memory EM: ?
-    spike_at_synapse = delay_window(:, :, 1);
-    delay_window(:, :, 1) = [];
-    delay_window = cat(3, delay_window, zeros(p.N, p.N));
-    delay_window(post',pre', arrives') = 1;
-    
-    % reccurent currents calculated as the sum over inputting neurones
-    % which fired by the efficacy at that synapse                     (4)
-    % spike_at_synapse = M.synapse_log(:, :, t);
-    M.Irec    =  SE.*spike_at_synapse;
-    M.Irec    =  sum(M.Irec, 2);  
-    M.Irec_log(:, t) = M.Irec;
-
-    J_fired = double(fired)'; 
-    M.J_fired_log(:, t) = J_fired';
-    M.spikelog(:, t) = fired; 
-    clear fired;
-    % update u and x parameters for E to E connections and update synaptic
-    % efficacy matrix
-    f_or_s = spike_at_synapse(1:p.Ne, 1:p.Ne);
-    u = u + (((p.U -u)/p.tau_facil) + (p.U.*(1-u).*f_or_s));          %(5)
-    x = x + (((1-x)/p.tau_decay) - (u.*x.*f_or_s));                   %(6)
-    SE_hat = J(1:p.Ne, 1:p.Ne).*u.*x;
-    % synaptic efficacy for E to E plastic synapses
-    SE(1:p.Ne, 1:p.Ne) = SE_hat;                                      %(7)
-    disp(t)
-end 
-
-
-
+% n_runs = 50;
+% data = zeros(p.N, n_runs.*2);   
+% 1/x = the degree to which the neural populations overlap '--' can put in desired pattern order, AA for repeated patterns
+% for i = 1:n_runs  
+%     [M_new, slice] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input);
+%     data(:, i) =slice;  
+%     disp(i)
+% end
+% [C, J, mems, first_input, second_input] = connectivity_matrix(M, p, 1/8, 'AC'); 
+% for i = n_runs+1:n_runs*2
+%     [M_new, slice] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input);
+%     data(:, i) =slice;  
+%     disp(i)
+% end
 
 %% plotting output
+% plotting vm in both patterns
+M = M_new;
 fs = 10;
 ns = 6;
 subplot(ns, 1, 1)
@@ -157,41 +76,28 @@ for m=1:2
 end
 ylabel('Vm in memory','FontSize',fs)
 
+% plotting synaptic parameters u an x
 subplot(ns,1,2)
-av_u = mean(M.U_log, 1); av_u = squeeze(av_u);
-idx = mems{1}; 
-av_u_memory = av_u(idx, :); 
-av_u_memory = mean(av_u_memory, 1);
-
-av_x = mean(M.X_log, 1); av_x = squeeze(av_x);
-idx = mems{1}; 
-av_x_memory = av_x(idx, :); 
-av_x_memory = mean(av_x_memory, 1);
-
+av_u_memory = M.U_mem1_log;
+av_x_memory = M.X_mem1_log;
 plot(1:p.SimLength,av_u_memory,'b')
 ylabel(first_input,'FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
+ylim([0 1])
+
 %u and x for second memory 
 subplot(ns,1,3)
-av_u = mean(M.U_log, 1); av_u = squeeze(av_u);
-idx = mems{2}; 
-av_u_memory = av_u(idx, :); 
-av_u_memory = mean(av_u_memory, 1);
-
-av_x = mean(M.X_log, 1); av_x = squeeze(av_x);
-idx = mems{2}; 
-av_x_memory = av_x(idx, :); 
-av_x_memory = mean(av_x_memory, 1);
-
+av_u_memory = M.U_mem2_log;
+av_x_memory = M.X_mem2_log;
 plot(1:p.SimLength,av_u_memory,'b')
 ylabel(second_input,'FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
-
-%plot recurrent current log 
+ylim([0 1])
+%plot recurrent current log adn external input 
 subplot(ns, 1, 4)
 av_i = mean(M.Irec_log, 1); 
 plot(1:p.SimLength, av_i)
@@ -201,8 +107,8 @@ av_e = mean(M.Iext_log, 1);
 plot(1:p.SimLength, av_e)
 ylabel('external','FontSize',fs)
 
-%plotting raster
-color_ops = { 'k', 'r'};
+%plotting spike raster
+color_ops = { 'b', 'r'};
 
 subplot(ns, 1, 6)
 for m = 1:2
@@ -232,7 +138,7 @@ for trialCount = 1:size(spikeMat,1)
         spikePos = tVec(find(spikeMat(trialCount, :)));
         for spikeCount = 1:length(spikePos)
             plot([spikePos(spikeCount) spikePos(spikeCount)], ...
-            [trialCount-0.4 trialCount+0.4], 'g');
+            [trialCount-0.4 trialCount+0.4], 'Color', [.5 .5 .5]);
         end
     end
 end
