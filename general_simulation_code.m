@@ -1,39 +1,50 @@
 %% General simulation code
+%  Code to implement a model of working memory using "silent" short-term
+%  facilitation, as described in:
+%  Mongillo et al. (2008) Science 319: 1543-1546
+%
+%  Version 2
+%  Elsa Marianelli, contactable at zcbtetm@ucl.ac.uk
 
-% Code to replicate results in Figure 2 of Mongillo et al's. 2008 
-% Synaptic Theory of Working Memory Paper, which models working memory as a 
-% property of calcium-mediated short term synaptic facilitation, in a 
-% recurrent network of integrate-and-fire neurones.
+%% Issues
+%  1) memory cells firing for whole duration of reactivaiton signal unlike
+%  in paper figure
+%  2) not sure time from initial or reactition length makes a
+%  difference...response is too immediate
 
-% Version 2
-% (Elsa Marianelli, contactable at zcbtetm@ucl.ac.uk)
 
-%% current problems 
-% 1) memory cells firing for whole duration of reactivaiton signal unlike
-% in paper figure
-% 2) not sure time from initial or reactition length makes a
-% difference...response is too immediate
+%% Define simulation parameters (p) and get input times (in)
+[p, in] = get_params(3, ...     % to multiply number of neurones by
+                    2000, ...   % simulation length (ms)
+                    1.15, ...   % selective stimulation contrast factor
+                    1.05,...    % reactivating signal contrast factor
+                    0.85, ...   % to multiply excitatory signal 
+                    .8,   ...    % SD of external current sigma
+                    1000, ...   % time between 1st and 2nd pattern 
+                    100,  ...   % initial stimulation length 
+                    20);        % reactivation length
 
-%% set up
-% Define simulation parameters (p) and get input times (in)... 
-[p, in]  = get_params(4, ...   %to multiply number of neurones by
-                    2000, ...  %simulation length (ms)
-                    1.15, ...  %selective stimulation contrast factor
-                    1.05,...  %reactivating signal contrast factor
-                    0.85, ...  %to multiply excitatory signal 
-                    1,   ...  % SD of external current sigma
-                    1000, ... % time between 1st and 2nd pattern 
-                    350,  ...  %initial stimulation length 
-                    40);      %reactivation length
+%% Assign memory, randomly assign neurons to memories, generate synaptic 
+%  connectivity matrices
+M       = get_memory(p);        % Generate memory for network (M)
 
-% Generate memory for network (M)
-[M] = get_memory(p);
+%  Assign neurons to memories (mems), generate synaptic connectivity matrix 
+%  (C) and synaptic strength matrix (J)
+[C, J, mems, first_input, second_input] = connectivity_matrix(p, 1/8, 'AC'); 
 
-% Assign Neurons to memories (mems)
-% generate synaptic connectivity matrix (C) and synaptic strength matrix (J)...
-[C, J, mems, first_input, second_input] = connectivity_matrix(M, p, 1/8, 'AA'); 
-[M_new, slice] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input);
-
+% %% Simulate dynamics
+% fire_rate_means = [];
+% for delay_time = 0:100:2000
+    [M_new, fire_rate_mean] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input, delay_time);
+%     fire_rate_means = [fire_rate_means, fire_rate_mean];
+%     disp(delay_time)
+% end
+% 
+M = M_new;
+% 
+% plot(1:21, fire_rate_means)
+% xlabel('time after initial simulation network is pinged')
+% ylabel('average firing rate during ping')
 % n_runs = 50;
 % data = zeros(p.N, n_runs.*2);   
 % 1/x = the degree to which the neural populations overlap '--' can put in desired pattern order, AA for repeated patterns
@@ -49,9 +60,9 @@
 %     disp(i)
 % end
 
-%% plotting output
+%% Plot the output, if required
 % plotting vm in both patterns
-M = M_new;
+
 fs = 10;
 ns = 6;
 subplot(ns, 1, 1)

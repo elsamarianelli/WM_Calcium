@@ -84,17 +84,17 @@ for t       = 1 : p.SimLength
 
     % [4] Log what needs logging
     % log synaptic parameters for each memory
-    mem_syn_inds = sub2ind(size(u),repmat(mems{1},1,length(mems{1})),sort(repmat(mems{1},1,length(mems{1}))));
-    mem_syn_inds(C(mem_syn_inds)==1);
-    M.U_mem1_log(t) = mean(u(mem_syn_inds(C(mem_syn_inds)==1)));%mean(u(C==1)); 
-    M.X_mem1_log(t) = mean(x(mem_syn_inds(C(mem_syn_inds)==1))); %mean(x(C==1));
+    % mem_syn_inds = sub2ind(size(u),repmat(mems{1},1,length(mems{1})),sort(repmat(mems{1},1,length(mems{1}))));
+    % mem_syn_inds(C(mem_syn_inds)==1);
+    M.U_mem1_log(t) = mean(u(find(C==1)), "all"); % mean(u(mem_syn_inds(C(mem_syn_inds)==1)));
+    M.X_mem1_log(t) = mean(x(find(C==1)), "all"); %mean(x(mem_syn_inds(C(mem_syn_inds)==1)));
     
-    mem_syn_inds = sub2ind(size(u),repmat(mems{2},1,length(mems{2})),sort(repmat(mems{2},1,length(mems{2}))));
-    mem_syn_inds(C(mem_syn_inds)==1);
-    M.U_mem2_log(t) = mean(u(mem_syn_inds(C(mem_syn_inds)==1)));
-    M.X_mem2_log(t) = mean(x(mem_syn_inds(C(mem_syn_inds)==1)));
+    % mem_syn_inds = sub2ind(size(u),repmat(mems{2},1,length(mems{2})),sort(repmat(mems{2},1,length(mems{2}))));
+    % mem_syn_inds(C(mem_syn_inds)==1);
+    M.U_mem2_log(t) = mean(u(C), "all"); %mean(u(mem_syn_inds(C(mem_syn_inds)==1)));
+    M.X_mem2_log(t) = mean(x(C), "all"); %mean(x(mem_syn_inds(C(mem_syn_inds)==1)));
 
-    % 
+    
     % log external input
     M.Iext_log(:, t) = M.Iext;
     % log recurrent input
