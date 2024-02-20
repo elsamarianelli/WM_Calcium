@@ -12,14 +12,15 @@
 %  2) not sure time from initial or reactition length makes a
 %  difference...response is too immediate
 
+
 %% Define simulation parameters (p) and get input times (in)
 [p, in] = get_params(3, ...     % to multiply number of neurones by
                     10000, ...   % simulation length (ms)
                     1.15, ...   % selective stimulation contrast factor
-                    1.02,...    % reactivating signal contrast factor
+                    1.05,...    % reactivating signal contrast factor
                     0.85, ...   % to multiply excitatory signal 
-                    0.9,   ...    % SD of external current sigma
-                    500, ...   % time between 1st and 2nd pattern 
+                    .84,   ...    % SD of external current sigma
+                    800, ...   % time between 1st and 2nd pattern 
                     150,  ...   % initial stimulation length 
                     60);        % reactivation length
 
@@ -31,24 +32,21 @@ M       = get_memory(p);        % Generate memory for network (M)
 %  (C) and synaptic strength matrix (J)
 [C, J, mems, first_input, second_input] = connectivity_matrix(p, 1/8, 'AA'); 
 
-% %% Simulate dynamics
+%% Simulate dynamics
 fire_rate_means = [];
-fire_rate_mean_others_all = [];
 Vm_max_reacts = [];
-for delay_time = 500:500:4000
-[M_new, fire_rate_mean,fire_rate_mean_others, Vm_max_react] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input, delay_time);
+for delay_time = 500:500:10000
+    [M_new, fire_rate_mean,fire_rate_mean_others, Vm_max_react] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input, delay_time);
     fire_rate_means = [fire_rate_means, fire_rate_mean];
     fire_rate_mean_others_all = [fire_rate_mean_others_all, fire_rate_mean_others];
     Vm_max_reacts = [Vm_max_reacts, Vm_max_react];
-    disp(delay_time)
-    disp(fire_rate_means);
-    disp(fire_rate_mean_others_all);
+    disp(delay_time, fire_rate_means, fire_rate_mean_others_all)
 end
 % % 
 M = M_new;
 % % 
-% plot(500:500:9500, fire_rate_means)
-% plot(500:500:9500, fire_rate_mean_others_all)
+% plot(1:1000:13000, fire_rate_means)
+% % plot(1:1000:13000, Vm_max_reacts)
 % xlabel('time after initial simulation network is pinged')
 % % ylabel('peak Vm reached by memory  during reactivation')
 % ylabel('mean firing rate in memory  during reactivation')
@@ -148,7 +146,7 @@ for m = 1:2
     hold on;
 end
 
-spikeMat = M.spikelog; spikeMat(mems{1},:) = [];%spikeMat(mems{2},:) = [];
+spikeMat = M.spikelog; spikeMat(mems{1},:) = [];spikeMat(mems{2},:) = [];
 spikeMat = spikeMat(randperm(size(spikeMat,1)),:);
 spikeMat = spikeMat(1:p.N/10, :);
 for trialCount = 1:size(spikeMat,1)
@@ -162,6 +160,6 @@ for trialCount = 1:size(spikeMat,1)
         end
     end
 end
-%ylim([0 size(spikeMat, 1)+1]);
-% xlim([0 p.SimLength])
+ylim([0 size(spikeMat, 1)+1]);
+xlim([0 p.SimLength])
 ylabel('spike log','FontSize',fs)

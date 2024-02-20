@@ -1,0 +1,18 @@
+% Applying a simplified version of the Mongillo et al. 2008 synaptic theory of working memory model 
+% to odour presentation in CA3 to CA1 hippocampal layers
+
+degree_overlap = 0.2;
+pattern_order = 'AB';
+length_stimulation = 100;
+delay_time = 500;
+start_time = 200;
+
+%getting paramaters connectivity matrices
+p = get_params_hipp();
+[C, J] = connectivity_matrix_hipp(p);
+[mems, first_input, second_input] = get_memory_hipp(p, degree_overlap, pattern_order);
+
+% times that memory is 'on', ms
+input.simulation = [start_time (start_time+length_stimulation)];
+input.reactivation = [(start_time+length_stimulation+delay_time) (start_time+length_stimulation+length_stimulation+delay_time)];
+

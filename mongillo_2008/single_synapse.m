@@ -15,6 +15,7 @@ Input(tps) = 1;
 U_log = zeros(1, SimLength);
 X_log = zeros(1, SimLength);
 Spikelog = zeros(1, SimLength);
+V_log = zeros(1, SimLength);
 
 %starting parameters
 u = U; x = x_init; v = 0;

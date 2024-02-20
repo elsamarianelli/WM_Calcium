@@ -8,8 +8,8 @@ delays      = randi([4 5], p.N, p.N).*C;
 delay_win   = zeros(p.N, p.N, 5);
 %% input details 
 % times that memory is 'on', ms
-in.simulation = [200 (200+200)];
-in.reactivation = [400+delay_time (400+delay_time+100)];
+in.simulation = [200 (200+300)];
+in.reactivation = [500+delay_time (500+delay_time+100)];
 all_others = 1:p.Ne; all_others(mems{1}) = [];
 %  Loop through time
 for t       = 1 : p.SimLength
@@ -69,7 +69,6 @@ for t       = 1 : p.SimLength
     % Reset membrane potential for cells which fired
     M.V(fired)          = [p.Vr_e*ones(sum(fired(1:p.Ne)),1) ; p.Vr_i*ones(sum(fired(p.Ne+1:end)),1)];
 
-
     % [3] Send spiking outputs along the delay lines
     delay_win(:,:,1)    = 0;                            % Eliminate spikes that have just been transmitted
     delay_win           = circshift(delay_win,-1,3);    % Move all spikes one timestep closer
@@ -97,14 +96,14 @@ for t       = 1 : p.SimLength
     % log synaptic parameters for each memory
     mem_syn_inds = sub2ind(size(u),repmat(all_others,1,length(all_others)),sort(repmat(all_others,1,length(all_others))));
     mem_syn_inds(C(mem_syn_inds)==1);
-    M.U_others_log(t) = mean(u(mem_syn_inds));%(C(mem_syn_inds)==1)));
-    M.X_others_log(t) = mean(x(mem_syn_inds));%(C(mem_syn_inds)==1))); 
-    
+    M.U_mem1_log(t) = mean(u(mem_syn_inds));%(C(mem_syn_inds)==1)));
+    M.X_mem1_log(t) = mean(x(mem_syn_inds));%(C(mem_syn_inds)==1))); 
+
     mem_syn_inds = sub2ind(size(u),repmat(mems{2},1,length(mems{2})),sort(repmat(mems{2},1,length(mems{2}))));
     mem_syn_inds(C(mem_syn_inds)==1);
     M.U_mem2_log(t) = mean(u(mem_syn_inds(C(mem_syn_inds)==1)));
     M.X_mem2_log(t) = mean(x(mem_syn_inds(C(mem_syn_inds)==1)));
-    % 
+    % % 
     % log external input
     M.Iext_log(:, t) = M.Iext;
     % log recurrent input
@@ -118,9 +117,10 @@ end
 
 spike_ping = M.spikelog();
 spike_ping = sum(spike_ping(:, in.reactivation(1):in.reactivation(2)), 2);
+spike_ping_others = spike_ping(all_others);
 spike_ping = spike_ping(mems{1});
 fire_rate_mean = mean(spike_ping);%;/(in.reactivation(2)-in.reactivation(1)));
-spike_ping_others = spike_ping(all_others);
+
 fire_rate_mean_others = mean(spike_ping_others);
 
 x = M.V_log(mems{1}, :);
