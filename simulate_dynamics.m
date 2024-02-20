@@ -1,4 +1,4 @@
-function [M, fire_rate_mean] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input, delay_time)
+function [M, fire_rate_mean, fire_rate_mean_others, Vm_max_react] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input, delay_time)
 
 %  Initialise variables
 u           = [[p.U.*(ones(p.Ne, p.Ne)) ; ones(p.Ni, p.Ne)] ones(p.N, p.Ni)];
@@ -8,9 +8,9 @@ delays      = randi([4 5], p.N, p.N).*C;
 delay_win   = zeros(p.N, p.N, 5);
 %% input details 
 % times that memory is 'on', ms
-% in.simulation = [200 (200+100)];
-% in.reactivation = [200+delay_time (200+delay_time+50)];
-
+in.simulation = [200 (200+200)];
+in.reactivation = [400+delay_time (400+delay_time+100)];
+all_others = 1:p.Ne; all_others(mems{1}) = [];
 %  Loop through time
 for t       = 1 : p.SimLength
 
@@ -82,18 +82,28 @@ for t       = 1 : p.SimLength
     delay_win(ind)      = 1; clear pre post arrives ind
 
 
-    % [4] Log what needs logging
+    % % [4] Log what needs logging
+    % % log synaptic parameters for each memory
+    % mem_syn_inds = sub2ind(size(u),repmat(mems{1},1,length(mems{1})),sort(repmat(mems{1},1,length(mems{1}))));
+    % mem_syn_inds(C(mem_syn_inds)==1);
+    % M.U_mem1_log(t) = mean(u(mem_syn_inds(C(mem_syn_inds)==1)));
+    % M.X_mem1_log(t) = mean(x(mem_syn_inds(C(mem_syn_inds)==1))); 
+    % 
+    % mem_syn_inds = sub2ind(size(u),repmat(mems{2},1,length(mems{2})),sort(repmat(mems{2},1,length(mems{2}))));
+    % mem_syn_inds(C(mem_syn_inds)==1);
+    % M.U_mem2_log(t) = mean(u(mem_syn_inds(C(mem_syn_inds)==1)));
+    % M.X_mem2_log(t) = mean(x(mem_syn_inds(C(mem_syn_inds)==1)));
+ % [4] Log what needs logging
     % log synaptic parameters for each memory
-    mem_syn_inds = sub2ind(size(u),repmat(mems{1},1,length(mems{1})),sort(repmat(mems{1},1,length(mems{1}))));
+    mem_syn_inds = sub2ind(size(u),repmat(all_others,1,length(all_others)),sort(repmat(all_others,1,length(all_others))));
     mem_syn_inds(C(mem_syn_inds)==1);
-    M.U_mem1_log(t) = mean(u(mem_syn_inds(C(mem_syn_inds)==1)));%mean(u(C==1)); 
-    M.X_mem1_log(t) = mean(x(mem_syn_inds(C(mem_syn_inds)==1))); %mean(x(C==1));
+    M.U_others_log(t) = mean(u(mem_syn_inds));%(C(mem_syn_inds)==1)));
+    M.X_others_log(t) = mean(x(mem_syn_inds));%(C(mem_syn_inds)==1))); 
     
     mem_syn_inds = sub2ind(size(u),repmat(mems{2},1,length(mems{2})),sort(repmat(mems{2},1,length(mems{2}))));
     mem_syn_inds(C(mem_syn_inds)==1);
     M.U_mem2_log(t) = mean(u(mem_syn_inds(C(mem_syn_inds)==1)));
     M.X_mem2_log(t) = mean(x(mem_syn_inds(C(mem_syn_inds)==1)));
-
     % 
     % log external input
     M.Iext_log(:, t) = M.Iext;
@@ -109,6 +119,14 @@ end
 spike_ping = M.spikelog();
 spike_ping = sum(spike_ping(:, in.reactivation(1):in.reactivation(2)), 2);
 spike_ping = spike_ping(mems{1});
-fire_rate_mean = mean(spike_ping/(in.reactivation(2)-in.reactivation(1)));
+fire_rate_mean = mean(spike_ping);%;/(in.reactivation(2)-in.reactivation(1)));
+spike_ping_others = spike_ping(all_others);
+fire_rate_mean_others = mean(spike_ping_others);
+
+x = M.V_log(mems{1}, :);
+x(x==0)=NaN;
+x = nanmean(x, 1);
+x(isnan (x)) = 0;
+Vm_max_react = max(x(in.reactivation(1):in.reactivation(2)));
 
 end

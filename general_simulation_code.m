@@ -15,14 +15,14 @@
 
 %% Define simulation parameters (p) and get input times (in)
 [p, in] = get_params(3, ...     % to multiply number of neurones by
-                    2000, ...   % simulation length (ms)
+                    15000, ...   % simulation length (ms)
                     1.15, ...   % selective stimulation contrast factor
                     1.05,...    % reactivating signal contrast factor
                     0.85, ...   % to multiply excitatory signal 
-                    .8,   ...    % SD of external current sigma
-                    1000, ...   % time between 1st and 2nd pattern 
-                    100,  ...   % initial stimulation length 
-                    20);        % reactivation length
+                    .84,   ...    % SD of external current sigma
+                    800, ...   % time between 1st and 2nd pattern 
+                    150,  ...   % initial stimulation length 
+                    60);        % reactivation length
 
 %% Assign memory, randomly assign neurons to memories, generate synaptic 
 %  connectivity matrices
@@ -30,24 +30,30 @@ M       = get_memory(p);        % Generate memory for network (M)
 
 %  Assign neurons to memories (mems), generate synaptic connectivity matrix 
 %  (C) and synaptic strength matrix (J)
-[C, J, mems, first_input, second_input] = connectivity_matrix(p, 1/8, 'AC'); 
+[C, J, mems, first_input, second_input] = connectivity_matrix(p, 1/8, 'AA'); 
 
-% %% Simulate dynamics
-% fire_rate_means = [];
-% for delay_time = 0:100:2000
-    [M_new, fire_rate_mean] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input, delay_time);
-%     fire_rate_means = [fire_rate_means, fire_rate_mean];
-%     disp(delay_time)
-% end
-% 
+%% Simulate dynamics
+fire_rate_means = [];
+Vm_max_reacts = [];
+for delay_time = 500:500:15000
+    [M_new, fire_rate_mean,fire_rate_mean_others, Vm_max_react] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input, delay_time);
+    fire_rate_means = [fire_rate_means, fire_rate_mean];
+    fire_rate_mean_others_all = [fire_rate_mean_others_all, fire_rate_mean_others];
+    Vm_max_reacts = [Vm_max_reacts, Vm_max_react];
+    disp(delay_time, fire_rate_means, fire_rate_mean_others_all)
+end
+% % 
 M = M_new;
-% 
-% plot(1:21, fire_rate_means)
+% % 
+% plot(1:1000:13000, fire_rate_means)
+% % plot(1:1000:13000, Vm_max_reacts)
 % xlabel('time after initial simulation network is pinged')
-% ylabel('average firing rate during ping')
+% % ylabel('peak Vm reached by memory  during reactivation')
+% ylabel('mean firing rate in memory  during reactivation')
+
 % n_runs = 50;
 % data = zeros(p.N, n_runs.*2);   
-% 1/x = the degree to which the neural populations overlap '--' can put in desired pattern order, AA for repeated patterns
+% % 1/x = the degree to which the neural populations overlap '--' can put in desired pattern order, AA for repeated patterns
 % for i = 1:n_runs  
 %     [M_new, slice] = simulate_dynamics(p, in, M, C, J, mems, first_input, second_input);
 %     data(:, i) =slice;  
@@ -139,6 +145,7 @@ for m = 1:2
     end
     hold on;
 end
+
 spikeMat = M.spikelog; spikeMat(mems{1},:) = [];spikeMat(mems{2},:) = [];
 spikeMat = spikeMat(randperm(size(spikeMat,1)),:);
 spikeMat = spikeMat(1:p.N/10, :);

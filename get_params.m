@@ -28,6 +28,6 @@ function [p, in] = get_params(factor, simlength, SCF, RCF, ex_fact, sigma, delay
     p.RCF = RCF;                              %reactivating signal contrast factor
     %% input details 
     % times that memory is 'on', ms
-    in.simulation = [500 (500+sim_time)];
-    in.reactivation = [500+delay_time (500+delay_time+react_time)];
+    in.simulation = [200 (200+sim_time)];
+    in.reactivation = [200+delay_time (200+delay_time+react_time)];
 end
