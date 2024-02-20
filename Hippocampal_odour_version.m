@@ -2,7 +2,7 @@
 % to odour presentation in CA3 to CA1 hippocampal layers
 
 % programmable paramaters 
-degree_overlap = 0.0;
+degree_overlap = 0.2;
 pattern_order = 'AB';
 length_stimulation = 100;
 delay_time = 500;

@@ -6,7 +6,7 @@ function p = get_params_hipp(factor)
     p.f       = 0.1;                          % Coding level
     p.c       = 0.2;                          % Probability of synaptic contact
     
-    p.j_p     = 0.45;                          % potentiated level of E-->E synapses
+    p.j_p     = 0.45;                         % potentiated level of E-->E synapses
     p.j_b     = 0;                            % baseline level of E-->E synapses 
     p.SPE     = 20;                           % spike emmision threshold
     p.Vr_e    = 16;                           % reset potentials

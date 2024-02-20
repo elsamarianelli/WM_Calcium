@@ -25,7 +25,7 @@ function M = simulate_dynapics_hipp(p, C, J, input, M, mems)
         clear activeMems
     
         % % Third, get synaptic currents (from CA3 to CA1)
-        M.Irec              = sum((J.*x.*u),1); % (4)
+        M.Irec              = sum((J.*x.*u.*fired(1:p.in)),1); % (4)
     
         % Finally, update short-term plasticity parameters for E to E connections
         u(1:p.in,1:p.out) = u(1:p.in,1:p.out)  + (((p.U -u(1:p.in,1:p.out))/p.tau_facil) + (p.U.*(1-u(1:p.in,1:p.out)).*fired(1:p.in).*C));
