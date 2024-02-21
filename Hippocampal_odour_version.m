@@ -1,11 +1,12 @@
 % Applying a simplified version of the Mongillo et al. 2008 synaptic theory of working memory model 
 % to odour presentation in CA3 to CA1 hippocampal layers
 
+%% initial set up 
 % programmable paramaters 
 degree_overlap = 0.2;
 pattern_order = 'AB';
-length_stimulation = 50;
-delay_time = 500;
+length_stimulation = 100;
+delay_time = 800;
 start_time = 200;
 
 % Get non-programmable paramaters
@@ -15,7 +16,7 @@ p = get_params_hipp(0.85);
 [C, J] = connectivity_matrix_hipp(p);
 
 % get cells to be activated by each odour in layer CA3
-[mems, first_input, second_input] = get_odours_hipp(p, degree_overlap, pattern_order);
+mems = get_odours_hipp(p, degree_overlap, pattern_order);
 
 % Times that memory is 'on', ms
 input.simulation = [start_time (start_time+length_stimulation)];
@@ -24,33 +25,53 @@ input.reactivation = [(start_time+length_stimulation+delay_time) (start_time+len
 % Generate memory to run simulation
 M = get_memory_hipp(p);
 
-% simulate dynamics across trials and record spike count in reacitvation
-% period for each CA1 output neuron
-% 
-n_trials = 5;
-spikes_x_trials = zeros(n_trials, p.out);
-% 
-i = 1;
-
-% for i = 1:n_trials
+%% generate training data
+n_trials = 100;
+spikes_x_trials = zeros(n_trials, p.out+1);
+%simulate 50 trials presenting odour A and then B
+for i = 1:n_trials/2
     M = simulate_dynapics_hipp(p, C, J, input, M, mems);
+    spikes = M.spikelog(p.in+1:p.full, :);
+    spikes = spikes(:, input.reactivation(1):input.reactivation(2));
+    spikes_out = sum(spikes, 2);
+    spikes_x_trials(i, 1:p.out) = spikes_out';
+    % labelled as no reward
+    spikes_x_trials(i, p.out+1) = 0;
+    disp(i)
+end
+
+% simulate another 50 trials but this time with C first, which is labelled
+% as reward
+pattern_order = 'CB';
+mems = get_odours_hipp(p, degree_overlap, pattern_order);
+M = get_memory_hipp(p);
+
+for i =  (n_trials/2)+1:n_trials
+     M = simulate_dynapics_hipp(p, C, J, input, M, mems);
 
     spikes = M.spikelog(p.in+1:p.full, :);
     spikes = spikes(:, input.reactivation(1):input.reactivation(2));
     spikes_out = sum(spikes, 2);
-    % spikes_x_trials(i, 1:p.out) = spikes';
-    spikes = M.spikelog(1:p.in, :);
-    spikes = spikes(:, input.reactivation(1):input.reactivation(2));
-    spikes_in = sum(spikes, 2);
+    spikes_x_trials(i, 1:p.out) = spikes_out';
+    % labelled as reward
+    spikes_x_trials(i, p.out+1) = 1;
+    disp(i)
+end
+% shuffle trials randomly
+shuffled_spikes_x_trials = spikes_x_trials(randperm(size(spikes_x_trials,1)),:);
 
-    
-    subplot(2, 1, 1)
-    heatmap(spikes_in)
-    subplot(2, 1, 2)
-    heatmap(spikes_out)
-% end
+% train on progressively more data to see if it improves
+class_loss_log = [];
+for i = 2:100
 
+    SVMModel = fitcsvm(shuffled_spikes_x_trials(1:i,1:p.out), shuffled_spikes_x_trials(1:i, end));
+    CVSVMModel = crossval(SVMModel);
+    classLoss = kfoldLoss(CVSVMModel);
+    disp(classLoss)
+    class_loss_log = [class_loss_log; classLoss];
 
+end
+plot(2:100, class_loss_log)
 %% plotting 
 %% Plot the output, if required
 % plotting vm in both patterns
@@ -90,7 +111,7 @@ hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
 ylim([0 1])
-
+ylabel('odour 1')
 %u and x for second memory 
 subplot(ns,1,3)
 av_u_memory = M.U_mem2_log;
@@ -101,22 +122,22 @@ hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
 ylim([0 1])
-
+ylabel('odour 2')
 %plot  current logs
 subplot(ns, 1, 4)
 av_e = mean(M.Iext_log(1:p.in, :), 1); 
 plot(1:p.SimLength, av_e)
-ylabel('external to input layer','FontSize',fs)
+ylabel('ext-->CA3','FontSize',fs)
 
 subplot(ns, 1, 5)
 av_i = mean(M.Irec_log(1:p.out, :), 1); 
 plot(1:p.SimLength, av_i)
-ylabel('input to output layer','FontSize',fs)
+ylabel('CA3-->CA1','FontSize',fs)
 
 subplot(ns, 1, 6)
 av_e = mean(M.Iext_log(p.in+1:p.full, :), 1); 
 plot(1:p.SimLength, av_e)
-ylabel('external input to output layer','FontSize',fs)
+ylabel('ext-->CA1','FontSize',fs)
 
 %plotting spike raster
 color_ops = { 'b', 'r'};
@@ -140,8 +161,6 @@ for m = 1:2
     end
     hold on;
 end
-legend('mem1', 'mem2')
-
 
 spikeMat = M.spikelog; spikeMat(mems{1},:) = []; spikeMat(mems{2},:) = [];
 spikeMat = spikeMat(randperm(size(spikeMat,1)),:);
@@ -159,26 +178,21 @@ for trialCount = 1:size(spikeMat,1)
 end
 ylim([0 size(spikeMat, 1)+1]);
 xlim([0 p.SimLength])
-ylabel('spike log','FontSize',fs)
-legend('10% of rest')
+ylabel('CA3 spiking','FontSize',fs)
 
-%
+% overlap = intersect(mems{1}, mems{2});
+overlap = mems{2};
+ind = find((sum(C(overlap, :)))); 
+
+
 subplot(ns, 1, 8)
-spikeMat = M.spikelog(p.in+1:p.full, :);
-
-% out_cells = 1:100;
-% 
-% sum(C([mems{1}], :))>3
-% spikeMat = spikeMat(randperm(size(spikeMat,1)),:);
-% spikeMat = spikeMat(1:p.full/10, :);
+spikeMat = M.spikelog(ind+p.in, :);
 for trialCount = 1:size(spikeMat,1)
     hold all;
     if sum(spikeMat(trialCount, :)) == 0
         continue
     else
         spikePos = tVec(find(spikeMat(trialCount, :)));
-        disp(trialCount)
-        disp(spikePos)
         for spikeCount = 1:length(spikePos)
             plot([spikePos(spikeCount) spikePos(spikeCount)], ...
             [trialCount-0.4 trialCount+0.4], 'Color', 'm');
@@ -187,5 +201,5 @@ for trialCount = 1:size(spikeMat,1)
 end
 ylim([0 size(spikeMat, 1)+1]);
 xlim([0 p.SimLength])
-ylabel('spike log','FontSize',fs)
-legend('10% of rest')
+ylabel('CA1 spikeing','FontSize',fs)
+% legend('10% of rest')

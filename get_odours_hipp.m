@@ -1,4 +1,4 @@
-function [mems, first_input, second_input] = get_odours_hipp(p, degree_overlap, pattern_order)
+function [mems] = get_odours_hipp(p, degree_overlap, pattern_order)
 
     %% memory input
     cells       = 1 : p.in;                   % List of all neurons
@@ -22,11 +22,11 @@ function [mems, first_input, second_input] = get_odours_hipp(p, degree_overlap, 
     AC_overlap  = pattern_A(end-num_overlap_cells+1:end);
     BC_overlap  = pattern_B(end-num_overlap_cells+1:end);
     cells       = cells(randperm(length(cells)));
-    non_overlap = sort(cells(1:(p.f*p.in)*(1-degree_overlap*2)));
+    non_overlap = sort(cells(1:int16((p.f*p.in)*(1-degree_overlap*2))));
     pattern_C   = [AC_overlap, BC_overlap, non_overlap];
     
     mems{1}     = eval(strcat('pattern', '_', pattern_order(1)));
     mems{2}     = eval(strcat('pattern', '_', pattern_order(2)));
-    first_input = pattern_order(1); second_input = pattern_order(2);
+
 
 end
