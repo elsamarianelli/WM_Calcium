@@ -5,12 +5,13 @@ M.V           = [p.Vr_e * ones(p.in,1) ; p.Vr_e * ones(p.out,1)];  % Membrane vo
 M.Iext        = zeros(p.in,1);                   % Input to each input layer Neuron
 M.Irec        = zeros(p.out,1);                  % Input to each output layer
 
-M.U_log       = zeros(p.in,p.out, p.SimLength);
-M.X_log       = zeros(p.in,p.out, p.SimLength);
+% M.U_log       = zeros(p.in,p.out, p.SimLength);
+% M.X_log       = zeros(p.in,p.out, p.SimLength);
 M.spikelog    = zeros(p.full, p.SimLength);
 M.V_log       = zeros(p.full, p.SimLength);
 % M.Irec_log    = zeros(p.out, p.SimLength);
 % M.Iext_log    = zeros(p.in, p.SimLength);
 % M.J_fired_log = zeros(p.in, p.SimLength);
-
+ M.V_log_out = zeros(1, p.SimLength);
+ M.V_log_in = zeros(1,  p.SimLength);
 end
