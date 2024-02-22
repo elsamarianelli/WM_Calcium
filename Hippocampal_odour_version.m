@@ -6,7 +6,7 @@
 degree_overlap = 0.2;
 pattern_order = 'AB';
 length_stimulation = 50;
-delay_time = 600;
+delay_time = 5000;
 start_time = 200;
 
 % Get non-programmable paramaters
