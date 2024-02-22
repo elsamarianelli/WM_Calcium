@@ -5,8 +5,8 @@
 % programmable paramaters 
 degree_overlap = 0.2;
 pattern_order = 'AB';
-length_stimulation = 100;
-delay_time = 800;
+length_stimulation = 50;
+delay_time = 600;
 start_time = 200;
 
 % Get non-programmable paramaters
@@ -25,14 +25,23 @@ input.reactivation = [(start_time+length_stimulation+delay_time) (start_time+len
 % Generate memory to run simulation
 M = get_memory_hipp(p);
 
-%% generate training data
-n_trials = 120;
-spikes_x_trials = zeros(n_trials, p.out+1);
+% calculate degree that ouput layer cells receiving input overlap between 2
+% memories 
+overlap1 = mems{2};
+ind1 = find((sum(C(overlap1, :)))); 
+overlap2 = mems{1};
+ind2 = find((sum(C(overlap2, :)))); 
+
+degree_overlap_ouput = size(intersect(ind1,ind2), 2)/p.out;
+
+M = simulate_dynapics_hipp(p, C, J, input, M, mems);
+% %  %% generate training data
+n_trials = 50;
+spikes_x_trials = zeros(n_trials,p.out+1);
 %simulate 50 trials presenting odour A and then B
 for i = 1:n_trials/2
     M = simulate_dynapics_hipp(p, C, J, input, M, mems);
-    spikes = M.spikelog(p.in+1:p.full, :);
-    spikes = spikes(:, input.reactivation(1):input.reactivation(2));
+    spikes = M.spikelog(p.in+1:p.full, input.reactivation(1):input.reactivation(2));
     spikes_out = sum(spikes, 2);
     spikes_x_trials(i, 1:p.out) = spikes_out';
     % labelled as no reward
@@ -46,11 +55,10 @@ pattern_order = 'CB';
 mems = get_odours_hipp(p, degree_overlap, pattern_order);
 M = get_memory_hipp(p);
 
-for i = n_trials/2 + 1 : (n_trials/2)+1:n_trials
+for i =  (n_trials/2)+1:n_trials
      M = simulate_dynapics_hipp(p, C, J, input, M, mems);
 
-    spikes = M.spikelog(p.in+1:p.full, :);
-    spikes = spikes(:, input.reactivation(1):input.reactivation(2));
+    spikes = M.spikelog(p.in+1:p.full, input.reactivation(1):input.reactivation(2));
     spikes_out = sum(spikes, 2);
     spikes_x_trials(i, 1:p.out) = spikes_out';
     % labelled as reward
@@ -62,16 +70,30 @@ shuffled_spikes_x_trials = spikes_x_trials(randperm(size(spikes_x_trials,1)),:);
 
 % train on progressively more data to see if it improves
 class_loss_log = [];
-for i = 2:100
+for i = 2:n_trials
 
-    SVMModel = fitcsvm(shuffled_spikes_x_trials(1:i,1:p.out), shuffled_spikes_x_trials(1:i, end));
+    SVMModel = fitcsvm(shuffled_spikes_x_trials(1:i, 1:p.out), shuffled_spikes_x_trials(1:i, end));
     CVSVMModel = crossval(SVMModel);
     classLoss = kfoldLoss(CVSVMModel);
     disp(classLoss)
     class_loss_log = [class_loss_log; classLoss];
 
 end
-plot(2:100, class_loss_log)
+plot(2:n_trials, class_loss_log)
+xlabel('number of observations');
+ylabel('class loss');
+% % %
+shuffled_spikes_x_trials(1:i, end)
+
+X = shuffled_spikes_x_trials(1:i, 1:p.out);
+Y = shuffled_spikes_x_trials(1:i, end);
+CVSVMModel = fitcsvm(X,Y,'Holdout',0.15);
+CompactSVMModel = CVSVMModel.Trained{1}; % Extract the trained, compact classifier
+testInds = test(CVSVMModel.Partition);   % Extract the test indices
+XTest = X(testInds,:);
+YTest = Y(testInds,:);
+L = loss(CompactSVMModel,XTest,YTest);
+
 %% plotting 
 %% Plot the output, if required
 % plotting vm in both patterns
@@ -181,12 +203,15 @@ xlim([0 p.SimLength])
 ylabel('CA3 spiking','FontSize',fs)
 
 % overlap = intersect(mems{1}, mems{2});
-overlap = mems{2};
-ind = find((sum(C(overlap, :)))); 
-
+overlap1 = mems{2};
+ind1 = find((sum(C(overlap1, :))>3)); 
+overlap2 = mems{1};
+ind2 = find((sum(C(overlap2, :))>3)); 
+coi = intersect(ind1,ind2);
+% coi = p.in+1:p.full;
 
 subplot(ns, 1, 8)
-spikeMat = M.spikelog(ind+p.in, :);
+spikeMat = M.spikelog(coi, :);
 for trialCount = 1:size(spikeMat,1)
     hold all;
     if sum(spikeMat(trialCount, :)) == 0
@@ -194,12 +219,12 @@ for trialCount = 1:size(spikeMat,1)
     else
         spikePos = tVec(find(spikeMat(trialCount, :)));
         for spikeCount = 1:length(spikePos)
-            plot([spikePos(spikeCount) spikePos(spikeCount)], ...
-            [trialCount-0.4 trialCount+0.4], 'Color', 'm');
+            plot([spikePos(spikeCount)+1 spikePos(spikeCount)+1], ...
+            [trialCount-1 trialCount+1], 'Color', 'm');
         end
     end
 end
 ylim([0 size(spikeMat, 1)+1]);
 xlim([0 p.SimLength])
-ylabel('CA1 spikeing','FontSize',fs)
+ylabel('odours CA1 overlap','FontSize',fs)
 % legend('10% of rest')
