@@ -23,7 +23,7 @@ function M = simulate_dynapics_hipp(p, C, J, input, M, mems)
         % and mem2
         activeMems      = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{input.reactivation});
         if activeMems   == 1
-            M.Iext(horzcat(mems{2})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.in).*p.CF;
+            M.Iext(horzcat(mems{2})) = normrnd(p.mu_e,p.sigma,1,sum(activeMems)*p.f*p.in).*p.RF;
         end
         clear activeMems
     
@@ -61,18 +61,33 @@ function M = simulate_dynapics_hipp(p, C, J, input, M, mems)
         ind                 = sub2ind([size(delay_win)], post, pre, arrives);
         delay_win(ind)      = 1; clear pre post arrives ind
         % % [4] Log what needs logging
-
+        
+        %get synapses which are activated during both odours
+        % overlap = intersect(mems{1}, mems{2});
+        % O = C; NO = C;  all = 1:p.in; all(overlap) = [];
+        % O(all, :) = 0; NO(overlap, :) = 0;
+        % 
+        overlap1 = mems{2};
+        ind1 = find((sum(C(overlap1, :))>1)); 
+        overlap2 = mems{1};
+        ind2 = find((sum(C(overlap2, :))>1)); 
+        coi = intersect(ind1,ind2);
+        full = 1:p.in; full(coi) = [];
+        O=C; NO= C; 
+        O(:, full) = 0; NO(:, coi) = 0;
         % log synaptic parameters for each memory
-        mem_syn_inds = sub2ind(size(u),repmat(mems{1},1,length(mems{1})),sort(repmat(mems{1},1,length(mems{1}))));
-        mem_syn_inds(C(mem_syn_inds)==1);
-        M.U_mem1_log(t) = mean(u(mem_syn_inds(C(mem_syn_inds)==1)));
-        M.X_mem1_log(t) = mean(x(mem_syn_inds(C(mem_syn_inds)==1))); 
+        % both = [mems{1} mems{2}];
+        both = mems{2};
+        mem_syn_inds = sub2ind(size(u),repmat(both,1,length(both)),sort(repmat(both,1,length(both))));
+        mem_syn_inds(O(mem_syn_inds)==1);
+        M.U_mem1_log(t) = mean(u(mem_syn_inds(O(mem_syn_inds)==1)));
+        M.X_mem1_log(t) = mean(x(mem_syn_inds(O(mem_syn_inds)==1))); 
 
-        mem_syn_inds = sub2ind(size(u),repmat(mems{2},1,length(mems{2})),sort(repmat(mems{2},1,length(mems{2}))));
-        mem_syn_inds(C(mem_syn_inds)==1);
-        M.U_mem2_log(t) = mean(u(mem_syn_inds(C(mem_syn_inds)==1)));
-        M.X_mem2_log(t) = mean(x(mem_syn_inds(C(mem_syn_inds)==1)));
- 
+        mem_syn_inds = sub2ind(size(u),repmat(both,1,length(both)),sort(repmat(both,1,length(both))));
+        mem_syn_inds(NO(mem_syn_inds)==1);
+        M.U_mem2_log(t) = mean(u(mem_syn_inds(NO(mem_syn_inds)==1)));
+        M.X_mem2_log(t) = mean(x(mem_syn_inds(NO(mem_syn_inds)==1)));
+
         % log external input
         M.Iext_log(:, t) = M.Iext;
         % log recurrent input

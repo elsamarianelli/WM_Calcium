@@ -5,8 +5,9 @@
 % programmable paramaters 
 degree_overlap = 0.2;
 pattern_order = 'AB';
-length_stimulation = 50;
-delay_time = 600;
+length_first = 50;
+lenght_second = 20;
+delay_time = 300;
 start_time = 200;
 
 % Get non-programmable paramaters
@@ -19,23 +20,19 @@ p = get_params_hipp(0.85);
 mems = get_odours_hipp(p, degree_overlap, pattern_order);
 
 % Times that memory is 'on', ms
-input.simulation = [start_time (start_time+length_stimulation)];
-input.reactivation = [(start_time+length_stimulation+delay_time) (start_time+length_stimulation+length_stimulation+delay_time)];
+input.simulation = [start_time (start_time+length_first)];
+input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_second+lenght_second+delay_time)];
 
 % Generate memory to run simulation
 M = get_memory_hipp(p);
 
 % calculate degree that ouput layer cells receiving input overlap between 2
 % memories 
-overlap1 = mems{2};
-ind1 = find((sum(C(overlap1, :)))); 
-overlap2 = mems{1};
-ind2 = find((sum(C(overlap2, :)))); 
 
-degree_overlap_ouput = size(intersect(ind1,ind2), 2)/p.out;
+% degree_overlap_ouput = size(intersect(ind1,ind2), 2)/p.out;
 
 M = simulate_dynapics_hipp(p, C, J, input, M, mems);
-% %  %% generate training data
+% % %  %% generate training data
 n_trials = 50;
 spikes_x_trials = zeros(n_trials,p.out+1);
 %simulate 50 trials presenting odour A and then B
@@ -65,37 +62,38 @@ for i =  (n_trials/2)+1:n_trials
     spikes_x_trials(i, p.out+1) = 1;
     disp(i)
 end
-% shuffle trials randomly
-shuffled_spikes_x_trials = spikes_x_trials(randperm(size(spikes_x_trials,1)),:);
-
-% train on progressively more data to see if it improves
-class_loss_log = [];
-for i = 2:n_trials
-
-    SVMModel = fitcsvm(shuffled_spikes_x_trials(1:i, 1:p.out), shuffled_spikes_x_trials(1:i, end));
-    CVSVMModel = crossval(SVMModel);
-    classLoss = kfoldLoss(CVSVMModel);
-    disp(classLoss)
-    class_loss_log = [class_loss_log; classLoss];
-
-end
-plot(2:n_trials, class_loss_log)
-xlabel('number of observations');
-ylabel('class loss');
-% % %
-shuffled_spikes_x_trials(1:i, end)
-
-X = shuffled_spikes_x_trials(1:i, 1:p.out);
-Y = shuffled_spikes_x_trials(1:i, end);
-CVSVMModel = fitcsvm(X,Y,'Holdout',0.15);
-CompactSVMModel = CVSVMModel.Trained{1}; % Extract the trained, compact classifier
-testInds = test(CVSVMModel.Partition);   % Extract the test indices
-XTest = X(testInds,:);
-YTest = Y(testInds,:);
-L = loss(CompactSVMModel,XTest,YTest);
+% % shuffle trials randomly
+ shuffled_spikes_x_trials = spikes_x_trials(randperm(size(spikes_x_trials,1)),:);
+% 
+% % train on progressively more data to see if it improves
+% class_loss_log = [];
+% for i = 2:n_trials
+% 
+%     SVMModel = fitcsvm(shuffled_spikes_x_trials(1:i, 1:p.out), shuffled_spikes_x_trials(1:i, end));
+%     CVSVMModel = crossval(SVMModel);
+%     classLoss = kfoldLoss(CVSVMModel);
+%     disp(classLoss)
+%     class_loss_log = [class_loss_log; classLoss];
+% 
+% end
+% plot(2:n_trials, class_loss_log)
+% xlabel('number of observations');
+% ylabel('class loss');
+% % % %
+% % hi = shuffled_spikes_x_trials(1:n_trials, end);
+% % shuffled_spikes_x_trials(1:n_trials, end) = hi(randperm(size(hi,1)),:);
+% 
+% X = shuffled_spikes_x_trials(1:i, 1:p.out);
+% Y = shuffled_spikes_x_trials(1:i, end);
+% CVSVMModel = fitcsvm(X,Y,'Holdout',0.15);
+% CompactSVMModel = CVSVMModel.Trained{1}; % Extract the trained, compact classifier
+% testInds = test(CVSVMModel.Partition);   % Extract the test indices
+% XTest = X(testInds,:);
+% YTest = Y(testInds,:);
+% L = loss(CompactSVMModel,XTest,YTest);
 
 %% plotting 
-%% Plot the output, if required
+
 % plotting vm in both patterns
 
 fs = 10;
@@ -128,7 +126,7 @@ subplot(ns,1,2)
 av_u_memory = M.U_mem1_log;
 av_x_memory = M.X_mem1_log;
 plot(1:p.SimLength,av_u_memory,'b')
-ylabel(first_input,'FontSize',fs)
+ylabel(pattern_order(1),'FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
@@ -139,7 +137,7 @@ subplot(ns,1,3)
 av_u_memory = M.U_mem2_log;
 av_x_memory = M.X_mem2_log;
 plot(1:p.SimLength,av_u_memory,'b')
-ylabel(second_input,'FontSize',fs)
+ylabel(pattern_order(2),'FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
@@ -202,16 +200,34 @@ ylim([0 size(spikeMat, 1)+1]);
 xlim([0 p.SimLength])
 ylabel('CA3 spiking','FontSize',fs)
 
+% % 
+% % subplot(ns, 1, 8)
+% spikeMat = M.spikelog(p.in+1:p.full, :);
+% for trialCount = 1:size(spikeMat,1)
+%     hold all;
+%     if sum(spikeMat(trialCount, :)) == 0
+%         continue
+%     else
+%         spikePos = tVec(find(spikeMat(trialCount, :)));
+%         for spikeCount = 1:length(spikePos)
+%             plot([spikePos(spikeCount)+1 spikePos(spikeCount)+1], ...
+%             [trialCount-1 trialCount+1], 'Color', 'm');
+%         end
+%     end
+% end
+
+% 
 % overlap = intersect(mems{1}, mems{2});
+
 overlap1 = mems{2};
-ind1 = find((sum(C(overlap1, :))>3)); 
+ind1 = find((sum(C(overlap1, :))>2)); 
 overlap2 = mems{1};
-ind2 = find((sum(C(overlap2, :))>3)); 
+ind2 = find((sum(C(overlap2, :))>2)); 
 coi = intersect(ind1,ind2);
-% coi = p.in+1:p.full;
+full = 1:p.out; full(coi) = [];
 
 subplot(ns, 1, 8)
-spikeMat = M.spikelog(coi, :);
+spikeMat = M.spikelog(p.in+coi, :);
 for trialCount = 1:size(spikeMat,1)
     hold all;
     if sum(spikeMat(trialCount, :)) == 0
@@ -224,7 +240,42 @@ for trialCount = 1:size(spikeMat,1)
         end
     end
 end
-ylim([0 size(spikeMat, 1)+1]);
+hold on;
+spikeMat = M.spikelog(p.in+full, :);
+for trialCount = 1:size(spikeMat,1)
+    hold all;
+    if sum(spikeMat(trialCount, :)) == 0
+        continue
+    else
+        spikePos = tVec(find(spikeMat(trialCount, :)));
+        for spikeCount = 1:length(spikePos)
+            plot([spikePos(spikeCount) spikePos(spikeCount)], ...
+            [trialCount-1 trialCount+1], 'Color', 'b');
+        end
+    end
+end
+% ylim([0 p.in]);
 xlim([0 p.SimLength])
 ylabel('odours CA1 overlap','FontSize',fs)
 % legend('10% of rest')
+% 
+% % working out mean spiking in overlapping cells vs non overlapping cells
+% %during second odour 
+% overlapping_log = zeros(n_trials, 1);
+% non_overlapping_log = zeros(n_trials, 1);
+% 
+% n_trials = 20;
+% for i = 1:n_trials
+%     M = simulate_dynapics_hipp(p, C, J, input, M, mems);
+% 
+%     overlapping = M.spikelog(p.in + coi, in.reactivation(1):in.reactivation(2));
+%     non_overlapping = M.spikelog(p.in+full,  in.reactivation(1):in.reactivation(2));
+% 
+%     mean_overlapping = sum( overlapping, "all")/size(overlapping, 1);
+%     mean_non_overlapping = sum(non_overlapping, "all")/size(non_overlapping, 1);
+% 
+%     overlapping_log(i) = mean_overlapping; non_overlapping_log(i) = mean_non_overlapping;
+%     disp(i)
+% end
+% 
+% plot(1:n_trials, overlapping_log); hold on; plot( 1:n_trials, non_overlapping_log);
