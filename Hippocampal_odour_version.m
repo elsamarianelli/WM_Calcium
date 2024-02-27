@@ -22,8 +22,8 @@ mems = get_odours_hipp(p, degree_overlap, pattern_order);
 % Times that memory is 'on', ms
 input.simulation = [start_time (start_time+length_first)];
 input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_second+lenght_second+delay_time)];
-
-M = simulate_dynapics_hipp(p, C, J, input, M, mems);
+M = get_memory_hipp(p);
+% M = simulate_dynapics_hipp(p, C, J, input, M, mems);
 
 %% for classifier section, WIP
 % generate training data
@@ -59,16 +59,17 @@ end
 shuffled_spikes_x_trials = spikes_x_trials(randperm(size(spikes_x_trials,1)),:);
 
 % train on progressively more data to see if it improves
-class_loss_log = [];
+class_loss_log2 = [];
 for i = 2:n_trials
     SVMModel = fitcsvm(shuffled_spikes_x_trials(1:i, 1:p.out), shuffled_spikes_x_trials(1:i, end));
     CVSVMModel = crossval(SVMModel);
     classLoss = kfoldLoss(CVSVMModel);
     disp(classLoss)
-    class_loss_log = [class_loss_log; classLoss];
+    class_loss_log2 = [class_loss_log2; classLoss];
 end
 % plot class log for increasing number of trials provided to classifier
-plot(2:n_trials, class_loss_log)
+hold on;
+plot(2:n_trials, class_loss_log2)
 xlabel('number of observations');
 ylabel('class loss');
 

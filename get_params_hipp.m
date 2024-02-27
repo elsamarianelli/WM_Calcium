@@ -1,10 +1,10 @@
 function p = get_params_hipp(factor)
 
-    p.in      = 300;                          % Number of CA3 (input) cells
-    p.out     = 300;                          % Number of CA1 (ouput) cells
+    p.in      = 500;                          % Number of CA3 (input) cells
+    p.out     = 500;                          % Number of CA1 (ouput) cells
     p.full    = p.in+p.out;                   % total number of neurones
     p.f       = 0.1;                          % Coding level
-    p.c       = 0.15;                          % Probability of synaptic contact
+    p.c       = 0.2;                          % Probability of synaptic contact
     
     p.j_p     = 2;                            % potentiated level of E-->E synapses
     p.j_b     = 0;                            % baseline level of E-->E synapses 
@@ -21,5 +21,5 @@ function p = get_params_hipp(factor)
     p.U = 0.2;                                %Baseline utilisation factor
     p.X = 1;                                  %Baseline synaptic materials factor
     p.CF = 1.2;                               % stimulation contrast factor
-    p.RF = 1.1;                             %second odour stim factor (check)
+    p.RF = 1.05;                             %second odour stim factor (check)
 end
