@@ -7,7 +7,7 @@ degree_overlap = 0.2;
 pattern_order = 'AB';
 length_first = 50;
 lenght_second = 20;
-delay_time = 300;
+delay_time = 800;
 start_time = 200;
 
 % Get non-programmable paramaters
@@ -22,20 +22,54 @@ mems = get_odours_hipp(p, degree_overlap, pattern_order);
 % Times that memory is 'on', ms
 input.simulation = [start_time (start_time+length_first)];
 input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_second+lenght_second+delay_time)];
-M = get_memory_hipp(p);
-% M = simulate_dynapics_hipp(p, C, J, input, M, mems);
+% M = get_memory_hipp(p);
+M = simulate_dynapics_hipp(p, C, J, input, M, mems);
 
+%% looking at mean firing rate of selective population during second odour 
+% for different delay times 
+for delay_time = 100:100:1500
+    input.simulation = [start_time (start_time+length_first)];
+    input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_second+lenght_second+delay_time)];
+    M = get_memory_hipp(p);
+    M_new = simulate_dynapics_hipp(p, C, J, input, M, mems);
+    
+    ind1 = find((sum(C(mems{1}, :))>filter)); 
+    ind2 = find((sum(C(mems{2}, :))>filter)); 
+    coi = intersect(ind1,ind2);
+    full = 1:p.out; full(coi) = [];
+    
+    n_trials = 10;
+    
+    overlapping_log = zeros(n_trials, 1);
+    non_overlapping_log = zeros(n_trials, 1);
+    
+    for i = 1:n_trials
+
+        M = simulate_dynapics_hipp(p, C, J, input, M, mems);
+        output_mem2 = C(mems{2}, :);
+        overlapping = M.spikelog(p.in + coi, input.reactivation(1):input.reactivation(2));
+        non_overlapping = M.spikelog(p.in+full,  input.reactivation(1):input.reactivation(2));
+    
+        mean_overlapping = sum( overlapping, "all")/(size(overlapping, 1).*lenght_second.*0.001);
+        mean_non_overlapping = sum(non_overlapping, "all")/(size(non_overlapping, 1).*lenght_second.*0.001);
+    
+        overlapping_log(i) = mean_overlapping; non_overlapping_log(i) = mean_non_overlapping;
+        disp(i)
+
+    end
+    
+    over = mean(overlapping_log); 
 %% for classifier section, WIP
-% generate training data
+% % generate training data
 n_trials = 50;
 spikes_x_trials = zeros(n_trials,p.out+1);
-%simulate 50 trials presenting odour A and then B, labelled no reward
+% simulate 50 trials presenting odour A and then B, labelled no reward
 for i = 1:n_trials/2
     M = simulate_dynapics_hipp(p, C, J, input, M, mems);
     spikes = M.spikelog(p.in+1:p.full, input.reactivation(1):input.reactivation(2));
     spikes_out = sum(spikes, 2);
     spikes_x_trials(i, 1:p.out) = spikes_out';
-    %labelling as no reward
+    % labelling as no reward
     spikes_x_trials(i, p.out+1) = 0;
     disp(i)
 end
@@ -50,7 +84,7 @@ for i =  (n_trials/2)+1:n_trials
     spikes = M.spikelog(p.in+1:p.full, input.reactivation(1):input.reactivation(2));
     spikes_out = sum(spikes, 2);
     spikes_x_trials(i, 1:p.out) = spikes_out';
-    %labelling as reward
+    % labelling as reward
     spikes_x_trials(i, p.out+1) = 1;
     disp(i)
 end
@@ -198,10 +232,8 @@ L3 = plot(nan, nan, 'color', 'm');
 legend([L1, L2, L3], {'odour 1' 'odour 2', '10% over non-odour cells'}, 'Location', 'southeast')
 
 % plotting spike raster for CA1 ouput cell firing
-overlap1 = mems{2};
-ind1 = find((sum(C(overlap1, :))>3)); 
-overlap2 = mems{1};
-ind2 = find((sum(C(overlap2, :))>3)); 
+ind1 = find((sum(C(mems{2}, :))>p.in.*0.01)); 
+ind2 = find((sum(C(mems{1}, :))>p.in.*0.01)); 
 coi = intersect(ind1,ind2);
 full = 1:p.out; full(coi) = [];
 
@@ -242,7 +274,7 @@ ylabel('CA1','FontSize',fs)
 
 L1 = plot(nan, nan, 'color', 'm');
 L2 = plot(nan, nan, 'color', 'b');
-legend([L1, L2], {'overlapping >3' 'non-overlapping'}, 'Location', 'southeast')
+legend([L1, L2], {'overlapping ' 'non-overlapping'}, 'Location', 'southeast')
 
 %plotting mean spiking in overlapping cells vs non overlapping cells
 %during second odour, filtering for cells which recived increasing number of inputs

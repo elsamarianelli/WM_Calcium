@@ -12,6 +12,11 @@ M.V_log       = zeros(p.full, p.SimLength);
 % M.Irec_log    = zeros(p.out, p.SimLength);
 % M.Iext_log    = zeros(p.in, p.SimLength);
 % M.J_fired_log = zeros(p.in, p.SimLength);
- M.V_log_out = zeros(1, p.SimLength);
- M.V_log_in = zeros(1,  p.SimLength);
+M.V_log_out = zeros(1, p.SimLength);
+M.V_log_in = zeros(1,  p.SimLength);
+M.U_mem1_log = zeros(1, p.SimLength);
+M.X_mem1_log = zeros(1, p.SimLength);
+M.U_mem2_log = zeros(1, p.SimLength);
+M.X_mem2_log = zeros(1, p.SimLength);
+
 end

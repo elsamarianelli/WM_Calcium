@@ -63,23 +63,22 @@ function M = simulate_dynapics_hipp(p, C, J, input, M, mems)
         % % [4] Log what needs logging
         
         %get synapses which are activated during both odours
-        % overlap = intersect(mems{1}, mems{2});
-        % O = C; NO = C;  all = 1:p.in; all(overlap) = [];
-        % O(all, :) = 0; NO(overlap, :) = 0;
-        % 
-        % overlap1 = mems{2};
-        % ind1 = find((sum(C(overlap1, :))>1)); 
-        % overlap2 = mems{1};
-        % ind2 = find((sum(C(overlap2, :))>1)); 
+        overlap = intersect(mems{1}, mems{2});
+        O = C; NO = C;  all = 1:p.in; all(overlap) = [];
+        O(all, :) = 0; NO(overlap, :) = 0; 
+        
+        % ind1 = find((sum(C(mems{1}, :))>1)); 
+        % ind2 = find((sum(C(mems{2}, :))>1)); 
         % coi = intersect(ind1,ind2);
-        % full = 1:p.out; full(coi) = [];
+        % full = 1:p.in; full(coi) = [];
         % O=C; NO= C; 
         % O(:, full) = 0; NO(:, coi) = 0;
+
         % log synaptic parameters for each memory
         % both = [mems{1} mems{2}];
         both = mems{2};
         mem_syn_inds = sub2ind(size(u),repmat(both,1,length(both)),sort(repmat(both,1,length(both))));
-        mem_syn_inds(O(mem_syn_inds)==1);
+        % mem_syn_inds(O(mem_syn_inds)==1);
         M.U_mem1_log(t) = mean(u(mem_syn_inds(O(mem_syn_inds)==1)));
         M.X_mem1_log(t) = mean(x(mem_syn_inds(O(mem_syn_inds)==1))); 
 
