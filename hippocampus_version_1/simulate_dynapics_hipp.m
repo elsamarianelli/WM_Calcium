@@ -6,7 +6,7 @@ function M = simulate_dynapics_hipp(p, C, J, input, M, mems)
     ref_p       = zeros(p.full,1);
     fired       = zeros(p.full, 1);
     
-    delays      = randi([4 5], p.in, p.out).*C;
+    delays      = randi([5 5], p.in, p.out).*C;
     delay_win   = zeros(p.in, p.out, 5);
     %  Loop through time
     for t       = 1 : p.SimLength
