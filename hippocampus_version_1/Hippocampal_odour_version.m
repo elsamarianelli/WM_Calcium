@@ -7,7 +7,7 @@ degree_overlap = 0.2;
 pattern_order = 'AB';
 length_first = 40;
 lenght_second = 40;
-delay_time = 800;
+delay_time = 600;
 start_time = 200;
 
 % Get non-programmable paramaters
@@ -27,7 +27,7 @@ M = get_memory_hipp(p);
 % simulate hippocampal dynamics 
 M = simulate_dynapics_hipp(p, C, J, input, M, mems);
 % plot output for a single trial 
-output_plot = get_output_plot(M,pattern_order, p, mems);
+output_plot = get_output_plot(M,pattern_order, p, mems, C);
 
 %plotting mean spiking in overlapping cells vs non overlapping cells
 %during second odour, filtering for cells which recived increasing number of inputs
@@ -35,3 +35,37 @@ mean_firing_second_odour = get_mean_firing_second_odour(p, C, J, input, M, mems,
 
 % plot SVM loss function for increasing number of trials 
 SVM_plot = run_classifier(p, C, J, input, M, mems);
+
+
+%% training perceptron 
+% create perceptron with CA1 mean firing during odour 2 for each cell as 
+% input, and a single "lick" output neuron 
+n_trials = 6.*20;
+train_data = get_train_data(C, J, input, n_trials, degree_overlap, p);
+
+P = train_data(1:n_trials, 1:p.out)'; 
+T = train_data(1:n_trials, end)';
+shuffle_T = T(randperm(length(T)));
+
+net = perceptron;
+% net = configure(net,P,T); view(net)
+net.trainParam.epochs =100;
+[net, tr] = train(net,P, shuffle_T);
+hold on
+
+net = perceptron;
+% net = configure(net,P,T); view(net)
+net.trainParam.epochs =100;
+[net, tr] = train(net,P, T);
+% 
+% %evaluate weights and biases
+% w = net.iw{1,1}; b = net.b{1};
+
+%% 
+net = feedforwardnet(1);
+[net,tr] = train(net,P, T);
+
+view(net)
+
+
+

@@ -3,7 +3,7 @@ function [mean_firing_second_odour] = get_mean_firing_second_odour(p, C, J, inpu
 %plotting mean spiking in overlapping cells vs non overlapping cells
 %during second odour, filtering for cells which recived increasing number of inputs
 figure
-
+set(0,'DefaultFigureVisible','off')
 
 for filter = 1:3
     

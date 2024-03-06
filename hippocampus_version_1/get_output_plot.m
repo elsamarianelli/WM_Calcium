@@ -159,4 +159,5 @@ L2 = plot(nan, nan, 'color', 'b');
 legend([L1, L2], {'overlapping ' 'non-overlapping'}, 'Location', 'southeast')
 
 fig = gcf;
+shg
 end

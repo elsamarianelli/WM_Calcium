@@ -4,7 +4,7 @@ function p = get_params_hipp(factor)
     p.out     = 200;                          % Number of CA1 (ouput) cells
     p.full    = p.in+p.out;                   % total number of neurones
     p.f       = 0.2;                          % Coding level
-    p.c       = 0.05;                          % Probability of synaptic contact
+    p.c       = 0.1;                         % Probability of synaptic contact
     
     p.j_p     = 2;                            % potentiated level of E-->E synapses
     p.j_b     = 0;                            % baseline level of E-->E synapses 
