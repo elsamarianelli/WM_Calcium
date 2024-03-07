@@ -1,4 +1,9 @@
 function  shuffled_spikes_x_trials = get_train_data(C, J, input, n_trials, degree_overlap, p)
+% at present this code is being used to get input to perceptron, the output
+% is a mean firing rate (Hz) for each CA1 cell during the second
+% odour presentation. Code to run an SVM instead of using a perceptron, as
+% well as code to run multiple delay times is at the bottom, commented out.
+
 %% looking at mean firing rate of selective population during second odour 
 spikes_x_trials = zeros(n_trials,p.out+1);
 reward_patterns = {'CB'; 'BA'; 'AC'};
@@ -21,6 +26,7 @@ for pattern = 1:length(reward_patterns)
     end
 end
 no_reward_patterns = {'AB'; 'CA'; 'BC'};
+
 % generate training data no reward conditions
 for pattern = 1:length(no_reward_patterns) 
     pattern_order = no_reward_patterns{pattern}; disp(pattern_order)
@@ -44,7 +50,9 @@ end
 % shuffle trials randomly
 shuffled_spikes_x_trials = spikes_x_trials(randperm(size(spikes_x_trials,1)),:);
 
-% 
+
+
+
 % if run_SVM == "on"
 %     % train on progressively more data to see if it improves
 %     class_loss_log2 = [];
