@@ -5,14 +5,9 @@
 %  presentation)
 %  and just to have a better idea of what's ouput in general.
 
-% function w = Perceptron_training(x,y,w,alpha)
-% x     - inputs 
-% y     - expected outputs 
-% w     - weights 
-% alpha - learning rate 
 %% get input
 % programmable paramaters 
-degree_overlap = 0.0;
+degree_overlap = 0.2;
 pattern_order = 'AB';
 length_first = 4300;
 lenght_second = 30;
@@ -29,8 +24,8 @@ input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_s
 M = get_memory_hipp(p);
 
 %% generate training data 
-n_trials = 6.*100;
-% data_overlap = get_train_data(C, J, input, n_trials, degree_overlap, p);
+n_trials = 6.*30;
+data_overlap = get_train_data(C, J, input, n_trials, degree_overlap, p);
 
 % partition data
 train_data = data_overlap(1:(n_trials*0.8), :);
@@ -43,26 +38,29 @@ shuffle_y = y(randperm(length(y)));
 y = shuffle_y;
 
 w = ones(size(x, 2), 1)';
-alpha = 0.001;
+% alpha sets the speed of learning
+alpha = 0.01;
 n = size(x,1);
 error_log = [];
 
 % training perceptron weights
 err = 1;
-while err>0
+bias = 1; % Bias value
+while err > 0
     % initialize accumulated error
     err = 0;
-    % for every set of inputs         
+    % for every set of inputs
     for i = 1:n
         % compute the actual output
-        o = 1;
-        o(dot(w,x(i,:))<0) = 0;
+        o = dot(w, [x(i,:), bias]) >= 0; % Adding bias term
+        
         % compute error
-        e = y(i)-o;
+        e = y(i) - o;
         % update weights if the actual output does not equal the expected
         % output (if abs(e)>0)
-        w = w + alpha*e*x(i,:);            
-        % accumulate error     
+        w = w + alpha * e * [x(i,:), bias]; % Updating weights with bias
+        
+        % accumulate error
         err = err + abs(e);
     end
     disp('run')
