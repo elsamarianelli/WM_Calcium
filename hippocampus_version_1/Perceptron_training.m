@@ -25,8 +25,8 @@ M = get_memory_hipp(p);
 
 %% generate training data 
 n_trials = 6.*100;
-data_overlap = get_train_data(C, J, input, n_trials, 0.2, p);
-data_no_overlap = get_train_data(C, J, input, n_trials, 0.0, p);
+% data_overlap = get_train_data(C, J, input, n_trials, 0.2, p);
+% data_no_overlap = get_train_data(C, J, input, n_trials, 0.0, p);
 data = data_no_overlap;
 
 % partition data
@@ -39,6 +39,7 @@ y = train_data(1:(n_trials*0.8), end);
 % shuffle_y = y(randperm(length(y)));
 % y = shuffle_y;
 
+%% train weights and bias on train data
 w = ones(size(x, 2)+1, 1)';
 % alpha sets the speed of learning
 alpha = 0.001;
@@ -77,16 +78,17 @@ end
 accuracy = (error_log/n);
 run = 1:size(accuracy, 2);
 figure
-plot(accuracy)
+plot(accuracy, 'g')
 hold on
+
+legend('overlap', 'no overlap', 'shuffle')
+xlabel('run')
+ylabel('error')
 % testing ouput on test data
 x_test = test_data(1:(n_trials*0.2), 1:p.out); 
 y_test = test_data(1:(n_trials*0.2), end);
 
-
-
-% Assuming x_test is your test data matrix and y_test is the corresponding labels
-
+%% assessing performance on test data
 % Initialize success counter
 success_count = 0;
 
@@ -105,17 +107,3 @@ end
 accuracy = success_count / size(x_test, 1);
 disp('Perceptron Accuracy:')
 disp(accuracy);
-
-% % running perceptron on test data to see how much of the time it gives
-% % correct output
-% success_log = [];
-% for i = 1:size(x_test, 1)
-%     % compute actual ouput
-%     o = 1;
-%     o(dot(w,[x_test(i, :), bias])<0) = 0;
-%     % compare to labelled ouput an log result
-%     check = abs(o-y_test(i));
-%     success_log = [success_log, check];
-% end
-% 
-% rate_success = sum(success_log)./size(success_log, 2);
