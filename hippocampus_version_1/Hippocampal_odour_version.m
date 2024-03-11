@@ -37,45 +37,45 @@ mean_firing_second_odour = get_mean_firing_second_odour(p, C, J, input, M, mems,
 SVM_plot = run_classifier(p, C, J, input, M, mems);
 
 
-%% training perceptron 
-% create perceptron with CA1 mean firing during odour 2 for each cell as 
-% input, and a single "lick" output neuron 
-n_trials = 6.*50;
-train_data_overlap = get_train_data(C, J, input, n_trials, degree_overlap, p);
-
-train_data = train_data_no_overlap;
-P = train_data(1:n_trials, 1:p.out)'; 
-T = train_data(1:n_trials, end)';
-shuffle_T = T(randperm(length(T)));
-
-% single layer notshuffled
-net = perceptron;
-net.trainParam.epochs =100;
-[net, tr] = train(net,P, T);
-
-% single layer shuffled
-net = perceptron;
-net.trainParam.epochs =100;
-[net, tr] = train(net,P, shuffle_T);
-
-% %evaluate weights and biases
-% w = net.iw{1,1}; b = net.b{1};
-
-% multilayer not shuffled 
-net = feedforwardnet(1);
-[net,tr] = train(net,P, T);
-y = net(P);
-perf = perform(net,y,t);
-
-% multilayer shuffled
-net = feedforwardnet(1);
-[net,tr] = train(net,P, shuffle_T);
-y = net(P);
-perf = perform(net,y,t);
-
-
-% with pattern net 
-net = patternnet(1);
-net = train(net,P, T);
-view(net)
+% %% training perceptron with matlab function 
+% % create perceptron with CA1 mean firing during odour 2 for each cell as 
+% % input, and a single "lick" output neuron 
+% n_trials = 6.*50;
+% train_data_overlap = get_train_data(C, J, input, n_trials, degree_overlap, p);
+% 
+% train_data = train_data_no_overlap;
+% P = train_data(1:n_trials, 1:p.out)'; 
+% T = train_data(1:n_trials, end)';
+% shuffle_T = T(randperm(length(T)));
+% 
+% % single layer notshuffled
+% net = perceptron;
+% net.trainParam.epochs =100;
+% [net, tr] = train(net,P, T);
+% 
+% % single layer shuffled
+% net = perceptron;
+% net.trainParam.epochs =100;
+% [net, tr] = train(net,P, shuffle_T);
+% 
+% % %evaluate weights and biases
+% % w = net.iw{1,1}; b = net.b{1};
+% 
+% % multilayer not shuffled 
+% net = feedforwardnet(1);
+% [net,tr] = train(net,P, T);
+% y = net(P);
+% perf = perform(net,y,t);
+% 
+% % multilayer shuffled
+% net = feedforwardnet(1);
+% [net,tr] = train(net,P, shuffle_T);
+% y = net(P);
+% perf = perform(net,y,t);
+% 
+% 
+% % with pattern net 
+% net = patternnet(1);
+% net = train(net,P, T);
+% view(net)
 
