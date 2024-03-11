@@ -82,7 +82,7 @@ success_log = [];
 for i = 1:size(x_test, 1)
     % compute actual ouput
     o = 1;
-    o(dot(w,x_test(i, :))<0) = 0;
+    o = dot(w, [x_test(i, :), bias]) >= 0; % Adding bias term
     % compare to labelled ouput an log result
     check = abs(o-y_test(i));
     success_log = [success_log, check];
