@@ -7,11 +7,11 @@
 
 %% get input
 % programmable paramaters 
-degree_overlap = 0.2;
+degree_overlap = 0.4;
 pattern_order = 'AB';
 length_first = 30;
 lenght_second = 30;
-delay_time = 500;
+delay_time = 100;
 start_time = 200;
 % Get non-programmable paramaters
 p = get_params_hipp(0.85);
@@ -25,9 +25,9 @@ M = get_memory_hipp(p);
 
 %% generate training data 
 n_trials = 6.*100;
-% data_overlap = get_train_data(C, J, input, n_trials, 0.2, p);
+% data_overlap_delay_100 = get_train_data(C, J, input, n_trials, 0.2, p);
 % data_no_overlap = get_train_data(C, J, input, n_trials, 0.0, p);
-data = data_no_overlap;
+data = data_overlap_big;
 
 % partition data
 train_data = data(1:(n_trials*0.8), :);
@@ -41,14 +41,14 @@ y = train_data(1:(n_trials*0.8), end);
 
 %% train weights and bias on train data
 w = ones(size(x, 2)+1, 1)';
-% alpha sets the speed of learning
+% alpha sets step size (aka speed of learning)
 alpha = 0.001;
 n = size(x,1);
 error_log = [];
 
 % training perceptron weights
 err = 1;
-bias = 1; % Bias value
+bias = 1; % Bias value (to shift decision boundary)
 
 while err > 0
     % initialize accumulated error
@@ -77,18 +77,18 @@ end
 % plot learning over runs 
 accuracy = (error_log/n);
 run = 1:size(accuracy, 2);
-figure
-plot(accuracy, 'g')
+% figure
+plot(accuracy, 'k')
 hold on
 
-legend('overlap', 'no overlap', 'shuffle')
+legend('delay of 400', 'delay of 2000')
 xlabel('run')
 ylabel('error')
-% testing ouput on test data
+
+%% assessing performance on test data
 x_test = test_data(1:(n_trials*0.2), 1:p.out); 
 y_test = test_data(1:(n_trials*0.2), end);
 
-%% assessing performance on test data
 % Initialize success counter
 success_count = 0;
 

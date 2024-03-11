@@ -51,6 +51,25 @@ end
 % shuffle trials randomly
 shuffled_spikes_x_trials = spikes_x_trials(randperm(size(spikes_x_trials,1)),:);
 
+matlab
+
+if isempty(gcp('nocreate')) parpool; % Starts the default parallel pool end 
+    
+reward_patterns = {'CB'; 'BA'; 'AC'}; 
+parfor pattern = 1:length(reward_patterns) 
+    pattern_order = reward_patterns{pattern}; 
+    disp(pattern_order); 
+    mems = get_odours_hipp(p, degree_overlap, pattern_order); 
+    M = get_memory_hipp(p); 
+    for i = 1:n_trials/6 
+        n = ((pattern.*n_trials/6)-n_trials/6) + i; 
+        M = simulate_dynapics_hipp(p, C, J, input, M, mems); 
+        spikes = M.spikelog(p.in+1:p.full, input.reactivation(1):input.reactivation(2)); 
+        spikes_out = sum(spikes, 2); 
+        spikes_x_trials(n, 1:p.out) = spikes_out'; 
+        spikes_x_trials(n, p.out+1) = 1; 
+    end 
+end 
 
 % if run_SVM == "on"
 %     % train on progressively more data to see if it improves
