@@ -9,7 +9,7 @@
 % programmable paramaters 
 degree_overlap = 0.2;
 pattern_order = 'AB';
-length_first = 4300;
+length_first = 30;
 lenght_second = 30;
 delay_time = 500;
 start_time = 200;
