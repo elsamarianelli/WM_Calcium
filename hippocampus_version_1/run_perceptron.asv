@@ -45,7 +45,7 @@ function performance_accuracy = run_perceptron(data, n_trials, p)
             
             % accumulate error
             err = err + abs(e);
-
+            
         end
         disp('run')
         disp(err)
@@ -71,7 +71,6 @@ function performance_accuracy = run_perceptron(data, n_trials, p)
     
     % Test the perceptron on the test data
     for i = 1:size(x_test, 1)
-        
         % Compute actual output
         o = dot(w, [x_test(i,:), bias]) >= 0; % Adding bias term
         
@@ -79,12 +78,10 @@ function performance_accuracy = run_perceptron(data, n_trials, p)
         if o == y_test(i)
             success_count = success_count + 1;
         end
-
     end
     
     % Calculate accuracy
     performance_accuracy = success_count / size(x_test, 1);
-
     % disp('Perceptron Accuracy:')
     % disp(accuracy);
 end
