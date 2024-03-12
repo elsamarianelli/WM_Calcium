@@ -7,11 +7,11 @@
 
 %% get input
 % programmable paramaters 
-degree_overlap = 0.4;
+degree_overlap = 0.2;
 pattern_order = 'AB';
 length_first = 30;
 lenght_second = 30;
-delay_time = 100;
+delay_time = 1000;
 start_time = 200;
 % Get non-programmable paramaters
 p = get_params_hipp(0.85);
@@ -23,10 +23,15 @@ input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_s
 % generate memory
 M = get_memory_hipp(p);
 
+%% generate training data for one run 
+data = get_train_data(C, J, input, n_trials, 0.2, p);
+% run perceptron and test
+
+
 %% generate training data for incremental delay times
 n_trials = 6.*200;
 % Define the size of the cell array
-num_iterations = 35;
+num_iterations = 20;
 delay_trial_data = cell(2, num_iterations);
 
 for i = 22:num_iterations
@@ -54,17 +59,13 @@ for i=1:size(delay_trial, 2)
     delay_trial{3, i} = performance_accuracy;
 end
 
+% plot variable delays
 plot(1:22, cell2mat(delay_trial(3, :)))
 custom_ticks = 1:22;
 custom_labels = (1:22).*100; 
-
-% Set the x-axis tick positions and labels
 xticks(custom_ticks);
 xticklabels(custom_labels);
-xaxis()
-%% generate training data 
-n_trials = 6.*100;
-% data_overlap_delay_100 = get_train_data(C, J, input, n_trials, 0.2, p);
-% data_no_overlap = get_train_data(C, J, input, n_trials, 0.0, p);
-
+xlabel('delay time between first and second odour')
+ylabel('performance of perceptron on test data after training')
+box off
 

@@ -1,4 +1,11 @@
 function performance_accuracy = run_perceptron(data, n_trials, p)
+%% code to run perceptron with an online learning algorithm 
+%  MATLAB function training was being done using batch learning (aka updates
+%  weights with cumulative errors after each epoch) 
+%  This is to do online learning (aka updating weights after each trial
+%  presentation)
+%  and just to have a better idea of what's ouput in general.
+
     % partition data
     train_data = data(1:(n_trials*0.8), :);
     test_data = data((n_trials*0.8)+1:end, :);

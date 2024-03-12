@@ -4,7 +4,7 @@ function p = get_params_hipp(factor)
     p.out     = 200;                          % Number of CA1 (ouput) cells
     p.full    = p.in+p.out;                   % total number of neurones
     p.f       = 0.2;                          % Coding level
-    p.c       = 0.1;                         % Probability of synaptic contact
+    p.c       = 0.05;                         % Probability of synaptic contact
     
     p.j_p     = 2;                            % potentiated level of E-->E synapses
     p.j_b     = 0;                            % baseline level of E-->E synapses 
@@ -15,7 +15,7 @@ function p = get_params_hipp(factor)
     
     p.mu_e =  23.10.*factor;                  %mean external current
     p.sigma = 0.87*factor;                    %standard deviation of external current
-    p.SimLength = 3500;                       %length of simulation (ms)
+    p.SimLength = 1500;                       %length of simulation (ms)
     p.tau_decay = 200;                        %recovery of synaptic resources 
     p.tau_facil = 800;                       %recovery time of utilisation factor 
     p.U = 0.2;                                %Baseline utilisation factor

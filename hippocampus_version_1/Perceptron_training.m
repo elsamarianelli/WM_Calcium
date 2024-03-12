@@ -1,9 +1,5 @@
-%% code to run perceptron with an online learning algorithm 
-%  MATLAB function training was being done using batch learning (aka updates
-%  weights with cumulative errors after each epoch) 
-%  This is to do online learning (aka updating weights after each trial
-%  presentation)
-%  and just to have a better idea of what's ouput in general.
+%% code to get perceptron accuracy for different delay times 
+% (and plot onvergence towards 0 error for training period)
 
 %% get input
 % programmable paramaters 
@@ -11,7 +7,7 @@ degree_overlap = 0.2;
 pattern_order = 'AB';
 length_first = 30;
 lenght_second = 30;
-delay_time = 100;
+delay_time = 1000;
 start_time = 200;
 % Get non-programmable paramaters
 p = get_params_hipp(0.85);
@@ -23,13 +19,20 @@ input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_s
 % generate memory
 M = get_memory_hipp(p);
 
+%% generate training data for one run 
+n_trials = 6.*200;
+data = get_train_data(C, J, input, n_trials, 0.2, p);
+% run perceptron and test
+performance_accuracy = run_perceptron(data, n_trials, p);
+
+
 %% generate training data for incremental delay times
 n_trials = 6.*200;
 % Define the size of the cell array
 num_iterations = 20;
 delay_trial_data = cell(2, num_iterations);
 
-for i = 22:num_iterations
+for i = 1:num_iterations
     % Variable Times that memory is 'on' (ms) in each loop
     delay_time = 100.*i;
     input.simulation = [start_time (start_time+length_first)];
