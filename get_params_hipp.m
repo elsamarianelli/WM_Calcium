@@ -15,7 +15,7 @@ function p = get_params_hipp(factor)
     
     p.mu_e =  23.10.*factor;                  %mean external current
     p.sigma = 0.87*factor;                    %standard deviation of external current
-    p.SimLength = 2500;                       %length of simulation (ms)
+    p.SimLength = 3500;                       %length of simulation (ms)
     p.tau_decay = 200;                        %recovery of synaptic resources 
     p.tau_facil = 800;                       %recovery time of utilisation factor 
     p.U = 0.2;                                %Baseline utilisation factor

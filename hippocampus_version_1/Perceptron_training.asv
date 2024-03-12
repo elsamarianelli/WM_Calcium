@@ -23,87 +23,48 @@ input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_s
 % generate memory
 M = get_memory_hipp(p);
 
+%% generate training data for incremental delay times
+n_trials = 6.*200;
+% Define the size of the cell array
+num_iterations = 35;
+delay_trial_data = cell(2, num_iterations);
+
+for i = 22:num_iterations
+    % Variable Times that memory is 'on' (ms) in each loop
+    delay_time = 100.*i;
+    input.simulation = [start_time (start_time+length_first)];
+    input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_second+lenght_second+delay_time)];
+    % simulate training + test data for 0.2 overlap
+    data = get_train_data(C, J, input, n_trials, 0.2, p);
+    delay_trial_data{1, i} = data;
+    delay_trial_data{2, i} = delay_time;
+    disp(i)
+end
+
+% save for later
+% save("Perceptron_performance_data.mat", "delay_trial_data")
+
+% train and test perceptron for each round of simulated data
+delay_trial = delay_trial_data(:, 1:22);
+performance_accuracy_all = zeros(size(delay_trial, 2));
+for i=1:size(delay_trial, 2)
+    data = delay_trial{1, i};
+    delay = delay_trial{2, i};
+    performance_accuracy = run_perceptron(data, n_trials, p);
+    delay_trial{3, i} = performance_accuracy;
+end
+
+plot(1:22, cell2mat(delay_trial(3, :)))
+custom_ticks = 1:22;
+custom_labels = (1:22).*100; 
+
+% Set the x-axis tick positions and labels
+xticks(custom_ticks);
+xticklabels(custom_labels);
+xaxis()
 %% generate training data 
 n_trials = 6.*100;
 % data_overlap_delay_100 = get_train_data(C, J, input, n_trials, 0.2, p);
 % data_no_overlap = get_train_data(C, J, input, n_trials, 0.0, p);
-data = data_overlap_delay_600;
 
-% partition data
-train_data = data(1:(n_trials*0.8), :);
-test_data = data((n_trials*0.8)+1:end, :);
 
-% seperate into input and expected ouput 
-x = train_data(1:(n_trials*0.8), 1:p.out); 
-y = train_data(1:(n_trials*0.8), end);
-% shuffle_y = y(randperm(length(y)));
-% y = shuffle_y;
-
-%% train weights and bias on train data
-w = ones(size(x, 2)+1, 1)';
-% alpha sets step size (aka speed of learning)
-alpha = 0.001;
-n = size(x,1);
-error_log = [];
-
-% training perceptron weights
-err = 1;
-bias = 1; % Bias value (to shift decision boundary)
-
-while err > 0
-    % initialize accumulated error
-    err = 0;
-    % for every set of inputs
-    for i = 1:n
-
-        % compute the actual output
-        o = dot(w, [x(i,:), bias]) >= 0; % Adding bias term
-        
-        % compute error
-        e = y(i) - o;
-
-        % update weights if the actual output does not equal the expected
-        % output (if abs(e)>0)
-        w = w + alpha * e * [x(i,:), bias]; % Updating weights with bias
-        
-        % accumulate error
-        err = err + abs(e);
-    end
-    disp('run')
-    disp(err)
-    error_log = [error_log, err];
-end
-
-% plot learning over runs 
-accuracy = (error_log/n);
-run = 1:size(accuracy, 2);
-% figure
-plot(accuracy, 'r')
-hold on
-
-legend('delay of 400', 'delay of 2000')
-xlabel('run')
-ylabel('error')
-
-%% assessing performance on test data
-x_test = test_data(1:(n_trials*0.2), 1:p.out); 
-y_test = test_data(1:(n_trials*0.2), end);
-
-% Initialize success counter
-success_count = 0;
-
-% Test the perceptron on the test data
-for i = 1:size(x_test, 1)
-    % Compute actual output
-    o = dot(w, [x_test(i,:), bias]) >= 0; % Adding bias term
-    
-    % Compare to labeled output
-    if o == y_test(i)
-        success_count = success_count + 1;
-    end
-end
-
-% Calculate accuracy
-accuracy = success_count / size(x_test, 1);
-disp('Perceptron Accuracy:')
-disp(accuracy);
