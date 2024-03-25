@@ -1,4 +1,4 @@
-function [C, J] = connectivity_matrix_hipp(p, overlap_control, mems)
+function [C, J] = connectivity_matrix_hipp(p, overlap_control, mems_all)
 % generates random connectivity matrix (C) for CA3 --> CA1 feedforward 
 % connections in network based on preset coding level c, 
 % and Synaptic weight matrix J. 
@@ -22,7 +22,7 @@ if overlap_control == "OFF"
 
 elseif overlap_control == "ON"
 % CA1 overlap controlled
-    
+   
     CA3_populations = mems_all;
     % get CA1 odour populations which CA3 odour populations will be allowed
     % to connect to 

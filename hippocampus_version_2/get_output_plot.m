@@ -3,7 +3,7 @@ function [fig] = get_output_plot(M,pattern_order, p, mems, C)
 figure
 % plotting vm in both patterns
 fs = 10;
-ns = 7; 
+ns = 4; 
 n = 0;
 % % V mean for input and output layer
 % subplot(ns, 1, 1)
@@ -38,7 +38,7 @@ hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
 ylim([0 1])
-ylabel('non_overlapping')
+ylabel('mem_2')
 %u and x for non overlapping 2nd odor cells
 ax2 = subplot(ns,1,n+2);
 av_u_memory = M.U_ovlp_log;
@@ -70,7 +70,7 @@ ylabel('overlapping')
 %plotting spike raster for CA3 cells odour 1 and odour 2
 color_ops = { 'b', 'r'};
 ops = {0, 2};
-ax6 = subplot(ns, 1, n+6);
+ax6 = subplot(ns, 1, n+3);
 for m = 1:2
     tVec = 1:p.SimLength;
     spikeMat = M.spikelog(mems{m}, :);
@@ -120,7 +120,7 @@ coi = intersect(ind1,ind2);
 full = 1:p.out; full(coi) = [];
 
 % overlapping with more than 2 inputs
-ax7 = subplot(ns, 1, n+7);
+ax7 = subplot(ns, 1, n+4);
 spikeMat = M.spikelog(p.in+coi, :);
 for trialCount = 1:size(spikeMat,1)
     hold all;

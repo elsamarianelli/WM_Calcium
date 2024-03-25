@@ -19,7 +19,8 @@ p                     = get_params_hipp(p);
 mems_all = get_odours_hipp(p, p.degree_overlap_CA3);
 
 %  Generate connectivity and synaptic efficacy matrix
-overlap_control = "ON";
+overlap_control     = "ON";
+p.c = 0.6;
 [C, J]              = connectivity_matrix_hipp(p, overlap_control, mems_all);
 
 %  Specify times that each odour is presented, assign memory for the output
