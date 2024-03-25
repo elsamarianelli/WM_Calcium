@@ -1,8 +1,8 @@
 function performance_accuracy = run_perceptron(data, n_trials, p)
 %% code to run perceptron with an online learning algorithm 
-%  MATLAB function training was being done using batch learning (aka updates
+%  MATLAB function training was being done using batch learning (updates
 %  weights with cumulative errors after each epoch) 
-%  This is to do online learning (aka updating weights after each trial
+%  This is to do online learning (updating weights after each trial
 %  presentation)
 %  and just to have a better idea of what's ouput in general.
 
@@ -18,7 +18,7 @@ function performance_accuracy = run_perceptron(data, n_trials, p)
     
     %% train weights and bias on train data
     w = ones(size(x, 2)+1, 1)';
-    % alpha sets step size (aka speed of learning)
+    % alpha sets step size (speed of learning)
     alpha = 0.001;
     n = size(x,1);
     error_log = [];
@@ -39,8 +39,7 @@ function performance_accuracy = run_perceptron(data, n_trials, p)
             % compute error
             e = y(i) - o;
     
-            % update weights if the actual output does not equal the expected
-            % output (if abs(e)>0)
+            % update weights if the actual output does not equal the expected output (if abs(e)>0)
             w = w + alpha * e * [x(i,:), bias]; % Updating weights with bias
             
             % accumulate error
@@ -73,7 +72,7 @@ function performance_accuracy = run_perceptron(data, n_trials, p)
     for i = 1:size(x_test, 1)
         
         % Compute actual output
-        o = dot(w, [x_test(i,:), bias]) >= 0; % Adding bias term
+        o = dot(w, [x_test(i,:), bias]) >= 0; 
         
         % Compare to labeled output
         if o == y_test(i)

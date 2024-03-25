@@ -31,16 +31,15 @@ elseif overlap_control == "ON"
     C = zeros(p.in,p.out);            % Connectivity matrix
     J = ones(p.in, p.out).*p.j_b;
     
-    % Connectivity matrix where the populations of CA1 that CA3 populations
-    % are allowed to project into are fixed 
     for population = 1:length(CA3_populations)
-        subpop_CA3 = CA3_populations{population};
-        subpop_CA1 = CA1_populations{population};
+        subpop_CA3 = CA3_populations(population);
+        subpop_CA1 = CA1_populations(population);
+
         for i = 1:length(subpop_CA3)
-            perm = randperm(length(subpop_CA1));
-            subpop_CA1_shuff = subpop_CA1(perm);
-            C(subpop_CA3(i), subpop_CA1_shuff(1:(length(subpop_CA1))*p.c)) = 1;
+            rand = randperm(le(subpop_CA1));   
+            C(subpop_CA3(i), rand(1:(length(subpop_CA1))*p.c)) = 1;
         end
+    
     end
 
     J(C==1) = p.j_p;                  % Synaptic weight matrix

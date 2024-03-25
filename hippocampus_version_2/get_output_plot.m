@@ -30,26 +30,26 @@ n = 0;
 % plotting synaptic parameters u an x for synapses potentiated by first
 % odour which are reactivated during second odour presentation
 ax1 = subplot(ns,1,n+1);
-av_u_memory = M.U_mem1_log;
-av_x_memory = M.X_mem1_log;
+av_u_memory = M.U_mem2_log;
+av_x_memory = M.X_mem2_log;
 plot(1:p.SimLength,av_u_memory,'b')
 ylabel(pattern_order(1),'FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
 ylim([0 1])
-ylabel('overlapping')
+ylabel('non_overlapping')
 %u and x for non overlapping 2nd odor cells
 ax2 = subplot(ns,1,n+2);
-av_u_memory = M.U_mem2_log;
-av_x_memory = M.X_mem2_log;
+av_u_memory = M.U_ovlp_log;
+av_x_memory = M.X_ovlp_log;
 plot(1:p.SimLength,av_u_memory,'b')
 ylabel(pattern_order(2),'FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
 ylim([0 1])
-ylabel('non-overlapping')
+ylabel('overlapping')
 
 %plot  current logs
 % ax3 = subplot(ns, 1, n+3);
