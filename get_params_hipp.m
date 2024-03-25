@@ -22,4 +22,5 @@ function p = get_params_hipp(factor)
     p.X = 1;                                  %Baseline synaptic materials factor
     p.CF = 1.1;                               % stimulation contrast factor
     p.RF = 1.1;                             %second odour stim factor (check)
+    
 end

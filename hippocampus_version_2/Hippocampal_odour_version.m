@@ -1,34 +1,36 @@
 % Applying a simplified version of the Mongillo et al. 2008 synaptic theory of working memory model 
 % to odour presentation in CA3 to CA1 hippocampal layers
+% 
+% Elsa Marianelli, UCL (2024)
 
-%% initial set up 
-% programmable paramaters 
-degree_overlap = 0.2;
-pattern_order = 'AB';
-length_first = 40;
-lenght_second = 40;
-delay_time = 600;
-start_time = 200;
 
-% Get non-programmable paramaters
-p = get_params_hipp(0.85);
+%% Set parameters for the simulation
+p.degree_overlap    = 0.2;          % Overlap between neural representations of each odour
+p.pattern_order     = 'AB';         % Order in which the odours should be presented
+p.start_time        = 200;          % Time at which the first odour is presented (ms)
+p.length_first      = 40;           % Length of time for which the first odour is presented (ms)
+p.delay_time        = 600;          % Delay between odour presentations (ms)
+p.length_second     = 40;           % Length of time for which the second odour is presented (ms)
+p.scaleF            = 0.85;         % Constant by which to scale random currents (to modulate baseline activity levels)
+p                   = get_params_hipp(p);
 
-% Get connectivity matrix and synaptic efficacy matrix
-[C, J] = connectivity_matrix_hipp(p);
+%  Generate connectivity and synaptic efficacy matrix
+[C, J]              = connectivity_matrix_hipp(p);
 
-% get cells to be activated by each odour in layer CA3
-mems = get_odours_hipp(p, degree_overlap, pattern_order);
+%  Assign CA3 cells to each odour representation
+mems                = get_odours_hipp(p);
 
-% Times that memory is 'on', ms
-%% 
-input.simulation = [start_time (start_time+length_first)];
-input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_second+lenght_second+delay_time)];
-M = get_memory_hipp(p);
+%  Specify times that each odour is presented, assign memory for the output
+input.simulation    = [p.start_time p.start_time+p.length_first];
+input.reactivation  = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
+M                   = get_memory_hipp(p);
 
-% simulate hippocampal dynamics 
-M = simulate_dynapics_hipp(p, C, J, input, M, mems);
-% plot output for a single trial 
-output_plot = get_output_plot(M,pattern_order, p, mems, C);
+
+%%  Simulate hippocampal dynamics 
+M                   = simulate_dynamics_hipp(p, C, J, input, M, mems);
+
+%  Plot output for a single trial 
+output_plot         = get_output_plot(M,p.pattern_order, p, mems, C);
 
 %plotting mean spiking in overlapping cells vs non overlapping cells
 %during second odour, filtering for cells which recived increasing number of inputs

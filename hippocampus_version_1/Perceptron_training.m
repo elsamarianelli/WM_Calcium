@@ -29,7 +29,7 @@ n_trials = 6.*200;
 num_iterations = 15;
 connectivity_trial_data = cell(2, num_iterations);
 
-for i = 1:num_iterations
+for i = 1:5:num_iterations
     connectivity_level = 0.02.*i;
     p.c = connectivity_level;
     % simulate training + test data for 0.2 overlap
@@ -39,6 +39,8 @@ for i = 1:num_iterations
     disp(i)
 end
 
+
+data = connectivity_trial_data{:, 1};
 % save for later
 save("Perceptron_performance_data_connectivity.mat", "delay_trial_data")
 
@@ -67,8 +69,10 @@ end
 % save("Perceptron_performance_data.mat", "delay_trial_data")
 
 % train and test perceptron for each round of simulated data
-delay_trial = delay_trial_data(:, 1:22);
-performance_accuracy_all = zeros(size(delay_trial, 2));
+for i = 1:5:15
+
+    delay_trial = delay_trial_data(:, 1:end);
+    performance_accuracy_all = zeros(size(delay_trial, 2));
 
 for i=1:size(delay_trial, 2)
     data = delay_trial{1, i};
