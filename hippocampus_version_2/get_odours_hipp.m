@@ -1,5 +1,15 @@
-function [mems] = get_odours_hipp(p,degree_overlap)
-    
+function [mems] = get_odours_hipp(p,degree_overlap, overlap_control)
+% Function to generate 3 lists of cells which will be activated by each odour
+% with variable degree of overlap 
+
+    % depnding on wether this is being used for CA1 or CA3 populaiton
+    % generation the overlap can be set differently 
+    if overlap_control == "OFF"
+        coding_level = p.f;
+    elseif overlap_control == "ON"
+        coding_level = p.f_o;
+    end
+
     %% memory input
     cells       = 1 : p.in;                   % List of all neurons
     mems        = cell(3,1);                  % Array of neurons in each memory
@@ -8,25 +18,27 @@ function [mems] = get_odours_hipp(p,degree_overlap)
     % odours, order can be choses in function
     
     %pattern A
-    num_overlap_cells = (p.f*p.in).*degree_overlap;
+    num_overlap_cells = (coding_level*p.in).*degree_overlap;
     cells       = cells(randperm(length(cells)));
-    pattern_A   = sort(cells(1:p.f*p.in));
+    pattern_A   = sort(cells(1:coding_level*p.in));
     cells(ismember(cells,pattern_A)) = [];
     % pattern B
     AB_overlap  = pattern_A(1:num_overlap_cells);
     cells       = cells(randperm(length(cells)));
-    non_overlap = sort(cells(1:(p.f*p.in)-num_overlap_cells));
+    non_overlap = sort(cells(1:(coding_level*p.in)-num_overlap_cells));
     pattern_B   = [AB_overlap, non_overlap];
     cells(ismember(cells,pattern_B)) = [];
     % pattern C 
     AC_overlap  = pattern_A(end-num_overlap_cells+1:end);
     BC_overlap  = pattern_B(end-num_overlap_cells+1:end);
     cells       = cells(randperm(length(cells)));
-    non_overlap = sort(cells(1:int16((p.f*p.in)*(1-degree_overlap*2))));
+    non_overlap = sort(cells(1:int16((coding_level*p.in)*(1-degree_overlap*2))));
     pattern_C   = [AC_overlap, BC_overlap, non_overlap];
+    pattern_C   = unique(pattern_C);
 
-    mems{1}     = eval(strcat('pattern', '_', pattern_order{1}));
-    mems{2}     = eval(strcat('pattern', '_', pattern_order{2}));
-    mems{3}     = eval(strcat('pattern', '_', pattern_order{3}));
+    mems{1}     = pattern_A;
+    mems{2}     = pattern_B;
+    mems{3}     = pattern_C;
+
 
 end

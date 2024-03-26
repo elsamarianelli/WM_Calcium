@@ -1,11 +1,11 @@
 % Applying a simplified version of the Mongillo et al. 2008 synaptic theory of working memory model 
 % to odour presentation in CA3 to CA1 hippocampal layers
-% 
+ 
 % Elsa Marianelli, UCL (2024)
 
 %% Set parameters for the simulation
 p.degree_overlap_CA3  = 0.2;          % Overlap between neural representations of each odour
-p.degree_overlap_CA1  = 0.0;
+p.degree_overlap_CA1  = 0.2;
 p.pattern_order       = 'AC';         % Order in which the odours should be presented
 p.start_time          = 200;          % Time at which the first odour is presented (ms)
 p.length_first        = 40;           % Length of time for which the first odour is presented (ms)
@@ -14,13 +14,22 @@ p.length_second       = 40;           % Length of time for which the second odou
 p.scaleF              = 0.85;         % Constant by which to scale random currents (to modulate baseline activity levels)
 p                     = get_params_hipp(p);
 
+% do we want to constrain the overlap of CA1 populations which receive
+% input from corresponding CA3 populaitons? or have projections be
+% completely random
+overlap_control     = "ON";
 
 %  Assign CA3 cells to each odour representation
-mems_all = get_odours_hipp(p, p.degree_overlap_CA3);
+mems_all = get_odours_hipp(p, p.degree_overlap_CA3, overlap_control);
+
+% take first and second odour to be presented 
+mems = cell(2,1); 
+first = double(upper(p.pattern_order(1))) - 64; 
+mems{1} = mems_all{first};
+second = double(upper(p.pattern_order(2))) - 64; 
+mems{2} = mems_all{second};
 
 %  Generate connectivity and synaptic efficacy matrix
-overlap_control     = "ON";
-p.c = 0.6;
 [C, J]              = connectivity_matrix_hipp(p, overlap_control, mems_all);
 
 %  Specify times that each odour is presented, assign memory for the output
@@ -28,23 +37,19 @@ input.simulation    = [p.start_time p.start_time+p.length_first];
 input.reactivation  = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
 M                   = get_memory_hipp(p);
 
-mems = cell(2,1); 
-first = double(upper(p.pattern_order(1))) - 64; 
-mems{1} = mems_all{first};
-second = double(upper(p.pattern_order(2))) - 64; 
-mems{2} = mems_all{second};
 %%  Simulate hippocampal dynamics 
 M                   = simulate_dynamics_hipp(p, C, J, input, M, mems);
 
 %  Plot output for a single trial 
 output_plot         = get_output_plot(M,p.pattern_order, p, mems, C);
 
-%plotting mean spiking in overlapping cells vs non overlapping cells
-%during second odour, filtering for cells which recived increasing number of inputs
+
+
+
+%% 
+% % plotting mean spiking in overlapping cells vs non overlapping cells
+% % during second odour, filtering for cells which recived increasing number of inputs
 % mean_firing_second_odour = get_mean_firing_second_odour(p, C, J, input, M, mems, p.length_second);
-% 
-
-
 
 %% keep for later but this isn't being used now
 % plot SVM loss function for increasing number of trials 

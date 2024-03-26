@@ -1,4 +1,4 @@
-function [C, J] = connectivity_matrix_hipp(p, overlap_control, mems)
+function [C, J] = connectivity_matrix_hipp(p, overlap_control, mems_all)
 % generates random connectivity matrix (C) for CA3 --> CA1 feedforward 
 % connections in network based on preset coding level c, 
 % and Synaptic weight matrix J. 
@@ -22,7 +22,7 @@ if overlap_control == "OFF"
 
 elseif overlap_control == "ON"
 % CA1 overlap controlled
-    
+   
     CA3_populations = mems_all;
     % get CA1 odour populations which CA3 odour populations will be allowed
     % to connect to 
@@ -31,15 +31,18 @@ elseif overlap_control == "ON"
     C = zeros(p.in,p.out);            % Connectivity matrix
     J = ones(p.in, p.out).*p.j_b;
     
+    % Connectivity matrix where the populations of CA1 that CA3 populations
+    % are allowed to project into are constrained 
     for population = 1:length(CA3_populations)
-        subpop_CA3 = CA3_populations(population);
-        subpop_CA1 = CA1_populations(population);
-
+        % get corresponding subpopulations for each odour
+        subpop_CA3 = CA3_populations{population};
+        subpop_CA1 = CA1_populations{population};
         for i = 1:length(subpop_CA3)
-            rand = randperm(le(subpop_CA1));   
-            C(subpop_CA3(i), rand(1:(length(subpop_CA1))*p.c)) = 1;
+            % randomly project to subsection of CA1 cell
+            perm = randperm(length(subpop_CA1));
+            subpop_CA1_shuff = subpop_CA1(perm);
+            C(subpop_CA3(i), subpop_CA1_shuff(1:(length(subpop_CA1))*p.c)) = 1;
         end
-    
     end
 
     J(C==1) = p.j_p;                  % Synaptic weight matrix
