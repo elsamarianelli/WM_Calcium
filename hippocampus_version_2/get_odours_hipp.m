@@ -1,4 +1,4 @@
-function [mems] = get_odours_hipp(p,degree_overlap, overlap_control)
+function [mems] = get_odours_hipp(p, overlap_control)
 % Function to generate 3 lists of cells which will be activated by each odour
 % with variable degree of overlap 
 
@@ -6,8 +6,10 @@ function [mems] = get_odours_hipp(p,degree_overlap, overlap_control)
     % generation the overlap can be set differently 
     if overlap_control == "OFF"
         coding_level = p.f;
+        degree_overlap = p.degree_overlap_CA3;
     elseif overlap_control == "ON"
         coding_level = p.f_o;
+        degree_overlap = p.degree_overlap_CA1;
     end
 
     %% memory input

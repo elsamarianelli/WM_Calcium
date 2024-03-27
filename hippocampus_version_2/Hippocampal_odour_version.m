@@ -20,7 +20,8 @@ p                     = get_params_hipp(p);
 overlap_control     = "ON";
 
 %  Assign CA3 cells to each odour representation
-mems_all = get_odours_hipp(p, p.degree_overlap_CA3, overlap_control);
+mems_all = get_odours_hipp(p, overlap_control);
+CA1_populations = get_odours_hipp(p, "ON");
 
 % take first and second odour to be presented 
 mems = cell(2,1); 
@@ -30,7 +31,7 @@ second = double(upper(p.pattern_order(2))) - 64;
 mems{2} = mems_all{second};
 
 %  Generate connectivity and synaptic efficacy matrix
-[C, J]              = connectivity_matrix_hipp(p, overlap_control, mems_all);
+[C, J]              = connectivity_matrix_hipp(p, overlap_control, mems_all, CA1_populations);
 
 %  Specify times that each odour is presented, assign memory for the output
 input.simulation    = [p.start_time p.start_time+p.length_first];

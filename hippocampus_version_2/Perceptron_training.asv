@@ -32,7 +32,7 @@ input.simulation    = [p.start_time p.start_time+p.length_first];
 input.reactivation  = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
 % M                   = get_memory_hipp(p);
 
-n_trials = 6.*50;
+n_trials = 6.*100;
 data = get_train_data(C, J, input, n_trials, p, CA3_populations);
 
 %% get input

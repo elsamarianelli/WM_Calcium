@@ -9,7 +9,7 @@ function M      = simulate_dynamics_hipp(p, C, J, input, M, mems)
 %  be set to vary randomly for different connections later on.
 
 
-    % Identify synapses of interest, to log data for    
+    % Identify synapses of interest, to log data for
     pre_overlap = intersect(mems{1}, mems{2});       
     [i,j]       = find(C(:,pre_overlap)>0);
     pre_overlap = sub2ind(size(C),i,pre_overlap(j)'); clear i j

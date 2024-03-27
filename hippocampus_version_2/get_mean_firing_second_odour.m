@@ -1,4 +1,4 @@
-function [mean_firing_second_odour] = get_mean_firing_second_odour(p, C, J, input, M, mems, lenght_second)
+function [mean_firing_second_odour] = get_mean_firing_second_odour(p, C, J, input, M, mems, length_second)
 %plotting mean spiking in overlapping cells vs non overlapping cells
 %during second odour, filtering for cells which recived increasing number of inputs
 
@@ -18,13 +18,13 @@ for filter = 1:3
     
     for i = 1:n_trials
 
-        M = simulate_dynapics_hipp(p, C, J, input, M, mems);
+        M = simulate_dynamics_hipp(p, C, J, input, M, mems);
     
         overlapping = M.spikelog(p.in + coi, input.reactivation(1):input.reactivation(2));
         non_overlapping = M.spikelog(p.in+full,  input.reactivation(1):input.reactivation(2));
     
-        mean_overlapping = sum( overlapping, "all")/(size(overlapping, 1).*lenght_second.*0.001);
-        mean_non_overlapping = sum(non_overlapping, "all")/(size(non_overlapping, 1).*lenght_second.*0.001);
+        mean_overlapping = sum( overlapping, "all")/(size(overlapping, 1).*length_second.*0.001);
+        mean_non_overlapping = sum(non_overlapping, "all")/(size(non_overlapping, 1).*length_second.*0.001);
     
         overlapping_log(i) = mean_overlapping; non_overlapping_log(i) = mean_non_overlapping;
         disp(i)

@@ -1,4 +1,4 @@
-function  shuffled_spikes_x_trials = get_train_data(C, J, input, n_trials, degree_overlap, p)
+function  shuffled_spikes_x_trials = get_train_data(C, J, input, n_trials, p, mems_all)
 % at present this code is being used to get input to perceptron, the output
 % is a mean firing rate (Hz) for each CA1 cell during the second
 % odour presentation. Code to run an SVM instead of using a perceptron, as
@@ -7,36 +7,35 @@ function  shuffled_spikes_x_trials = get_train_data(C, J, input, n_trials, degre
 %% looking at mean firing rate of selective population during second odour 
 spikes_x_trials = zeros(n_trials,p.out+1);
 reward_patterns = {'CB'; 'BA'; 'AC'};
-mems_all = get_odours_hipp(p, degree_overlap);
+% mems_all = get_odours_hipp(p, degree_overlap, "OFF");
 
 % generate training data reward conditions
 for pattern = 1:length(reward_patterns) 
     mems_trial = cell(2,1); 
-    pattern_order = reward_patterns{pattern}; disp(pattern_order)
+    p.pattern_order = reward_patterns{pattern}; disp(p.pattern_order)
     M = get_memory_hipp(p);
-    first = double(upper(pattern_order(1))) - 64; 
+    first = double(upper(p.pattern_order(1))) - 64; 
     mems_trial{1} = mems_all{first};
-    second = double(upper(pattern_order(2))) - 64; 
+    second = double(upper(p.pattern_order(2))) - 64; 
     mems_trial{2} = mems_all{second};
     % simulate 50 trials presenting odour A and then B, labelled no reward
     for i = 1:n_trials/6
         n = ((pattern.*n_trials/6)-n_trials/6) + i;
-        M = simulate_dynapics_hipp(p, C, J, input, M, mems_trial);
+        M = simulate_dynamics_hipp(p, C, J, input, M, mems_trial);
         spikes = M.spikelog(p.in+1:p.full, input.reactivation(1):input.reactivation(2));
         spikes_out = sum(spikes, 2);
         spikes_x_trials(n, 1:p.out) = spikes_out';
         % labelling as reward
         spikes_x_trials(n, p.out+1) = 1;
         % disp(spikes_x_trials(n, p.out+1))
-        disp(i); disp(pattern_order);
+        disp(i); disp(p.pattern_order);
     end
 end
 no_reward_patterns = {'AB'; 'CA'; 'BC'};
-
 % generate training data no reward conditions
 for pattern = 1:length(no_reward_patterns) 
     mems_trial = cell(2,1); 
-    pattern_order = reward_patterns{pattern}; disp(pattern_order)
+    pattern_order = no_reward_patterns{pattern}; disp(pattern_order)
     M = get_memory_hipp(p);
     first = double(upper(pattern_order(1))) - 64; 
     mems_trial{1} = mems_all{first};
@@ -45,7 +44,7 @@ for pattern = 1:length(no_reward_patterns)
     % simulate 50 trials presenting odour A and then B, labelled no reward
     for i = 1:n_trials/6
         n = ((pattern.*n_trials/6)+n_trials/3) + i;
-        M = simulate_dynapics_hipp(p, C, J, input, M, mems_trial);
+        M = simulate_dynamics_hipp(p, C, J, input, M, mems_trial);
         spikes = M.spikelog(p.in+1:p.full, input.reactivation(1):input.reactivation(2));
         spikes_out = sum(spikes, 2);
         spikes_x_trials(n, 1:p.out) = spikes_out';
