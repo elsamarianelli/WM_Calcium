@@ -3,7 +3,6 @@
 %% Set parameters for the simulation
 p.degree_overlap_CA3  = 0.2;          % Overlap between neural representations of each odour
 p.degree_overlap_CA1  = 0.0;
-p.pattern_order       = 'AB';         % Order in which the odours should be presented
 p.start_time          = 100;          % Time at which the first odour is presented (ms)
 p.length_first        = 40;           % Length of time for which the first odour is presented (ms)
 p.delay_time          = 700;          % Delay between odour presentations (ms)
@@ -28,7 +27,7 @@ second = double(upper(p.pattern_order(2))) - 64;
 mems{2} = CA3_populations{second};
 
 %  Generate connectivity and synaptic efficacy matrix
-p.c = 0.6;
+p.c = .2;
 overlap_control     = "ON";
 [C, J]              = connectivity_matrix_hipp(p, overlap_control, CA3_populations, CA1_populations);
 
@@ -45,7 +44,7 @@ output_plot         = get_output_plot(M,p.pattern_order, p, mems, C);
 % [mean_firing_second_odour] = get_mean_firing_second_odour(p, C, J, input, M, mems, p.length_second);
 
 %% plot 2
-number_of_trials = 100;
+number_of_trials = 50;
 
 firing_rate_data = cell(2, 5);
 
@@ -56,17 +55,20 @@ firing_rate_data{1, 3} = 'CA3_stimulated_Hz';
 firing_rate_data{1, 4} = 'CA1_stimulated_Hz';
 firing_rate_data{1, 5} = 'CA1_overlap_Hz';
 
-filter = 1;
 
 % get CA1 cells which are able to receive input from both A and B
 overlap_CA3 = intersect(CA3_populations{first}, CA3_populations{second});
 ind = find((sum(C(overlap_CA3, :))>0)); 
 CA1_overlap = intersect(CA1_populations{second}, ind);
-not_ind = ~ismember(CA1_population{second}, ind);
-CA1_non_overlap = CA1_population{second};
+not_ind = ~ismember(CA1_populations{second}, ind);
+CA1_non_overlap = CA1_populations{second};
 CA1_non_overlap = CA1_non_overlap(not_ind);
+% 
+% CA1_overlap = CA1_overlap(1:10);
+% CA1_non_overlap = CA1_non_overlap(1:10);
 
-% % get subpopulations to plot
+% get subpopulations to plot
+% filter = 8;
 % overlap_CA3 = intersect(CA3_populations{first}, CA3_populations{second});
 % % overlap_CA1 = intersect(CA1_populations{first}, CA1_populations{second});
 % ind1 = find((sum(C(mems{1}, :))>filter)); 
@@ -142,7 +144,6 @@ end
 xticks(1:numel(variable_names)); 
 xticklabels(strrep(variable_names, '_', ' '));
 ylabel('Hz');
-
 
 % Extract variable names and data
 variable_names = firing_rate_data(1,:);

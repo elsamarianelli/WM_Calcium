@@ -11,7 +11,7 @@ function p      = get_params_hipp(p)
     p.c         = 0.2;              % Probability of synaptic contact
     
     p.max_delay = 1;                % Maximum CA3 -> CA1 axonal / synaptic delay
-    p.j_p       = 1.5;                % potentiated strength of E-->E synapses    
+    p.j_p       = 2;                % potentiated strength of E-->E synapses    
     p.j_b       = 0;                % background strength of E-->E synapses 
     p.SPE       = 20;               % spike emission threshold
     p.Vr_e      = 16;               % reset potentials

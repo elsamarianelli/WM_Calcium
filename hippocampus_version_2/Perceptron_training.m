@@ -5,7 +5,6 @@
 %% Set parameters for the simulation
 p.degree_overlap_CA3  = 0.2;          % Overlap between neural representations of each odour
 p.degree_overlap_CA1  = 0.0;
-p.pattern_order       = 'AB';         % Order in which the odours should be presented
 p.start_time          = 100;          % Time at which the first odour is presented (ms)
 p.length_first        = 40;           % Length of time for which the first odour is presented (ms)
 p.delay_time          = 700;          % Delay between odour presentations (ms)
@@ -30,32 +29,14 @@ overlap_control     = "ON";
 %  Specify times that each odour is presented, assign memory for the output
 input.simulation    = [p.start_time p.start_time+p.length_first];
 input.reactivation  = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
-% M                   = get_memory_hipp(p);
+M                   = get_memory_hipp(p);
+M = simulate_dynamics_hipp(p, C, J, input, M, mems);
+output_plot         = get_output_plot(M,p.pattern_order, p, mems, C);
 
-n_trials = 6.*50;
+n_trials = 6.*200;
 data = get_train_data(C, J, input, n_trials, p, CA3_populations);
 
-%% get input
-% programmable paramaters 
-degree_overlap = 0.2;
-pattern_order = 'AB';
-length_first = 30;
-lenght_second = 30;
-delay_time = 1000;
-start_time = 200;
-
-% Get non-programmable paramaters
-p = get_params_hipp(0.85);
-
-% Get connectivity matrix and synaptic efficacy matrix
-[C, J] = connectivity_matrix_hipp(p);
-
-% Times that memory is 'on', ms
-input.simulation = [start_time (start_time+length_first)];
-input.reactivation = [(start_time+lenght_second+delay_time) (start_time+lenght_second+lenght_second+delay_time)];
-
-% generate memory
-M = get_memory_hipp(p);
+performance_accuracy = run_perceptron(data, n_trials, p);
 
 %% generate training data for incremental increases in connectivity level between CA1 and CA3
 n_trials = 6.*200;
