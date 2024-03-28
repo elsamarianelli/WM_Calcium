@@ -27,7 +27,7 @@ second = double(upper(p.pattern_order(2))) - 64;
 mems{2} = CA3_populations{second};
 
 %  Generate connectivity and synaptic efficacy matrix
-p.c = .2;
+p.c = .1;
 overlap_control     = "ON";
 [C, J]              = connectivity_matrix_hipp(p, overlap_control, CA3_populations, CA1_populations);
 

@@ -16,20 +16,28 @@ p                     = get_params_hipp(p);
 % input from corresponding CA3 populaitons? or have projections be
 % completely random
 
-
 %  Assign CA3 cells to each odour representation
 CA3_populations = get_odours_hipp(p, "OFF");
 CA1_populations = get_odours_hipp(p, "ON");
 
 %  Generate connectivity and synaptic efficacy matrix
-p.c = 0.6;
-overlap_control     = "OFF";
+p.c = 0.2;
+overlap_control     = "ON";
 [C, J]              = connectivity_matrix_hipp(p, overlap_control, CA3_populations, CA1_populations);
 
 %  Specify times that each odour is presented, assign memory for the output
 input.simulation    = [p.start_time p.start_time+p.length_first];
 input.reactivation  = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
-% M                   = get_memory_hipp(p);
+M                   = get_memory_hipp(p);
+M = simulate_dynamics_hipp(p, C, J, input, M, mems);
+
+% see U and X over time in synapses whihc receive overlapping input and
+% those which only fire with odour 2, also firing across CA3 and CA1 popu
+output_plot         = get_output_plot(M,p.pattern_order, p, mems, C);
+% visualise connectivity in part of the network, with different odour
+% corresponding populations coloured differently, and connections for that
+% portion of the network shown
+see_connectivity    = visualise_connectivity(C, CA3_populations, CA1_populations);
 
 n_trials = 6.*200;
 data = get_train_data(C, J, input, n_trials, p, CA3_populations);
