@@ -21,6 +21,7 @@ for pattern = 1:length(reward_patterns)
     for i = 1:n_trials/6
         n = ((pattern.*n_trials/6)-n_trials/6) + i;
         M = get_memory_hipp(p);
+        %%  Simulate hippocampal dynamics 
         M = simulate_dynamics_hipp(p, C, J, input, M, mems_trial);
         spikes = M.spikelog(p.in+1:p.full, input.reactivation(1):input.reactivation(2));
         spikes_out = sum(spikes, 2);

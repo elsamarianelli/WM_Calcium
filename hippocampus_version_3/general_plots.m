@@ -24,7 +24,7 @@ stim{2}                 = ca3_ensembles{second}; %clear second
 
 %  Generate connectivity and synaptic efficacy matrix
 [C, J]                  = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
-see_connectivity        = visualise_connectivity(C, ca3_ensembles, ca1_ensembles);
+% see_connectivity        = visualise_connectivity(C, ca3_ensembles, ca1_ensembles);
 
 %  Specify times that each odour is presented, assign memory for the output
 input.simulation        = [p.start_time p.start_time+p.length_first];
@@ -32,23 +32,22 @@ input.reactivation      = [p.start_time+p.length_first+p.delay_time p.start_time
 M                       = get_memory_hipp(p);
 
 %% 
-M = simulate_dynamics_hipp(p, C, J, input, M, mems);
-output_plot         = get_output_plot(M,p.pattern_order, p, mems, C);
+%%  Simulate hippocampal dynamics 
+M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
+
+%  Plot output for a single trial 
+output_plot             = get_output_plot(M,p.pattern_order, p, stim, C);
 
 %% plot 1     M = simulate_dynamics_hipp(p, C, J, input, M, mems);
 % [mean_firing_second_odour] = get_mean_firing_second_odour(p, C, J, input, M, mems, p.length_second);
 
-%% plot 2
-
-
-
 %% get rates for different populations
-number_of_trials = 10;
+number_of_trials = 30;
 rates_sorted_all = zeros(18, number_of_trials);
 sub_groups = [1, first+1, second+1];
 for i = 1:number_of_trials
-    M                       = get_memory_hipp(p); 
-    M = simulate_dynamics_hipp(p, C, J, input, M, mems);
+    M             = get_memory_hipp(p); 
+    M             = simulate_dynamics_hipp(p, C, J, input, M, stim);
     rates_sorted  = sortRates(p,M,input,ca3_ensembles,ca1_ensembles);
 
     for n = 1:3
@@ -108,7 +107,3 @@ end
 xticks(1:numel(variable_names)); 
 xticklabels(strrep(variable_names, '_', ' '));
 ylabel('Hz');
-
-% Extract variable names and data
-variable_names = firing_rate_data(1,:);
-data = firing_rate_data(2,:);

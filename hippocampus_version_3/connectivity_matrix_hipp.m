@@ -8,7 +8,7 @@ function [C, J] = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles)
 % cells can receive a variable number of inputs (fixIn = false)
 
 % Assign some memory
-fixIn       = true;
+fixIn       = false;
 C           = zeros(p.out,p.in);            % Connectivity matrix
 J           = ones(p.out,p.in).*p.j_b;     % Synaptic weight matrix
 
