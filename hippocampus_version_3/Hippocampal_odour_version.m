@@ -4,7 +4,7 @@
 % Elsa Marianelli, UCL (2024)
 
 %% Set parameters for the simulation
-p.degree_overlap_CA3    = 0;              % Overlap between neural representations of each odour
+p.degree_overlap_CA3    = 0.2;              % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.2;
 p.pattern_order         = 'AC';           % Order in which the odours should be presented
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
@@ -27,7 +27,7 @@ stim{2}                 = ca3_ensembles{second}; clear second
 
 %  Generate connectivity and synaptic efficacy matrix
 [C, J]                  = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
-see_connectivity        = visualise_connectivity(C, ca3_ensembles, ca1_ensembles);
+% see_connectivity        = visualise_connectivity(C, ca3_ensembles, ca1_ensembles);
 
 %  Specify times that each odour is presented, assign memory for the output
 input.simulation        = [p.start_time p.start_time+p.length_first];
@@ -39,53 +39,3 @@ M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
 
 %  Plot output for a single trial 
 output_plot             = get_output_plot(M,p.pattern_order, p, stim, C);
-
-%% 
-% % plotting mean spiking in overlapping cells vs non overlapping cells
-% % during second odour, filtering for cells which recived increasing number of inputs
-% mean_firing_second_odour = get_mean_firing_second_odour(p, C, J, input, M, mems, p.length_second);
-
-%% keep for later but this isn't being used now
-% plot SVM loss function for increasing number of trials 
-% SVM_plot = run_classifier(p, C, J, input, M, mems);
-% %% training perceptron with matlab function 
-% % create perceptron with CA1 mean firing during odour 2 for each cell as 
-% % input, and a single "lick" output neuron 
-% n_trials = 6.*50;
-% train_data_overlap = get_train_data(C, J, input, n_trials, degree_overlap, p);
-% 
-% train_data = train_data_no_overlap;
-% P = train_data(1:n_trials, 1:p.out)'; 
-% T = train_data(1:n_trials, end)';
-% shuffle_T = T(randperm(length(T)));
-% 
-% % single layer notshuffled
-% net = perceptron;
-% net.trainParam.epochs =100;
-% [net, tr] = train(net,P, T);
-% 
-% % single layer shuffled
-% net = perceptron;
-% net.trainParam.epochs =100;
-% [net, tr] = train(net,P, shuffle_T);
-% 
-% % %evaluate weights and biases
-% % w = net.iw{1,1}; b = net.b{1};
-% 
-% % multilayer not shuffled 
-% net = feedforwardnet(1);
-% [net,tr] = train(net,P, T);
-% y = net(P);
-% perf = perform(net,y,t);
-% 
-% % multilayer shuffled
-% net = feedforwardnet(1);
-% [net,tr] = train(net,P, shuffle_T);
-% y = net(P);
-% perf = perform(net,y,t);
-% 
-% 
-% % with pattern net 
-% net = patternnet(1);
-% net = train(net,P, T);
-% view(net)
