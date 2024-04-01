@@ -27,6 +27,6 @@ input.reactivation      = [p.start_time+p.length_first+p.delay_time p.start_time
 M                       = get_memory_hipp(p);
 
 %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
-n_trials = 6.*100;
+n_trials = 6.*10;
 data = get_train_data(C, J, input, n_trials, p, ca3_ensembles);
 performance_accuracy = run_perceptron(data, n_trials, p);

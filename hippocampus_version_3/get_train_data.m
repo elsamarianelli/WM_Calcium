@@ -12,10 +12,10 @@ reward_patterns = {'CB'; 'BA'; 'AC'};
 % generate training data reward conditions
 for pattern = 1:length(reward_patterns) 
     mems_trial = cell(2,1); 
-    p.pattern_order = reward_patterns{pattern}; disp(p.pattern_order)
-    first = double(upper(p.pattern_order(1))) - 64; 
+    pattern_order = reward_patterns{pattern}; disp(pattern_order)
+    first = double(upper(pattern_order(1))) - 64; 
     mems_trial{1} = mems_all{first};
-    second = double(upper(p.pattern_order(2))) - 64; 
+    second = double(upper(pattern_order(2))) - 64; 
     mems_trial{2} = mems_all{second};
     % simulate 50 trials presenting odour A and then B, labelled no reward
     for i = 1:n_trials/6
