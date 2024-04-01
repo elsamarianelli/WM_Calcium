@@ -45,7 +45,10 @@ data = get_train_data(C, J, input, n_trials, p, CA3_populations);
 
 performance_accuracy = run_perceptron(data, n_trials, p);
 
-%% generate training data for incremental increases in connectivity level between CA1 and CA3
+
+
+
+%% generate training data for incremental increases in connectivity level between CA1 and CA3 --> needs updating still from v1
 n_trials = 6.*200;
 % Define the size of the cell array
 num_iterations = 15;

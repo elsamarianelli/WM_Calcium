@@ -8,7 +8,7 @@ function p      = get_params_hipp(p)
     p.full      = p.in+p.out;       % Total number of neurones
     p.f         = 0.2;              % Coding level of input layer
     p.f_o       = 0.2;              % Coding level of ouput layer
-    p.c         = 0.1;              % Probability of synaptic contact
+    p.c         = 0.2;              % Probability of synaptic contact
     
     p.max_delay = 1;                % Maximum CA3 -> CA1 axonal / synaptic delay
     p.j_p       = 2;                % potentiated strength of E-->E synapses    
@@ -22,7 +22,7 @@ function p      = get_params_hipp(p)
     p.sigma     = 0.87*p.scaleF;    % Standard deviation of external current
     p.SimLength = 1500;             % Length of simulation (ms)
     p.tau_decay = 200;              % Recovery of synaptic resources 
-    p.tau_facil = 1500;              % Recovery time of utilisation factor 
+    p.tau_facil = 1500;             % Recovery time of utilisation factor 
     p.U         = 0.2;              % Baseline utilisation factor
     p.X         = 1;                % Baseline synaptic materials factor
     p.CF        = 1.1;              % Stimulation contrast factor

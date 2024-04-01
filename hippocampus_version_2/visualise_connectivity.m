@@ -3,7 +3,7 @@ function connectivity_plot = visualise_connectivity(C, CA3_populations, CA1_popu
 
     connectivity_plot = figure;
     connectivity_matrix = C;
-    length_show = 50;
+    length_show = 20;
     connectivity_matrix = connectivity_matrix(1:length_show, 1:length_show);
     CA3_populations{1}(CA3_populations{1}>length_show) = [];
     CA3_populations{2}(CA3_populations{2}>length_show) = [];
