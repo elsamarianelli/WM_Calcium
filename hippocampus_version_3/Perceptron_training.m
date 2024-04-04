@@ -4,8 +4,7 @@
 %% perceptron training on segregated CA1 poulation ouptut
 %% Set parameters for the simulation
 p.degree_overlap_CA3    = 0.2;              % Overlap between neural representations of each odour
-p.degree_overlap_CA1    = 0.2;
-p.pattern_order         = 'AC';           % Order in which the odours should be presented
+p.degree_overlap_CA1    = 0.0;
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
 p.length_first          = 40;             % Length of time for which the first odour is presented (ms)
 p.delay_time            = 600;            % Delay between odour presentations (ms)
@@ -27,6 +26,7 @@ input.reactivation      = [p.start_time+p.length_first+p.delay_time p.start_time
 M                       = get_memory_hipp(p);
 
 %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
-n_trials = 6.*10;
-data = get_train_data(C, J, input, n_trials, p, ca3_ensembles);
+n_trials = 6.*200;
+% data = get_train_data(C, J, input, n_trials, p, ca3_ensembles);
+
 performance_accuracy = run_perceptron(data, n_trials, p);

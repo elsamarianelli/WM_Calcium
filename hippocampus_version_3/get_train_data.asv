@@ -8,8 +8,6 @@ function  shuffled_spikes_x_trials = get_train_data(C, J, input, n_trials, p, me
 % for all cells in CA1 with trial labelled as reward/no reward
 spikes_x_trials = zeros(n_trials,p.out+1);
 
-% what times is spiking being looked at from /to
-start_time = input.reactivation(1); end_time = input.reactivation(2) + 100;
 %% generate training data reward conditions
 reward_patterns = {'CB'; 'BA'; 'AC'};
 
@@ -29,13 +27,12 @@ for pattern = 1:length(reward_patterns)
         M = get_memory_hipp(p);
         %  Simulate hippocampal dynamics 
         M = simulate_dynamics_hipp(p, C, J, input, M, mems_trial);
-        spikes = M.spikelog(p.in+1:p.full, start_time:end_time);
+        spikes = M.spikelog(p.in+1:p.full, input.reactivation(1):input.reactivation(2));
         spikes_out = sum(spikes, 2);
         spikes_x_trials(n, 1:p.out) = spikes_out';
         % labelling as reward
         spikes_x_trials(n, p.out+1) = 1;
         disp(i); disp(p.pattern_order);
-
     end
 end
 
@@ -44,7 +41,6 @@ no_reward_patterns = {'AB'; 'CA'; 'BC'};
 
 for pattern = 1:length(no_reward_patterns) 
 
-    % get CA3 cell ensembles which odour 1 and 2 will activate
     mems_trial = cell(2,1); 
     pattern_order = no_reward_patterns{pattern}; disp(pattern_order)
     first = double(upper(pattern_order(1))) - 64; 
@@ -58,13 +54,12 @@ for pattern = 1:length(no_reward_patterns)
         M = get_memory_hipp(p);
         %  Simulate hippocampal dynamics 
         M = simulate_dynamics_hipp(p, C, J, input, M, mems_trial);
-        spikes = M.spikelog(p.in+1:p.full, start_time:end_time);
+        spikes = M.spikelog(p.in+1:p.full, input.reactivation(1):input.reactivation(2));
         spikes_out = sum(spikes, 2);
         spikes_x_trials(n, 1:p.out) = spikes_out';
         % labelling as no-reward
         spikes_x_trials(n, p.out+1) = 0;
         disp(i); disp(pattern_order);
-
     end
 end
 

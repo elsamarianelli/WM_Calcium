@@ -27,7 +27,11 @@ function performance_accuracy = run_perceptron(data, n_trials, p)
     err = 1;
     bias = 1; % Bias value (to shift decision boundary)
     
-    while err > 0
+    % break clause if no convergence to 0 
+    max_iterations = 2000;
+    iteration_count = 0;
+
+    while (err > 0)  &  (iteration_count<max_iterations)
         % initialize accumulated error
         err = 0;
         % for every set of inputs
@@ -46,20 +50,24 @@ function performance_accuracy = run_perceptron(data, n_trials, p)
             err = err + abs(e);
 
         end
+
+        % update iteration count
+        iteration_count = iteration_count + 1;
+
         disp('run')
         disp(err)
         error_log = [error_log, err];
+
     end
     
+    figure
     % plot learning over runs 
     accuracy = (error_log/n);
     % run = 1:size(accuracy, 2);
-    plot(accuracy)
-    hold on
-    
+    plot(accuracy)    
     % legend('delay of 400', 'delay of 2000')
-    % xlabel('run')
-    % ylabel('error')
+    xlabel('run')
+    ylabel('error')
     
     %% assessing performance on test data
     x_test = test_data(1:(n_trials*0.2), 1:p.out); 
@@ -84,6 +92,6 @@ function performance_accuracy = run_perceptron(data, n_trials, p)
     % Calculate accuracy
     performance_accuracy = success_count / size(x_test, 1);
 
-    % disp('Perceptron Accuracy:')
-    % disp(accuracy);
+    disp('Perceptron Accuracy:')
+    disp(accuracy);
 end
