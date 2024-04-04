@@ -9,7 +9,7 @@ function  shuffled_spikes_x_trials = get_train_data(C, J, input, n_trials, p, me
 spikes_x_trials = zeros(n_trials,p.out+1);
 
 % what times is spiking being looked at from /to
-start_time = input.reactivation(1); end_time = input.reactivation(2) + 100;
+start_time = input.reactivation(1); end_time = input.reactivation(2);
 %% generate training data reward conditions
 reward_patterns = {'CB'; 'BA'; 'AC'};
 
