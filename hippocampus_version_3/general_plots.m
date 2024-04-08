@@ -1,5 +1,5 @@
 %% general plots 
-
+    
 %% Set parameters for the simulation
 p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
