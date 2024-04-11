@@ -18,12 +18,12 @@ function p      = get_params_hipp(p)
     p.tau_e     = 15;               % membrane time constant
     p.ARP       = 2;                % absolute refractory period
     
-    p.mu_e      = 23.10*p.scaleF;  % Mean external current
+    p.mu_e      = 23.10*p.scaleF;   % Mean external current
     p.sigma     = 0.87*p.scaleF;    % Standard deviation of external current
     p.tau_decay = 200;              % Recovery of synaptic resources 
     p.tau_facil = 1500;             % Recovery time of utilisation factor 
     p.U         = 0.2;              % Baseline utilisation factor
     p.X         = 1;                % Baseline synaptic materials factor
-    p.CF        = 1.1;              % Stimulation contrast factor
+    p.CF        = 1.03;              % Stimulation contrast factor
 
 end

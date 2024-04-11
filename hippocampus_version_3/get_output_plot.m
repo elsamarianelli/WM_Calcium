@@ -13,7 +13,7 @@ av_x_memory = M.X_mem2_log;
 plot(1:p.SimLength,av_u_memory,'b')
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
-legend('u', 'x' ,'Location','southeast')
+legend('u', 'x' ,'Location','best')
 ylim([0 1])
 ylabel(pattern_order(2),'FontSize',fs)
 box off
@@ -25,7 +25,7 @@ av_x_memory = M.X_ovlp_log;
 plot(1:p.SimLength,av_u_memory,'b')
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
-legend('u', 'x' ,'Location','southeast')
+legend('u', 'x' ,'Location','best')
 ylim([0 1])
 ylabel(strcat(pattern_order(1), ' overlap ', pattern_order(2)))
 box off

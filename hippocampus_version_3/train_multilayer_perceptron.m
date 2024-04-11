@@ -65,7 +65,7 @@ end
 % plot(pints, performance, 'LineWidth', 2);
 % title('Pool Performance vs. Alcohol Intake (Pints)');
 % 
-% xlabel('Pints of Alcohol');
+% xlabel('Pints');
 % 
 % performance_labels = {'Leave the Pub', 'Inept', 'Embarrasing', 'Below Mediocre', 'Average', 'Passable', 'Kinda Alright', 'Decent?'};
 % performance_positions = linspace(min(performance), max(performance), length(performance_labels));

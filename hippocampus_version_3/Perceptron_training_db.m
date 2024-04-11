@@ -49,38 +49,3 @@ xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',2
 %% test on test data generated with same connectivity matrix 
 [spikeCounts_test, ~]	= get_train_data_db(C, J, 5, p, ca3_ensembles);
 [performance_test] = test_perceptron_output(spikeCounts_test, w);
-
-%% trying to compare perceptron input weighting to populations of CA1 which would receive overlapping input
-% % find position of highest weighted inputs
-% [sorted_numbers, sorted_indices] = sort(w, 'descend');
-% biggest = sorted_indices(1:10);
-% smallest = sorted_indices(end-10:end);
-% disp(w(biggest)); 
-% disp(w(smallest));
-% 
-% % CA1 cells getting the most input CA3 cells which receive overlapping
-% % input in REWARD pair cases 
-% 
-% % overlaps..
-% AB = intersect(ca3_ensembles{1}, ca3_ensembles{2});
-% BC = intersect(ca3_ensembles{2}, ca3_ensembles{3});
-% AC = intersect(ca3_ensembles{1}, ca3_ensembles{3});
-% 
-% % CA1 overlap inputs...
-% AB_CA1 = find(sum(C(AB, :))>3);
-% BC_CA1 = find(sum(C(BC, :))>3);
-% AC_CA1 = find(sum(C(AC, :))>3);
-% 
-% % use overlap receiving CA1 populaitons to index from perceptron weights
-% AB_w = w(AB_CA1);
-% BC_w = w(BC_CA1);
-% AC_w = w(AC_CA1);
-% 
-% % compare the two index lists
-% figure
-% scatter(AB_CA1, ones(length(AB_CA1)), "filled"); hold on; 
-% scatter(BC_CA1, ones(length(BC_CA1)), "filled"); hold on; 
-% scatter(AC_CA1, ones(length(AC_CA1)), "filled"); hold on; 
-% scatter(biggest, 2.*ones(size(biggest)), "filled");  hold on;
-% % scatter(smallest, 2.*ones(size(smallest)), "filled"); 
-% ylim([0 3])
