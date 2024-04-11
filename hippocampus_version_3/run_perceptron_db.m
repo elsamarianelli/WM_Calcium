@@ -2,7 +2,7 @@ function[output,error, w] = run_perceptron_db(data)
 %% Function to iteratively train a perceptron on simulated CA1 output
 
 %  Extract some parameters, set some parameters, assign some memory
-iterations  = 200;                                   % Number of training blocks
+iterations  = 100;                                   % Number of training blocks
 bias        = 0.5;                                  % Threshold
 alpha       = 0.1;                                  % Learning rate
 n_trials   	= size(data,1);                         % Number of trials
@@ -24,5 +24,3 @@ for i       = 1 : iterations
     clear t
 end
 clear i
-
-

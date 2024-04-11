@@ -9,13 +9,13 @@ function M      = simulate_dynamics_hipp(p, C, J, input, M, mems)
 %  vary randomly for different connections later on.
 
 % Identify synapses of interest, to log data for
-pre_overlap = intersect(mems{1}, mems{2});
-[i,j]       = find(C(:,pre_overlap)>0);
-pre_overlap = sub2ind(size(C),i,pre_overlap(j)'); clear i j
-mem1_unq    = mems{1}(~ismember(mems{1},pre_overlap));
+pre_overlap_use = intersect(mems{1}, mems{2});
+[i,j]       = find(C(:,pre_overlap_use)>0);
+pre_overlap = sub2ind(size(C),i,pre_overlap_use(j)'); clear i j
+mem1_unq    = mems{1}(~ismember(mems{1},pre_overlap_use));
 [i,j]       = find(C(:,mem1_unq)>0);
 mem1_unq    = sub2ind(size(C),i,mem1_unq(j)'); clear i j
-mem2_unq    = mems{2}(~ismember(mems{2},pre_overlap));
+mem2_unq    = mems{2}(~ismember(mems{2},pre_overlap_use));
 [i,j]       = find(C(:,mem2_unq)>0);
 mem2_unq    = sub2ind(size(C),i,mem2_unq(j)'); clear i j
 

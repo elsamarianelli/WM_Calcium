@@ -1,31 +1,9 @@
 function [fig] = get_output_plot(M,pattern_order, p, mems, C)
 
 figure
-% plotting vm in both patterns
 fs = 10;
 ns = 4; 
 n = 0;
-% % V mean for input and output layer
-% subplot(ns, 1, 1)
-% x = M.V_log_in;
-% plot(1:p.SimLength, x)
-% hold on;
-% x = M.V_log_out;
-% plot(1:p.SimLength, x)
-% hold on;
-% x_points = [input.simulation(1), input.simulation(1), input.simulation(2), input.simulation(2)];
-% x2_points =[input.reactivation(1), input.reactivation(1), input.reactivation(2), input.reactivation(2)];
-% y_points = [0, 1, 1, 0];
-% color = [0, 0, 1];
-% hold on;
-% a = fill(x_points, y_points, color,'LineStyle','none');
-% a.FaceAlpha = 0.1; 
-% hold on;
-% a = fill(x2_points, y_points, color,'LineStyle','none');
-% a.FaceAlpha = 0.1; 
-% hold on;
-% ylabel('Vm in memory','FontSize',fs)
-% legend('V out', 'V in')
 
 % plotting synaptic parameters u an x for synapses potentiated by first
 % odour which are reactivated during second odour presentation
@@ -33,23 +11,24 @@ ax1 = subplot(ns,1,n+1);
 av_u_memory = M.U_mem2_log;
 av_x_memory = M.X_mem2_log;
 plot(1:p.SimLength,av_u_memory,'b')
-ylabel(pattern_order(1),'FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
 ylim([0 1])
-ylabel('mem_2')
+ylabel(pattern_order(2),'FontSize',fs)
+box off
+
 %u and x for non overlapping 2nd odor cells
 ax2 = subplot(ns,1,n+2);
 av_u_memory = M.U_ovlp_log;
 av_x_memory = M.X_ovlp_log;
 plot(1:p.SimLength,av_u_memory,'b')
-ylabel(pattern_order(2),'FontSize',fs)
 hold on
 plot(1:p.SimLength,av_x_memory,'r')
 legend('u', 'x' ,'Location','southeast')
 ylim([0 1])
-ylabel('overlapping')
+ylabel(strcat(pattern_order(1), ' overlap ', pattern_order(2)))
+box off
 
 %plot  current logs
 % ax3 = subplot(ns, 1, n+3);
@@ -107,11 +86,13 @@ end
 ylim([0 size(spikeMat, 1)+1]);
 xlim([0 p.SimLength])
 ylabel('CA3','FontSize',fs)
+box off
 
-L1 = plot(nan, nan, 'color', 'b');
-L2 = plot(nan, nan, 'color', 'r');
-L3 = plot(nan, nan, 'color', 'm');
-legend([L1, L2, L3], {'odour 1' 'odour 2', '10% over non-odour cells'}, 'Location', 'southeast')
+% 
+% L1 = plot(nan, nan, 'color', 'b');
+% L2 = plot(nan, nan, 'color', 'r');
+% L3 = plot(nan, nan, 'color', 'm');
+% legend([L1, L2, L3], {'odour 1' 'odour 2', '10% over non-odour cells'}, 'Location', 'best')
 
 % plotting spike raster for CA1 ouput cell firing
 ind1 = find((sum(C(mems{2}, :))>p.in.*0.01)); 
@@ -152,12 +133,13 @@ end
 % ylim([0 p.in]);
 xlim([0 p.SimLength])
 ylabel('CA1','FontSize',fs)
+box off
 
 
-L1 = plot(nan, nan, 'color', 'm');
-L2 = plot(nan, nan, 'color', 'b');
-legend([L1, L2], {'overlapping ' 'non-overlapping'}, 'Location', 'southeast')
-
+% L1 = plot(nan, nan, 'color', 'm');
+% L2 = plot(nan, nan, 'color', 'b');
+% legend([L1, L2], {'overlapping ' 'non-overlapping'}, 'Location', 'best')
+box off
 fig = gcf;
 shg
 end

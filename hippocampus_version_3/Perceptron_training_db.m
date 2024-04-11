@@ -1,16 +1,17 @@
 %% Code to train perceptron on odour discrimination task
 
 %% Set parameters for the simulation
-n_trials                = 100;           % Number of training trials per odour pair
+n_trials                = 100;          % Number of training trials per odour pair
 p.degree_overlap_CA3    = 0.2;          % Overlap between neural representations of each odour in CA3
-p.degree_overlap_CA1    = 0.0;          % Overlap between neural representations of each odour in CA1
+p.degree_overlap_CA1    = 0.2;          % Overlap between neural representations of each odour in CA1
 p.start_time            = 200;          % Time at which the first odour is presented (ms)
-p.length_first          = 100;           % Length of time for which the first odour is presented (ms)
-p.delay_time            = 1000;          % Delay between odour presentations (ms)
-p.length_second         = 100;           % Length of time for which the second odour is presented (ms)
+p.length_first          = 100;          % Length of time for which the first odour is presented (ms)
+p.delay_time            = 1000;         % Delay between odour presentations (ms)
+p.length_second         = 100;          % Length of time for which the second odour is presented (ms)
 p.scaleF                = 0.85;         % Constant by which to scale random currents (to modulate baseline activity levels)
-p.SimLength = 1500;                      % Length of simulation (ms)
+p.SimLength             = 1700;         % Length of simulation (ms)
 p                       = get_params_hipp(p);
+
 %  Randomly assign CA3 and CA1 cells to each odour representation
 ca3_ensembles           = get_odours_hipp(1:p.in, p.f, p.degree_overlap_CA3);
 ca1_ensembles           = get_odours_hipp(p.in+(1:p.out), p.f_o, p.degree_overlap_CA1);
