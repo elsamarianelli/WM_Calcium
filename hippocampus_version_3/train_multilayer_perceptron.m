@@ -1,58 +1,62 @@
-function[error, W1, W2] = train_multilayer_perceptron(input, target_output)
+% Sample data generation for demonstration
+Y = [1 1 1 0 0 0]; % where 1 = reward, 0 = no reward
+X = [0 0 1 0 0 1
+              0 1 0 0 1 0 
+              1 0 0 1 0 0 
+              0 1 0 1 0 0 
+              0 0 1 0 1 0 
+              1 0 0 0 0 1];
+data = [X Y'];
 
-%  Set some parameters
-iterations  = 100;             % Number of training blocks
-bias        = 0.5;             % Threshold
-alpha       = 0.1;             % Learning rate
-n_trials    = size(input,1);
-% Define architecture 
-input_layer_size = 6;
-hidden_layer_size = 6;
-output_layer_size = 1;
+function [output, error, w1, w2] = train_multilayer_perceptron_em(data)
+%% Function to iteratively train a perceptron with one hidden layer on simulated CA1 output
+
+% Extract some parameters, set some parameters, assign some memory
+iterations  = 1000;                                 % Number of training blocks
+alpha       = 0.01;                                 % Learning rate
+n_trials    = size(data,1);                        % Number of trials
+n_ca1       = size(data,2)-1;                      % Number of CA1 inputs
+n_hidden    = 6;                                   % Number of neurons in the hidden layer
 
 % Initialize weights
-W1 = rand(hidden_layer_size, input_layer_size) - 0.5;
-W2 = rand(output_layer_size, hidden_layer_size)  - 0.5;
+w1          = rand(n_ca1, n_hidden) - 0.05;  % Connection weights from input to hidden layer
+w2          = rand(n_hidden, 1) - 0.05;      % Connection weights from hidden to output layer
+output      = nan(1, n_trials * iterations);       % Network output (lick / no lick)
+error       = nan(1, n_trials * iterations);       % Error
 
-% Memory
-error  = nan(1,n_trials*iterations);  
-output = nan(1,n_trials*iterations);
+% Sigmoid activation function
+sigmoid = @(x) 1 ./ (1 + exp(-x));
 
+% Run the dynamics
 for i = 1:iterations
     for t = 1:n_trials
+        % Forward pass: from input to hidden
+        hidden_input = data(t, 1:n_ca1) * w1;      % Linear combination
+        hidden_output = sigmoid(hidden_input);     % Non-linear activation
 
-        % [1] Forward pass
+        % Forward pass: from hidden to output
+        final_input = hidden_output * w2;          % Linear combination
+        o = double(final_input >= 0);              % Threshold (binary output)
 
-        % Input to hidden layer
-        hidden_input =  (W1 * input(t, :)')' ;                   
-        hidden_output = (1.0./(1.0 + exp(-hidden_input)));     % Sigmoid activation function
-        
-        % Hidden to output layer
-        output_layer_input = W2 * hidden_output';
-        output_output = 1.0./(1.0 + exp(-output_layer_input)); % Sigmoid activation function for output
-   
-        % Output is binary (either reward or no reward (1/0))
-        output_output   = double(output_output>=bias);
-        output((i-1)*n_trials+t) = output_output;               % update output log 
+        % Compute the error
+        d = data(t, n_ca1+1) - o;                  % Error term
 
-        % [2] Backward pass
+        % Backward pass: update weights using the error
+        % Update w2 (hidden to output)
+        delta_w2 = alpha * d * hidden_output';
+        w2 = w2 + delta_w2;
 
-        % Derivative of the sigmoid function for output and hidden layer
-        output_deriv = output_output * (1 - output_output);
-        hidden_deriv = hidden_output .* (1 - hidden_output);
-    
-        % Output layer error
-        output_delta = (output_output - target_output(t)) ; %* output_deriv;
-        error((i-1)*n_trials+t) = output_delta;                 % update error log 
+        % Update w1 (input to hidden)
+        % Compute derivative for sigmoid at hidden outputs
+        sigmoid_derivative = hidden_output .* (1 - hidden_output);
+        delta_w1 = alpha * d * w2' .* sigmoid_derivative .* data(t, 1:n_ca1);
+        w1 = w1 + delta_w1';
 
-        % Hidden layer error
-        hidden_delta = (W2' * output_delta')' .* hidden_deriv;
-      
-        % Update weights
-        W2 = W2 - alpha * output_delta' * hidden_output;       % Adjusted weight update for W2
-        W1 = W1 - alpha * (hidden_delta' * input(t, :))';      % Adjusted weight update for W1
-
+        % Record output and error
+        output((i - 1) * n_trials + t) = o;
+        error((i - 1) * n_trials + t) = d;
     end
 end
 
-%% 
+end
+
