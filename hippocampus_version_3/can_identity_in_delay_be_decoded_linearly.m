@@ -56,3 +56,28 @@ n_trials            = 20;
 figure;
 plot(fastsmooth(abs(error),50)), set(gca,'FontSize',18), axis square
 xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
+
+%% run for different levels of background input to see how performance changes
+scaleF_list = (0.84:0.002:0.85);
+performance_log = zeros(1, length(scaleF_list));
+for i = 1:length(scaleF_list)
+    scaleF = scaleF_list(i);
+    p.scaleF = scaleF;
+    %%  Simulate hippocampal dynamics  over many trials with simplest version of task (only 2 odours)
+    time_1              = input.simulation(2);
+    time_2              = input.reactivation(1);
+    % simulate train data
+    n_trials            = 100;
+    [spikeCounts, ~]	= get_train_data_simplest_test(C, J, n_trials, p, ca3_ensembles, input.simulation(2), input.reactivation(1));
+    % simulate test data 
+    n_trials            = 20;
+    [spikeCounts_test, ~] = get_train_data_simplest_test(C, J, n_trials, p, ca3_ensembles, input.simulation(2), input.reactivation(1));
+    
+    %% run perceptron 
+    [performance_accuracy, error, w]    = run_perceptron_db(spikeCounts);
+    [performance_test]                  = test_perceptron_output(spikeCounts_test, w);
+   
+    % log performance 
+    performance_log(scaleF) = performance_test;
+end
+        
