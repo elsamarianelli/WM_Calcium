@@ -1,14 +1,13 @@
 function p      = get_params_hipp(p)
-%% generates a data frame with all set parameters needed for model
-%  (most are taken from Mongillo et al. SOM 2008, with some adjusted for this
-%  models purposes)
+%% generates a data structure with all parameters needed for the model
+%  (most are taken from Mongillo et al. Science 2008)
 
     p.in        = 200;              % Number of CA3 (input) cells
-    p.out       = 200;              % Number of CA1 (ouput) cells
+    p.out       = 100;              % Number of CA1 (ouput) cells
     p.full      = p.in+p.out;       % Total number of neurones
     p.f         = 0.2;              % Coding level of input layer
     p.f_o       = 0.2;              % Coding level of ouput layer
-    p.c         = 0.1.5;              % Probability of synaptic contact
+    p.c         = 0.2;              % Probability of synaptic contact
     
     p.max_delay = 1;                % Maximum CA3 -> CA1 axonal / synaptic delay
     p.j_p       = 1;                % potentiated strength of E-->E synapses    

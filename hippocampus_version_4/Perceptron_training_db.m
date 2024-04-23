@@ -1,15 +1,15 @@
 %% Code to train perceptron on odour discrimination task
 
 %% Set parameters for the simulation
-n_trials                = 50;          % Number of training trials per odour pair
-p.degree_overlap_CA3    = 0.25;            % Overlap between neural representations of each odour
+n_trials                = 50;            % Number of training trials per odour pair
+p.degree_overlap_CA3    = 0.20;           % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
 p.pattern_order         = 'AC';           % Order in which the odours should be presented
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
-p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
-p.delay_time            = 1000;            % Delay between odour presentations (ms)
-p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
-p.scaleF                = 0.847;           % Constant by which to scale random currents (to modulate baseline activity levels)
+p.length_first          = 250;            % Length of time for which the first odour is presented (ms)
+p.delay_time            = 800;           % Delay between odour presentations (ms)
+p.length_second         = 250;            % Length of time for which the second odour is presented (ms)
+p.scaleF                = 0.85;          % Constant by which to scale random currents (to modulate baseline activity levels)
 p.SimLength             = 2500;
 p                       = get_params_hipp(p);
 
@@ -39,26 +39,36 @@ stim{2}                 = ca3_ensembles{second}; clear second
 M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
 output_plot             = get_output_plot(M,p.pattern_order, p, stim, C);
 %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
-[spikeCounts,sequence]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, input.reactivation(1), input.reactivation(2));
-[performance_accuracy, error, w]    = run_perceptron_db(spikeCounts);
+% [spikeCounts,sequence]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, input.reactivation(1), input.reactivation(2));
+% [spikeCounts_test, ~]	= get_train_data_db(C, J, 30, p, ca3_ensembles, input.reactivation(1), input.reactivation(2));
 
-%%  Debug plot (requires fastsmooth function)
+%% use to train and test single layer perceptron 
+[performance_accuracy_single, error, w]    = run_perceptron_db(spikeCounts);
+[performance_test_single] = test_perceptron_output(spikeCounts_test, w);
+
+% Debug plot (requires fastsmooth function)
 figure;
-plot(fastsmooth(abs(error),300)), set(gca,'FontSize',18), axis square
+plot(fastsmooth(abs(error),6000)), set(gca,'FontSize',18), axis square
 xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
 
-%% test on test data generated with same connectivity matrix 
-[spikeCounts_test, ~]	= get_train_data_db(C, J, 5, p, ca3_ensembles, input.reactivation(1), input.reactivation(2));
-[performance_test] = test_perceptron_output(spikeCounts_test, w);
+%% use to train and test multilayer perceptron 
+[~, error, w1, w2] = run_multilayer_perceptron(spikeCounts);
+[performance_accuracy_multi]  = test_multilayer_perceptron_output(spikeCounts_test, w1, w2);
+
+%  Debug plot (requires fastsmooth function)
+figure;
+plot(fastsmooth(abs(error),6000)), set(gca,'FontSize',18), axis square
+xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
 
 %% multilayer perceptron test
-target_output = [1 1 1 0 0 0]; 
-input =     [0 0 1 0 0 1
-              0 1 0 0 1 0 
-              1 0 0 1 0 0 
-              0 1 0 1 0 0 
-              0 0 1 0 1 0 
-              1 0 0 0 0 1];
+target_output =  [1 1 1 0 0 0]; 
+input =   [0 0 1 0 0 1
+          0 1 0 0 1 0 
+          1 0 0 1 0 0 
+          0 1 0 1 0 0 
+          0 0 1 0 1 0 
+          1 0 0 0 0 1];
+
 data = [input, target_output'];
 
 [output, error, w1, w2] = run_multilayer_perceptron(data);
@@ -68,15 +78,3 @@ plot(fastsmooth(abs(error),100)), set(gca,'FontSize',18), axis square
 xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
 
 [performance_test] = test_multilayer_perceptron_output(data, w1, w2);
-
-[performance_accuracy, error, w]    = run_perceptron_db(spikeCounts);
-
-%%  Debug plot (requires fastsmooth function)
-figure;
-plot(fastsmooth(abs(error),300)), set(gca,'FontSize',18), axis square
-xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
-
-%% test on test data generated with same connectivity matrix 
-[spikeCounts_test, ~]	= get_train_data_db(C, J, 5, p, ca3_ensembles, input.reactivation(1), input.reactivation(2));
-[performance_test] = test_perceptron_output(spikeCounts_test, w);
-
