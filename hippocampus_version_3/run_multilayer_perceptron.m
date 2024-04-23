@@ -2,15 +2,16 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
     % Function to iteratively train a perceptron with one hidden layer
 
     % Parameters
-    iterations = 500;                              % Number of training iterations
+    iterations = 1000;                               % Number of training iterations
     alpha = 0.1;                                    % Learning rate
     n_trials = size(data,1);                        % Number of trials
     n_ca1 = size(data,2) - 1;                       % Number of CA1 inputs
-    n_hidden = 6;                                   % Number of neurons in the hidden layer
+    n_hidden = 6;                               % Number of neurons in the hidden layer
+    bias = 0.5;                                     % Bias term for weights
 
     % Initialize weights
-    w1 = rand(n_ca1, n_hidden) - 0.5;                     % Weights from input to hidden layer
-    w2 = rand(n_hidden, 1) - 0.5 ;                         % Weights from hidden to output layer
+    w1 = rand(n_ca1, n_hidden) - bias;              % Weights from input to hidden layer
+    w2 = rand(n_hidden, 1) - bias;                  % Weights from hidden to output layer
     output = nan(1, n_trials * iterations);         % Network output
     error = nan(1, n_trials * iterations);          % Error tracking
 
@@ -28,7 +29,7 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
 
             % hidden to output
             final_input = hidden_output * w2;
-            o = double(final_input >= 0);            % Binary threshold
+            o = double(final_input >= 0);            % Binary threshold (reward/no reward)
 
             % Error calculation
             d = data(t, n_ca1+1) - o;
@@ -41,8 +42,6 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
 
             % Update hidden layer weights
             sigmoid_derivative = hidden_output .* (1 - hidden_output);
-            % delta_w1 = alpha * d * (w2' .* sigmoid_derivative) .* data(t, 1:n_ca1); %% change
-            % w1 = w1 + delta_w1';
 
             % Calculate the gradient for each weight in w1
             gradient_w1 = (data(t, 1:n_ca1)' * (d * (w2' .* sigmoid_derivative)));
@@ -53,6 +52,7 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
             % Store output and error
             output((i - 1) * n_trials + t) = o;
             error((i - 1) * n_trials + t) = d;
+
         end
     end
 end

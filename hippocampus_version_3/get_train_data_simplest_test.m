@@ -1,18 +1,12 @@
-function[shuffled_spikes_x_trials,sequenceID] = get_train_data(C, J, n_trials, p, ca3_ensembles, time_1, time_2)
-% at present this code is being used to get input to perceptron, the output
-% is a mean firing rate (Hz) for each CA1 cell during the second
-% odour presentation. Code to run an SVM instead of using a perceptron, as
-% well as code to run multiple delay times is at the bottom, commented out.
+function[shuffled_spikes_x_trials,sequenceID] = get_train_data_simplest_test(C, J, n_trials, p, ca3_ensembles, time_1, time_2)
 
-
-%% Assign some parameters and memory for the output
-odour_sequences     = {'CB'; 'BA'; 'AC'; 'AB'; 'CA'; 'BC'};
-reward_outcome      = [1 1 1 0 0 0];
+%%  Simulate hippocampal dynamics  over many trials with simplest version of task (only 2 odours)
+odour_sequences     = {'CB'; 'BC'};
+reward_outcome      = [1 0];
 input.simulation    = [p.start_time p.start_time+p.length_first];
 input.reactivation  = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
 spikes_x_trials     = zeros(n_trials.*6,p.out+1);
 sequenceID          = cell(n_trials.*6,1);
-
 
 %% Generate training data for each odour sequence
 %  Loop through each input pattern

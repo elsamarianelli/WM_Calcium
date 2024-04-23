@@ -1,0 +1,105 @@
+%% Code to train perceptron on odour discrimination task
+
+%% Set parameters for the simulation
+n_trials                = 50;          % Number of training trials per odour pair
+p.degree_overlap_CA3    = 0.25;            % Overlap between neural representations of each odour
+p.degree_overlap_CA1    = 0.0;
+p.pattern_order         = 'AC';           % Order in which the odours should be presented
+p.start_time            = 200;            % Time at which the first odour is presented (ms)
+p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
+p.delay_time            = 1000;            % Delay between odour presentations (ms)
+p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
+p.scaleF                = 0.847;           % Constant by which to scale random currents (to modulate baseline activity levels)
+p.SimLength             = 2500;
+p                       = get_params_hipp(p);
+
+%  Randomly assign CA3 and CA1 cells to each odour representation
+ca3_ensembles           = get_odours_hipp(1:p.in, p.f, p.degree_overlap_CA3);
+ca1_ensembles           = get_odours_hipp(p.in+(1:p.out), p.f_o, p.degree_overlap_CA1);
+
+%  Generate connectivity and synaptic efficacy matrix
+[C, J]                  = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
+
+%% check dynamics over single trial 
+
+% set extra paramaters for single trial
+p.pattern_order         = 'AB';
+input.simulation        = [p.start_time p.start_time+p.length_first];
+input.reactivation      = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
+M                       = get_memory_hipp(p);
+
+% take first and second odour to be presented 
+stim                    = cell(2,1); 
+first                   = double(upper(p.pattern_order(1))) - 64; 
+stim{1}                 = ca3_ensembles{first}; clear first
+second                  = double(upper(p.pattern_order(2))) - 64; 
+stim{2}                 = ca3_ensembles{second}; clear second
+
+% simulate dynamics
+M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
+output_plot             = get_output_plot(M,p.pattern_order, p, stim, C);
+
+%%  Simulate hippocampal dynamics  over many trials with simplest version of task (only 2 odours)
+odour_sequences     = {'CB'; 'BC'};
+reward_outcome      = [1 0];
+input.simulation    = [p.start_time p.start_time+p.length_first];
+input.reactivation  = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
+spikes_x_trials     = zeros(n_trials.*6,p.out+1);
+sequenceID          = cell(n_trials.*6,1);
+
+time_1              = input.simulation(2);
+time_2              = input.reactivation(1);
+%% Generate training data for each odour sequence
+%  Loop through each input pattern
+for pattern         = 1 : length(odour_sequences) 
+    
+    % Identify input neurons for each odour in this sequence
+    mems_trial      = cell(2,1); 
+    p.pattern_order = odour_sequences{pattern}; 
+    disp(['Starting ' p.pattern_order ' trials...']);
+    first           = double(upper(p.pattern_order(1))) - 64; 
+    mems_trial{1}   = ca3_ensembles{first}; clear first
+    second          = double(upper(p.pattern_order(2))) - 64; 
+    mems_trial{2}   = ca3_ensembles{second}; clear second
+    
+    % simulate n_trials of these odour presentations
+    for i           = 1 : n_trials
+        
+        % update the user
+        disp(['Trial ' int2str(i) ' with odour pair ' p.pattern_order]);
+        
+        % assign memory and run the dynamics
+        n           = (pattern-1)*n_trials + i;
+        M           = get_memory_hipp(p);
+        M           = simulate_dynamics_hipp(p, C, J, input, M, mems_trial);
+        
+        % log spiking activity during time of interest
+        spikes      = M.spikelog(p.in+1:p.full,time_1:time_2);
+        spikes      = sum(spikes, 2);
+        spikes_x_trials(n, 1:p.out) = spikes'; clear spikes M
+        sequenceID{n}               = p.pattern_order;
+        
+        % label as a rewarded or un-rewarded trial
+        spikes_x_trials(n, p.out+1) = reward_outcome(pattern); clear n        
+        
+    end
+    clear i mems_trial
+    
+end
+clear C ca3_ensembles input J n_trials odour_sequences p pattern reward_outcome
+
+% shuffle trials randomly
+randOrd                     = randperm(size(spikes_x_trials,1));
+shuffled_spikes_x_trials    = spikes_x_trials(randOrd,:); clear spikes_x_trials
+sequenceID                  = sequenceID(randOrd); clear randOrd
+
+
+%%  Debug plot (requires fastsmooth function)
+figure;
+plot(fastsmooth(abs(error),300)), set(gca,'FontSize',18), axis square
+xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
+
+%% test on test data generated with same connectivity matrix 
+[spikeCounts_test, ~]	= get_train_data_db(C, J, 5, p, ca3_ensembles, input.simulation(2), input.reactivation(1));
+[performance_test]      = test_perceptron_output(spikeCounts_test, w);
+
