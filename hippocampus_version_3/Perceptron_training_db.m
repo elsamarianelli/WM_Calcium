@@ -1,7 +1,7 @@
 %% Code to train perceptron on odour discrimination task
 
 %% Set parameters for the simulation
-n_trials                = 100;          % Number of training trials per odour pair
+n_trials                = 50;          % Number of training trials per odour pair
 p.degree_overlap_CA3    = 0.2;          % Overlap between neural representations of each odour in CA3
 p.degree_overlap_CA1    = 0.2;          % Overlap between neural representations of each odour in CA1
 p.start_time            = 200;          % Time at which the first odour is presented (ms)
@@ -49,3 +49,20 @@ xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',2
 %% test on test data generated with same connectivity matrix 
 [spikeCounts_test, ~]	= get_train_data_db(C, J, 5, p, ca3_ensembles);
 [performance_test] = test_perceptron_output(spikeCounts_test, w);
+
+%% multilayer perceptron test
+target_output = [1 1 1 0 0 0]; 
+input =     [0 0 1 0 0 1
+              0 1 0 0 1 0 
+              1 0 0 1 0 0 
+              0 1 0 1 0 0 
+              0 0 1 0 1 0 
+              1 0 0 0 0 1];
+data = [input, target_output'];
+
+[output, error, w1, w2] = run_multilayer_perceptron(data);
+
+figure;
+plot(fastsmooth(abs(error),100)), set(gca,'FontSize',18), axis square
+xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
+
