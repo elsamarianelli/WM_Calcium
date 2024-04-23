@@ -57,8 +57,8 @@ input_data = [input, target_output'];
 
 % run perceptorn just with this simplified input for many trials to see if
 % it can learn weights
-[performance_accuracy, error, w]    = run_perceptron_db(input_data);
-
+%[performance_accuracy, error, w]    = run_perceptron_db(input_data);
+[error, W1, W2] = train_multilayer_perceptron(input, target_output);
 %%  Debug plot (requires fastsmooth function)
 figure;
 plot(fastsmooth((error),10)), set(gca,'FontSize',18), axis square

@@ -12,11 +12,11 @@ output_layer_size = 1;
 
 % Initialize weights
 W1 = rand(hidden_layer_size, input_layer_size) - 0.5;
-W2 = rand(output_layer_size, hidden_layer_size) - 0.5;
+W2 = rand(output_layer_size, hidden_layer_size)  - 0.5;
 
 % Memory
-error  = nan(1,n_trials*iterations);   % Error log
-output = nan(1,n_trials*iterations);   % Network output log
+error  = nan(1,n_trials*iterations);  
+output = nan(1,n_trials*iterations);
 
 for i = 1:iterations
     for t = 1:n_trials
@@ -42,7 +42,7 @@ for i = 1:iterations
         hidden_deriv = hidden_output .* (1 - hidden_output);
     
         % Output layer error
-        output_delta = (output_output - target_output(t)) * output_deriv;
+        output_delta = (output_output - target_output(t)) ; %* output_deriv;
         error((i-1)*n_trials+t) = output_delta;                 % update error log 
 
         % Hidden layer error
@@ -56,21 +56,3 @@ for i = 1:iterations
 end
 
 %% 
-% 
-% pints = 0:0.1:9.9;
-% 
-% performance = arrayfun(@(x) x - (x - 2)^2, pints);
-% 
-% figure;
-% plot(pints, performance, 'LineWidth', 2);
-% title('Pool Performance vs. Alcohol Intake (Pints)');
-% 
-% xlabel('Pints');
-% 
-% performance_labels = {'Leave the Pub', 'Inept', 'Embarrasing', 'Below Mediocre', 'Average', 'Passable', 'Kinda Alright', 'Decent?'};
-% performance_positions = linspace(min(performance), max(performance), length(performance_labels));
-% 
-% yticks(performance_positions);
-% yticklabels(performance_labels);
-% 
-% grid on;

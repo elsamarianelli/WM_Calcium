@@ -4,11 +4,11 @@ function [C, J] = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles)
 % weight matrix J. Connectivity can be constrained either such that:
 % (i) every CA1 cell receives exactly the same number of inputs, but CA3
 % cells can project a variable number of outputs (fixIn  = true); or
-% (ii) every CA3 cell sends exactly the same number of outputs, but CA1    
+% (ii) every CA3 cell sends exactly the same number of outputs, but CA1     %% E.M. I think these are the other way round aswell
 % cells can receive a variable number of inputs (fixIn = false)
 
 % Assign some memory
-fixIn       = true;
+fixIn       = false;
 % C           = zeros(p.out,p.in);            % Connectivity matrix
 % J           = ones(p.out,p.in).*p.j_b;      % Synaptic weight matrix
 C           = zeros(p.in, p.out);            % Connectivity matrix          %% E.M. I think that the in and out are the wrong way round in the connectivity matrix

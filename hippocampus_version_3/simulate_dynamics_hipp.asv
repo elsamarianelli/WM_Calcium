@@ -31,8 +31,8 @@ for t       = 1 : p.SimLength
     activeMems          = cellfun(@(x) any(x(:,1)<=t & x(:,2)>=t),{input.simulation ; input.reactivation});
     M.Iext(horzcat(mems{activeMems})) = M.Iext(horzcat(mems{activeMems})).*p.CF; clear activeMems
 
-    % Third, get synaptic currents (from CA3 to CA1)
-    M.Isyn              = [zeros(p.in,1) ; sum((J.*M.x.*M.u.*M.delay_win(:,:,1)),1)']; % (4)  %% E.M. changed to ,1)' instead of ,2) because was in wrong dimensions
+    % % Third, get synaptic currents (from CA3 to CA1)
+    M.Isyn              = [zeros(p.in,1) ; sum((J.*M.x.*M.u.*M.delay_win(:,:,1)),1)']; % (4)
 
     % Finally, update short-term plasticity parameters for E to E connections
     M.u                 = M.u + (((p.U - M.u)/p.tau_facil) + (p.U .* (1-M.u) .* M.delay_win(:,:,1) .*C));
@@ -59,7 +59,7 @@ for t       = 1 : p.SimLength
     M.delay_win         = circshift(M.delay_win,-1,3);    % Move all spikes one timestep closer
 
     % Update synapse log based on transmission delays
-    pre                 = nonzeros(repmat(fired(1:p.in)',p.in,1) .* repmat((1:p.in),p.in,1) .* C);      %not sure whats being done here, need array size of repmapt to match C
+    pre                 = nonzeros(repmat(fired(1:p.in)',p.in,1) .* repmat((1:p.in),p.in,1) .* C);      %not sure whats being done here
     post                = nonzeros(repmat(fired(1:p.in)',p.in,1) .* repmat((1:p.in)',1,p.in) .* C);
     arrives             = nonzeros(repmat(fired(1:p.in)',p.in,1) .* M.delays .* C);
     ind                 = sub2ind([size(M.delay_win)], post, pre, arrives);

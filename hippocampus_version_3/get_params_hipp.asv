@@ -8,7 +8,7 @@ function p      = get_params_hipp(p)
     p.full      = p.in+p.out;       % Total number of neurones
     p.f         = 0.2;              % Coding level of input layer
     p.f_o       = 0.2;              % Coding level of ouput layer
-    p.c         = 0.15;              % Probability of synaptic contact
+    p.c         = 0.1.5;              % Probability of synaptic contact
     
     p.max_delay = 1;                % Maximum CA3 -> CA1 axonal / synaptic delay
     p.j_p       = 1;                % potentiated strength of E-->E synapses    

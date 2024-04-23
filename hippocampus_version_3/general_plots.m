@@ -1,15 +1,15 @@
 %% general plots 
 
 %% Set parameters for the simulation
-p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
+p.degree_overlap_CA3    = 0.25;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
 p.pattern_order         = 'AC';           % Order in which the odours should be presented
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
-p.delay_time            = 600;            % Delay between odour presentations (ms)
+p.delay_time            = 1000;            % Delay between odour presentations (ms)
 p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
 p.scaleF                = 0.847;           % Constant by which to scale random currents (to modulate baseline activity levels)
-p.SimLength             = 2000;
+p.SimLength             = 2500;
 p                       = get_params_hipp(p);
 
 %  Assign CA3 and CA1 cells to each odour representation
@@ -31,7 +31,7 @@ stim{2}                 = ca3_ensembles{second}; %clear second
 input.simulation        = [p.start_time p.start_time+p.length_first];
 input.reactivation      = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
 M                       = get_memory_hipp(p);
-
+mems = stim;
 %% 
 %%  Simulate hippocampal dynamics 
 M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
@@ -196,10 +196,11 @@ time1 = input.simulation(1);
 time2 = input.simulation(2);
 time3 = input.reactivation(1);
 time4 = input.reactivation(2);
+
 % get CA1 cells which are able to receive input from both A and B
 CA3_overlap = intersect(ca3_ensembles{first}, ca3_ensembles{second});
-ind = find((sum(C(CA3_overlap, :))>1)); 
-CA1_overlap = intersect(ca1_ensembles{second}, ind+p.in);
+ind = find((sum(C(CA3_overlap, :))>0)); 
+CA1_overlap = intersect(ca1_ensembles{first}, ind+p.in);
 
 not_ind = ~ismember(ca1_ensembles{second}, ind+p.in);
 CA1_B = ca1_ensembles{second};
@@ -210,7 +211,7 @@ CA1_A = ca1_ensembles{first};
 CA1_A = CA1_A(not_ind);
 
 % Memory
-number_of_trials = 50;
+number_of_trials = 20;
 
 firing_rate_data = cell(2, 9);
 
@@ -226,6 +227,16 @@ firing_rate_data{1, 7} = 'A unique';
 firing_rate_data{1, 8} = 'A overlap B';
 firing_rate_data{1, 9} = 'B unique';
 
+% for looking at firing rate of CA3 or CA1 populaitions
+         % CA1
+A       = CA1_A;
+overlap = CA1_overlap;
+B       = CA1_B;
+%         % CA3
+% A       = ca3_ensembles{first};
+% overlap = CA3_overlap;
+% B       = ca3_ensembles{second};
+
 for i = 1:number_of_trials
         
     % Simulate a trial
@@ -235,36 +246,36 @@ for i = 1:number_of_trials
     % [1] get firing rates during FIRST odour presentation
 
     % A unique
-    Hz = get_mean_rate(M, time1, time2, CA1_A);
+    Hz = get_mean_rate(M, time1, time2, A);
     firing_rate_data{2, 1} = [firing_rate_data{2, 1}, Hz]; clear Hz;
     % A overlap B 
-    Hz = get_mean_rate(M, time1, time2, CA1_overlap);
+    Hz = get_mean_rate(M, time1, time2, overlap);
     firing_rate_data{2, 2} = [firing_rate_data{2, 2}, Hz]; clear Hz;
     % B unique
-    Hz = get_mean_rate(M, time1, time2, CA1_B);
+    Hz = get_mean_rate(M, time1, time2, B);
     firing_rate_data{2, 3} = [firing_rate_data{2, 3}, Hz]; clear Hz;
 
     % [2] get firing rates during DELAY period
 
     % A unique
-    Hz = get_mean_rate(M, time2, time3, CA1_A);
+    Hz = get_mean_rate(M, time2, time3, A);
     firing_rate_data{2, 4} = [firing_rate_data{2, 4}, Hz]; clear Hz;
     % A overlap B 
-    Hz = get_mean_rate(M, time2, time3, CA1_overlap);
+    Hz = get_mean_rate(M, time2, time3, overlap);
     firing_rate_data{2, 5} = [firing_rate_data{2, 5}, Hz]; clear Hz;
     % B unique
-    Hz = get_mean_rate(M, time2, time3, CA1_B);
+    Hz = get_mean_rate(M, time2, time3, B);
     firing_rate_data{2, 6} = [firing_rate_data{2, 6}, Hz]; clear Hz;
 
     % [3] get firing rates during SECOND odour presentation
     % A unique
-    Hz = get_mean_rate(M, time3, time4, CA1_A);
+    Hz = get_mean_rate(M, time3, time4, A);
     firing_rate_data{2, 7} = [firing_rate_data{2, 7}, Hz]; clear Hz;
     % A overlap B 
-    Hz = get_mean_rate(M, time3, time4, CA1_overlap);
+    Hz = get_mean_rate(M, time3, time4, overlap);
     firing_rate_data{2, 8} = [firing_rate_data{2, 8}, Hz]; clear Hz;
     % B unique
-    Hz = get_mean_rate(M, time3, time4, CA1_B);
+    Hz = get_mean_rate(M, time3, time4, B);
     firing_rate_data{2, 9} = [firing_rate_data{2, 9}, Hz]; clear Hz;
 
     disp(i)
@@ -277,8 +288,11 @@ end
 variable_names = firing_rate_data(1,:);
 data = firing_rate_data(2,:);
 
-% Define color codes for "A unique", "A overlap B", and "B unique"
-colors = {'b', 'm', 'r'}; % Blue for A unique, Purple for A overlap B, Red for B unique
+% A / overlap / B colours
+colors = {'b', 'm', 'r'}; 
+
+% Group names 
+group_names = {'first odour', 'delay', 'second odour'};
 
 % Setup the figure
 figure;
@@ -291,39 +305,39 @@ for subplotIdx = 1:totalSubplots
     subplot(1, totalSubplots, subplotIdx); % Arrange in 1 row, with totalSubplots columns
     
     % Loop through each category within a subplot
-    for categoryIdx = 1:3
-        % Calculate index for data (adjust based on your specific data structure)
-        dataIndex = (subplotIdx - 1) * 3 + categoryIdx;
+    for time_frame = 1:3
+
+        % Calculate index for data 
+        dataIndex = (subplotIdx - 1) * 3 + time_frame;
+  
         if dataIndex > length(data)
             continue; % Skip if dataIndex exceeds the data length
         end
         
-        % Generate jittering for both x and y axes to simulate the swarm effect
-        xJitterValues = 0.1 * rand(1, numel(data{dataIndex})) - 0.05 + categoryIdx;
+        % Generate jittering for axes to simulate the swarm effect
+        xJitterValues = 0.1 * rand(1, numel(data{dataIndex})) - 0.05 + time_frame;
         yJitterValues = data{dataIndex} + (0.05 * rand(1, numel(data{dataIndex})) - 0.025); % Adjust the magnitude of jittering as needed
         
-        scatter(xJitterValues, yJitterValues, colors{categoryIdx});
+        scatter(xJitterValues, yJitterValues, colors{time_frame});
         hold on;
             
         % Calculate mean and SD (Standard Deviation)
         mean_value = mean(data{dataIndex});
         sd_value = std(data{dataIndex}); % SD calculation
         
-        % Add mean bar
-        plot([categoryIdx-0.1, categoryIdx+0.1], [mean_value, mean_value], '-k', 'LineWidth', 2);
+        % mean bar
+        plot([time_frame-0.1, time_frame+0.1], [mean_value, mean_value], '-k', 'LineWidth', 2);
         
-        % Add error bar for SD
-        errorbar(categoryIdx, mean_value, sd_value, 'k', 'LineWidth', 2, 'CapSize', 10);
+        % error bar for SD
+        errorbar(time_frame, mean_value, sd_value, 'k', 'LineWidth', 2, 'CapSize', 10);
     end
     
-    % Adjustments for each subplot
     xticks(1:3);
     xticklabels({'A unique', 'A overlap B', 'B unique'});
     ylabel('Hz');
+    title([group_names{subplotIdx}]);
     
-    % Title to indicate subplot number (or any other relevant title)
-    title(['Group ' num2str(subplotIdx)]);
-    
-    hold off; % Ensure next subplot doesn't overlay on the current one
+    hold off;
 end
 
+% clear
