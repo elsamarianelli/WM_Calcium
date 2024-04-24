@@ -1,6 +1,6 @@
 %% Code to train perceptron on odour discrimination task
 %% Set parameters for the simulation
-n_trials                = 50;
+n_trials                = 200;
 p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
 p.pattern_order         = 'AC';           % Order in which the odours should be presented
@@ -46,21 +46,21 @@ time4 = time3+100; %input.reactivation(2);
 
 %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
 % [spikeCounts,sequence]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
-% [spikeCounts_test, ~]	= get_train_data_db(C, J, 5, p, ca3_ensembles, time3, time4);
+% [spikeCounts_test, ~]	= get_train_data_db(C, J, 10, p, ca3_ensembles, time3, time4);
 
 %% Save data and settings info to current working directory
-folderName = '300_trials_fixIn_true_100_after_odour';
-
-% Create the folder if it doesn't already exist
-if ~exist(folderName, 'dir')
-    mkdir(folderName);
-end
-
-% Save the matrix in a .mat file
-save(fullfile(folderName, 'spikeCounts.mat'), 'spikeCounts');
-save(fullfile(folderName, 'spikeCounts_test.mat'), 'spikeCounts_test');
-% Save the structure in a .mat file
-save(fullfile(folderName, 'myStruct.mat'), 'p');
+% folderName = '300_trials_fixIn_true_100_after_odour_shorter_delay';
+% 
+% % Create the folder if it doesn't already exist
+% if ~exist(folderName, 'dir')
+%     mkdir(folderName);
+% end
+% 
+% % Save the matrix in a .mat file
+% save(fullfile(folderName, 'spikeCounts.mat'), 'spikeCounts');
+% save(fullfile(folderName, 'spikeCounts_test.mat'), 'spikeCounts_test');
+% % Save the structure in a .mat file
+% save(fullfile(folderName, 'myStruct.mat'), 'p');
 
 %% use to train and test single layer perceptron 
 [performance_accuracy_single, error, w]    = run_perceptron_db(spikeCounts);

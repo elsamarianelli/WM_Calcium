@@ -2,7 +2,7 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
     % Function to iteratively train a perceptron with one hidden layer
 
     % Parameters
-    iterations = 3000;                              % Number of training iterations
+    iterations = 100;                              % Number of training iterations
     alpha = 0.1;                                    % Learning rate
     n_trials = size(data,1);                        % Number of trials
     n_ca1 = size(data,2) - 1;                       % Number of CA1 inputs
@@ -11,7 +11,12 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
 
     % Initialize weights
     w1 = rand(n_ca1, n_hidden) - bias;              % Weights from input to hidden layer
-    w2 = rand(n_hidden, 1) - bias;                  % Weights from hidden to output layer
+    %w2 = rand(n_hidden, 1) - bias;                  % Weights from hidden to output layer
+
+    % what if i already know what my second layer weights should look like
+    % --> makes the performance better
+    % w2 = [-1 -1 -1 1 1 1]';
+
     output = nan(1, n_trials * iterations);         % Network output
     error = nan(1, n_trials * iterations);          % Error tracking
 
@@ -52,7 +57,7 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
             error((i - 1) * n_trials + t) = d;
 
         end
-        disp(['iteration', i])
+        disp(['iteration ', num2str(i)])
     end
 end
 
