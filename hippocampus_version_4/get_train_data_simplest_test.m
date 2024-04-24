@@ -3,8 +3,6 @@ function[shuffled_spikes_x_trials,sequenceID] = get_train_data_simplest_test(C, 
 %%  Simulate hippocampal dynamics  over many trials with simplest version of task (only 2 odours)
 odour_sequences     = {'CB'; 'BC'};
 reward_outcome      = [1 0];
-input.simulation    = [p.start_time p.start_time+p.length_first];
-input.reactivation  = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
 spikes_x_trials     = zeros(n_trials.*6,p.out+1);
 sequenceID          = cell(n_trials.*6,1);
 
@@ -20,7 +18,7 @@ for pattern         = 1 : length(odour_sequences)
     mems_trial{1}   = ca3_ensembles{first}; clear first
     second          = double(upper(p.pattern_order(2))) - 64; 
     mems_trial{2}   = ca3_ensembles{second}; clear second
-    
+    stim = mems_trial;
     % simulate n_trials of these odour presentations
     for i           = 1 : n_trials
         
@@ -30,7 +28,7 @@ for pattern         = 1 : length(odour_sequences)
         % assign memory and run the dynamics
         n           = (pattern-1)*n_trials + i;
         M           = get_memory_hipp(p);
-        M           = simulate_dynamics_hipp(p, C, J, input, M, mems_trial);
+        M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
         
         % log spiking activity during time of interest
         spikes      = M.spikelog(p.in+1:p.full,time_1:time_2);

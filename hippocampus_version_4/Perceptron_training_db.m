@@ -62,62 +62,91 @@ time4 = time3+100; %input.reactivation(2);
 % % Save the structure in a .mat file
 % save(fullfile(folderName, 'myStruct.mat'), 'p');
 
-%% load data to use 
+%% with shorter delay 
+
+figure
+
+% get data
 folderName = '300_trials_fixIn_true_100_after_odour_shorter_delay';
 
 % Load data from .mat files
 load(fullfile(folderName, 'spikeCounts.mat'));  % Loads 'spikeCounts'
 load(fullfile(folderName, 'spikeCounts_test.mat'));  % Loads 'spikeCounts_test'
 load(fullfile(folderName, 'myStruct.mat'));  % Loads 'p'
-%% use to train and test single layer perceptron 
-[performance_accuracy_single, error, w]    = run_perceptron_db(spikeCounts(:, :));
-[performance_test_single] = test_perceptron_output(spikeCounts_test, w);
 
-% Debug plot (requires fastsmooth function)
-figure;
-plot(fastsmooth(abs(error),6000)), set(gca,'FontSize',18), axis square
-xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
+% %% fake data test
+% % assume binary input for subpopulations A B C only, and overlap
+% % populations, to show problem is solvable using a multilayer perceptron,
+% % but not a single one
+% target_output =  [1 1 1 0 0 0]; 
+% input =   [0 0 1 0 0 1
+%           0 1 0 0 1 0 
+%           1 0 0 1 0 0 
+%           0 1 0 1 0 0 
+%           0 0 1 0 1 0 
+%           1 0 0 0 0 1];
+% 
+% data = [input, target_output'];
 
-%% use to train and test multilayer perceptron 
-[~, error, w1, w2] = run_multilayer_perceptron(spikeCounts(:, :));
-[performance_test_multi]  = test_multilayer_perceptron_output(spikeCounts_test, w1, w2);
-
-%  Debug plot (requires fastsmooth function)
-figure;
-plot(fastsmooth(abs(error),6000)), set(gca,'FontSize',18), axis square
-xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
-
-%% fake data test
-% assume binary input for subpopulations A B C only, and overlap
-% populations, to show problem is solvable using a multilayer perceptron,
-% but not a single one
-target_output =  [1 1 1 0 0 0]; 
-input =   [0 0 1 0 0 1
-          0 1 0 0 1 0 
-          1 0 0 1 0 0 
-          0 1 0 1 0 0 
-          0 0 1 0 1 0 
-          1 0 0 0 0 1];
-
-data = [input, target_output'];
+data = spikeCounts;
+data_test = spikeCounts_test; 
 
 % with single layer perceptron 
-[performance_accuracy_single, error, w]    = run_perceptron_db(spikeCounts);
-[performance_test_single] = test_perceptron_output(spikeCounts_test, w);
+[performance_accuracy_single, error, w]  = run_perceptron_db(data);
+[performance_test_single] = test_perceptron_output(data_test, w);
 
-figure;
-subplot(2, 1, 1)
+subplot(2, 2, 1)
 plot(fastsmooth(abs(error),6000)), set(gca,'FontSize',18), axis square
-xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
+xlabel('Trial Number','FontSize',15), ylabel('Moving Average Error','FontSize',15)
 title('single layer performance =', performance_test_single)
-
+clear error performane_test_single
 hold on 
 
 % with multilayer perceptron 
-[output, error, w1, w2] = run_multilayer_perceptron(data);
-[performance_test_multi] = test_multilayer_perceptron_output(data, w1, w2);
+[~, error, w1, w2] = run_multilayer_perceptron(data);
+[performance_test_multi] = test_multilayer_perceptron_output(data_test, w1, w2);
+disp(performance_test_multi)
 
-subplot(2, 1, 1)
-plot(fastsmooth(abs(error),100)), set(gca,'FontSize',18), axis square
-xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
+subplot(2, 2, 2)
+plot(fastsmooth(abs(error),3000)), set(gca,'FontSize',18), axis square
+xlabel('Trial Number','FontSize',15), ylabel('Moving Average Error','FontSize',15)
 title('multilayer performance =', performance_test_multi)
+clear error performane_test_
+
+hold on
+
+%% with longer delay 
+
+% get data
+folderName = '300_trials_fixIn_true_100_after_odour';
+
+% Load data from .mat files
+load(fullfile(folderName, 'spikeCounts.mat'));  % Loads 'spikeCounts'
+load(fullfile(folderName, 'spikeCounts_test.mat'));  % Loads 'spikeCounts_test'
+load(fullfile(folderName, 'myStruct.mat'));  % Loads 'p'
+
+data = spikeCounts;
+data_test = spikeCounts_test; 
+
+% with single layer perceptron 
+[performance_accuracy_single, error, w]  = run_perceptron_db(data);
+[performance_test_single] = test_perceptron_output(data_test, w);
+
+subplot(2, 2, 3)
+plot(fastsmooth(abs(error),6000),'Color', 'r'), set(gca,'FontSize',18), axis square
+xlabel('Trial Number','FontSize',15), ylabel('Moving Average Error','FontSize',15)
+title('single layer performance =', performance_test_single)
+clear error performane_test_single
+hold on 
+
+% with multilayer perceptron 
+[~, error, w1, w2] = run_multilayer_perceptron(data);
+[performance_test_multi] = test_multilayer_perceptron_output(data_test, w1, w2);
+disp(performance_test_multi)
+
+subplot(2, 2, 4)
+plot(fastsmooth(abs(error),3000), 'Color', 'r'), set(gca,'FontSize',18), axis square
+xlabel('Trial Number','FontSize',15), ylabel('Moving Average Error','FontSize',15)
+title('multilayer performance =', performance_test_multi)
+clear error performane_test_
+

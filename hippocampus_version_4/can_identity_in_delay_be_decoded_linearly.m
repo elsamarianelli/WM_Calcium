@@ -1,15 +1,16 @@
 %% Code to train perceptron on odour discrimination task
 
 %% Set parameters for the simulation
-p.degree_overlap_CA3    = 0.25;            % Overlap between neural representations of each odour
+%% Set parameters for the simulation
+p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
 p.pattern_order         = 'AC';           % Order in which the odours should be presented
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
-p.delay_time            = 1000;            % Delay between odour presentations (ms)
+p.delay_time            = 700;            % Delay between odour presentations (ms)
 p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
 p.scaleF                = 0.85;           % Constant by which to scale random currents (to modulate baseline activity levels)
-p.SimLength             = 2500;
+p.SimLength             = 1500;
 p                       = get_params_hipp(p);
 
 %  Randomly assign CA3 and CA1 cells to each odour representation
@@ -36,17 +37,17 @@ stim{2}                 = ca3_ensembles{second}; clear second
 
 % simulate dynamics
 M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
-output_plot             = get_output_plot(M,p.pattern_order, p, stim, C);
+output_plot             = get_output_plot(M,p.pattern_order, p, stim, C, ca3_ensembles, ca1_ensembles);
 
 %%  Simulate hippocampal dynamics  over many trials with simplest version of task (only 2 odours)
 time_1              = input.simulation(2);
 time_2              = input.reactivation(1);
 % simulate train data
 n_trials            = 100;
-[spikeCounts, ~]	= get_train_data_simplest_test(C, J, n_trials, p, ca3_ensembles, input.simulation(2), input.reactivation(1));
+[spikeCounts, ~]	= get_train_data(C, J, n_trials, p, ca3_ensembles, time_1, time_2);
 % simulate test data 
 n_trials            = 20;
-[spikeCounts_test, ~] = get_train_data_simplest_test(C, J, n_trials, p, ca3_ensembles, input.simulation(2), input.reactivation(1));
+[spikeCounts_test, ~] = get_train_data(C, J, n_trials, p, ca3_ensembles, time_1, time_2);
 
 %% run perceptron 
 [performance_accuracy, error, w]    = run_perceptron_db(spikeCounts);
