@@ -15,7 +15,7 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
 
     % what if i already know what my second layer weights should look like
     % --> makes the performance better
-    % w2 = [-1 -1 -1 1 1 1]';
+    w2 = [-1 -1 -1 1 1 1]';
 
     output = nan(1, n_trials * iterations);         % Network output
     error = nan(1, n_trials * iterations);          % Error tracking

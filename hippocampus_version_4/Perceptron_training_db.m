@@ -62,6 +62,13 @@ time4 = time3+100; %input.reactivation(2);
 % % Save the structure in a .mat file
 % save(fullfile(folderName, 'myStruct.mat'), 'p');
 
+%% load data to use 
+folderName = '300_trials_fixIn_true_100_after_odour';
+
+% Load data from .mat files
+load(fullfile(folderName, 'spikeCounts.mat'));  % Loads 'spikeCounts'
+load(fullfile(folderName, 'spikeCounts_test.mat'));  % Loads 'spikeCounts_test'
+load(fullfile(folderName, 'myStruct.mat'));  % Loads 'p'
 %% use to train and test single layer perceptron 
 [performance_accuracy_single, error, w]    = run_perceptron_db(spikeCounts);
 [performance_test_single] = test_perceptron_output(spikeCounts_test, w);
