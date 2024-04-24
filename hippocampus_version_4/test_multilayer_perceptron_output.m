@@ -1,6 +1,5 @@
 function[performance_test] = test_multilayer_perceptron_output(data, w1, w2)
 %% Function to test weights in trained perceptron on newly generated test data
-
 %  Extract some parameters, set some parameters, assign some memory
 n_trials   	= size(data,1);              % Number of trials
 n_ca1       = size(data,2)-1;            % Number of CA1 inputs
