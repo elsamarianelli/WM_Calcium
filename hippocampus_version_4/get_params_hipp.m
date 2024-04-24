@@ -3,14 +3,14 @@ function p      = get_params_hipp(p)
 %  (most are taken from Mongillo et al. Science 2008)
 
     p.in        = 200;              % Number of CA3 (input) cells
-    p.out       = 100;              % Number of CA1 (ouput) cells
+    p.out       = 200;              % Number of CA1 (ouput) cells
     p.full      = p.in+p.out;       % Total number of neurones
     p.f         = 0.2;              % Coding level of input layer
     p.f_o       = 0.2;              % Coding level of ouput layer
-    p.c         = 0.2;              % Probability of synaptic contact
+    p.c         = 0.1;              % Probability of synaptic contact
     
     p.max_delay = 1;                % Maximum CA3 -> CA1 axonal / synaptic delay
-    p.j_p       = 1;                % potentiated strength of E-->E synapses    
+    p.j_p       = 2;                % potentiated strength of E-->E synapses    
     p.j_b       = 0;                % background strength of E-->E synapses 
     p.SPE       = 20;               % spike emission threshold
     p.Vr_e      = 16;               % reset potentials

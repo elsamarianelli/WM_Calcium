@@ -85,7 +85,7 @@ legend([L1, L2, L3], {'odour 1' 'odour 2', '10% over non-odour cells'}, 'Locatio
 % plotting spike raster for CA1 ouput cell firing
 % get CA1 cells which are able to receive input from both A and B
 CA3_overlap = intersect(ca3_ensembles{first}, ca3_ensembles{second});
-ind = find((sum(C(CA3_overlap, :))>4)); 
+ind = find((sum(C(CA3_overlap, :))>5)); 
 CA1_overlap_second =[(intersect(ca1_ensembles{second}, ind+p.in))];
 CA1_second = setdiff(ca1_ensembles{second}, CA1_overlap_second);
 
@@ -126,7 +126,7 @@ ylabel('CA1','FontSize',fs)
 
 L1 = plot(nan, nan, 'color', 'm');
 L2 = plot(nan, nan, 'color', 'b');
-legend([L1, L2], {'>x overlapping odour 2 ' 'other odour 2'}, 'Location', 'southwest')
+legend([L1, L2], {'overlapping ' 'non-overlapping'}, 'Location', 'southwest')
 
 fig = gcf;
 shg

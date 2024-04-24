@@ -42,11 +42,11 @@ output_plot             = get_output_plot(M,p.pattern_order, p, stim, C, ca3_ens
 time1 = input.simulation(1);
 time2 = input.simulation(2);
 time3 = input.reactivation(1);
-time4 = time3+100; %input.reactivation(2);
+time4 = time3+350; %input.reactivation(2);
 
 % get CA1 cells which are able to receive input from both A and B
 CA3_overlap = intersect(ca3_ensembles{first}, ca3_ensembles{second});
-ind = find((sum(C(CA3_overlap, :))>3)); 
+ind = find((sum(C(CA3_overlap, :))>4)); 
 CA1_overlap_first = [(intersect(ca1_ensembles{first}, ind+p.in))];
 CA1_overlap_second =[(intersect(ca1_ensembles{second}, ind+p.in))];
 
@@ -185,7 +185,7 @@ for subplotIdx = 1:totalSubplots
     xticklabels({'A unique', 'A overlap B', 'B unique'});
     ylabel('Hz');
     title([group_names{subplotIdx}]);
-    ylim([0 25])
+    ylim([0 30])
     hold off;
 end
 

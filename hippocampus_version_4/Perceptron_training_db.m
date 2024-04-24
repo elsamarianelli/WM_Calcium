@@ -1,15 +1,16 @@
 %% Code to train perceptron on odour discrimination task
 
+
 %% Set parameters for the simulation
-n_trials                = 50;            % Number of training trials per odour pair
-p.degree_overlap_CA3    = 0.20;           % Overlap between neural representations of each odour
+n_trials                = 300;
+p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
 p.pattern_order         = 'AC';           % Order in which the odours should be presented
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
-p.length_first          = 250;            % Length of time for which the first odour is presented (ms)
-p.delay_time            = 800;           % Delay between odour presentations (ms)
-p.length_second         = 250;            % Length of time for which the second odour is presented (ms)
-p.scaleF                = 0.85;          % Constant by which to scale random currents (to modulate baseline activity levels)
+p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
+p.delay_time            = 1500;            % Delay between odour presentations (ms)
+p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
+p.scaleF                = 0.848;           % Constant by which to scale random currents (to modulate baseline activity levels)
 p.SimLength             = 2500;
 p                       = get_params_hipp(p);
 
@@ -37,10 +38,16 @@ stim{2}                 = ca3_ensembles{second}; clear second
 
 % simulate dynamics
 M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
-output_plot             = get_output_plot(M,p.pattern_order, p, stim, C);
+output_plot             = get_output_plot(M,p.pattern_order, p, stim, C, ca3_ensembles, ca1_ensembles);
+
+% get times to use to train perceptorn 
+time1 = input.simulation(1);
+time2 = input.simulation(2);
+time3 = input.reactivation(1);
+time4 = time3+100; %input.reactivation(2);
 %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
-% [spikeCounts,sequence]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, input.reactivation(1), input.reactivation(2));
-% [spikeCounts_test, ~]	= get_train_data_db(C, J, 30, p, ca3_ensembles, input.reactivation(1), input.reactivation(2));
+% [spikeCounts,sequence]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
+% [spikeCounts_test, ~]	= get_train_data_db(C, J, 5, p, ca3_ensembles, time3, time4);
 
 %% use to train and test single layer perceptron 
 [performance_accuracy_single, error, w]    = run_perceptron_db(spikeCounts);
@@ -57,7 +64,7 @@ xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',2
 
 %  Debug plot (requires fastsmooth function)
 figure;
-plot(fastsmooth(abs(error),6000)), set(gca,'FontSize',18), axis square
+plot(fastsmooth(abs(error),3000)), set(gca,'FontSize',18), axis square
 xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',24)
 
 %% multilayer perceptron test
