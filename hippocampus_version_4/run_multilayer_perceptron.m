@@ -2,7 +2,7 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
     % Function to iteratively train a perceptron with one hidden layer
 
     % Parameters
-    iterations = 100;                              % Number of training iterations
+    iterations = 1000;                              % Number of training iterations
     alpha = 0.1;                                    % Learning rate
     n_trials = size(data,1);                        % Number of trials
     n_ca1 = size(data,2) - 1;                       % Number of CA1 inputs
