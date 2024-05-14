@@ -18,7 +18,7 @@ function[] = save_data_varying_delay_times(C, J, p, ca3_ensembles, delay_time, s
     [spikeCounts_test, ~]	= get_train_data_db(C, J, 20, p, ca3_ensembles, time3, time4);
     
     %% Save data and settings info to current working directory
-    folderName = num2str(delay_time);
+    folderName = num2str(scaleF);
     
     % Full path for the new folder
     fullFolderPath = fullfile(main_folder, folderName);
