@@ -108,11 +108,11 @@ for i = 1:length(scaleF_list)
     
     performance = performance_log(i, 1:20);
     performance_mean = mean(performance);
-
+    
     save(fullfile(folderName, sub_folderName, 'train_data.mat'), 'spikeCounts');
     save(fullfile(folderName, sub_folderName, 'test_data.mat'), 'spikeCounts_test');
     save(fullfile(folderName, sub_folderName, 'performance.mat'), 'performance');
-    save(fullfile(folderName, sub_folderName, 'performance_mean.mat'), 'performance_mean');
+
 end
 
 

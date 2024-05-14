@@ -26,3 +26,4 @@ out.ca1Rates	= [mean(M.spikelog(ca1ids,:),1) ; vertcat(out.ca1Rates{:})]; clear 
 out.ca1stim1Mn  = sum(out.ca1Rates(:,input.simulation(1):input.simulation(2)),2) ./ (diff(input.simulation)/1000);
 out.ca1delayMn  = sum(out.ca3Rates(:,input.simulation(2)+1:input.reactivation(1)-1),2) ./ ((input.reactivation(1)-input.simulation(2)-2)/1000);
 out.ca1stim2Mn	= sum(out.ca1Rates(:,input.reactivation(1):input.reactivation(2)),2) ./ (diff(input.reactivation)/1000);
+

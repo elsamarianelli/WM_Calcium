@@ -8,7 +8,7 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
     n_ca1 = size(data,2) - 1;                       % Number of CA1 inputs
     n_hidden = 6;                                   % Number of neurons in the hidden layer
     bias = 0.5;                                     % Bias term for weights
-    momentum = 0.9;                                 % momentum term to for w1 updates
+    momentum = 0.9;                                 % momentum term for w1 updates (to try to prevent getting stuck in local minima)
     delta_w1 = 0;                                   % initial change in w1                                                                                                               
     % Initialize weights
     w1 = rand(n_ca1, n_hidden) - bias;              % Weights from input to hidden layer

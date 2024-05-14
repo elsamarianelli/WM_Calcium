@@ -12,7 +12,8 @@ error       = nan(1,n_trials);           % Error
 for t	= 1 : n_trials
     o	= data(t,1:n_ca1)*w;                    % Compute output
     o   = double(o>=bias);                      % Threshold
-    d   = data(t,n_ca1+1) - o;                  % Error term
+    d   = data(t,n_ca1+1) - o;   
+    % Error term
     output(t)	= o; clear o    % Record output
     error(t)   = d; clear d    % Record error
 end
