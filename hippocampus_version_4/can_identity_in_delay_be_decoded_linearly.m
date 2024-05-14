@@ -38,7 +38,7 @@ stim{2}                 = ca3_ensembles{second}; clear second
 
 % simulate dynamics
 M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
-output_plot             = get_output_plot(M,p);
+output_plot             = get_output_plot(M,p,ca3_ensembles, C);
 
 %%  Simulate hippocampal dynamics  over many trials with simplest version of task (only 2 odours)
 time_1              = input.simulation(2);
@@ -64,7 +64,7 @@ xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',2
 %% run for different levels of background input to see how performance changes
 
 % scaleF_list = (0.82:0.002:0.87);
-scaleF_list = (0.85:0.002:0.86);
+scaleF_list = (0.84:0.002:0.86);
 performance_log = zeros(length(scaleF_list), 1:20);
 
 % Create the folder for data storage it doesn't already exist
@@ -117,7 +117,7 @@ end
 
 
 %% plot perceptron performance across delay times
-
+figure;
 folderName = 'Linear_decoding_delay_period';
 scaleF_list = (0.82:0.002:0.87);  % Ensure this matches the scaleF_list used during saving
 performance_log_reloaded = zeros(1, length(scaleF_list));

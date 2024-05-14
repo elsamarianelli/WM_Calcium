@@ -36,8 +36,7 @@ stim{2}                 = ca3_ensembles{second}; clear second
 
 % simulate dynamics
 M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
-output_plot             = get_output_plot(M,p.pattern_order, p, stim, C, ca3_ensembles, ca1_ensembles);
-
+output_plot             = get_output_plot(M,p,ca3_ensembles, C);
 
 % get times to use to train perceptorn 
 time1 = input.simulation(1);
@@ -65,8 +64,7 @@ save(fullfile(folderName, 'myStruct.mat'), 'p');
 
 %% creating delay data using parpool
 
- %% Set parameters for the simulation
-%% Set parameters for the simulation
+% Set parameters for the simulation
 n_trials                = 100;
 p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
@@ -84,7 +82,6 @@ ca1_ensembles           = get_odours_hipp(p.in+(1:p.out), p.f_o, p.degree_overla
 %  Generate connectivity and synaptic efficacy matrix
 [C, J]                  = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
     
-
 % Create the folder if it doesn't already exist
 main_folder = 'FixIn_true_CF_0.848_CA3overlap_0.2_trials_100_1st_100_secs';
 
@@ -94,24 +91,16 @@ end
 
 % Define the range of delays
 delays = 0:250:3000;
-
-% Start a parallel pool if not already started
-pool = gcp('nocreate'); 
-
-if isempty(pool)
-    parpool; 
-end
-
-% Parallel loop
-parfor index = 2:3%length(delays)
+for index = 2:length(delays)
     delay_time = delays(index);
-    save_data_varying_delay_times(C, J, p, ca3_ensembles, delay_time, main_folder);
+    disp(delay_time)
+    save_data_varying_delay_times(C, J, p, ca3_ensembles, delay_time, n_trials, main_folder);
 end
 
 %% plotting 
 
 % Number of colors needed
-ncols = 5;
+ncols = 3;
 indices = linspace(1, 64, ncols); % MATLAB colormaps by default contain 64 colors
 cmap = winter(64);  % Get the full colormap`
 selectedColors = cmap(ceil(indices), :);  % Use ceil to ensure indices are integers
@@ -119,9 +108,7 @@ selectedColors = cmap(ceil(indices), :);  % Use ceil to ensure indices are integ
 % Define scenarios and their corresponding delays
 data_loaded = {
     'fixIn_true_100_after_odour_300_delay', [3000, selectedColors(1, 1:3)]; %300 delay
-    '300_trials_fixIn_true_100_after_odour_shorter_delay', [3000,selectedColors(2, 1:3)]; % short delay (700)
     '300_trials_fixIn_true_100_after_odour', [3000,selectedColors(3, 1:3)]; % 1500 delay
-     'fixIn_true_100_after_odour_2000_delay', [3000, selectedColors(4, 1:3)]; % 2000 delay
     '300_trials_fixIn_true_100_after_odour_3000_delay', [3000,selectedColors(5, 1:3)]; % long delay (3000)
 };
 
@@ -184,12 +171,11 @@ meanMulti = mean(multiPerf, 2);
 stdMulti = std(multiPerf, 0, 2);
 means = [meanSingle; meanMulti];
 stds = [stdSingle; stdMulti];
-colors = [selectedColors;selectedColors];    
+colors = [selectedColors;selectedColors];   
+
 % labels for each delay time
 labels = {'300'
-          '700'
           '1500'
-          '2000'
           '3000'};
 labels = [labels;labels];
 % Plot results

@@ -1,4 +1,4 @@
-function[fig] = get_output_plot(M, p)
+function[fig] = get_output_plot(M, p, mems, C)
 
 figure
 fs = 10;

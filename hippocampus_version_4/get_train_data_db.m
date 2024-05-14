@@ -31,7 +31,7 @@ for pattern         = 1 : length(odour_sequences)
     for i           = 1 : n_trials
         
         % update the user
-        disp(['Trial ' int2str(i) ' with odour pair ' p.pattern_order]);
+        % disp(['Trial ' int2str(i) ' with odour pair ' p.pattern_order]);
         
         % assign memory and run the dynamics
         n           = (pattern-1)*n_trials + i;
@@ -49,7 +49,7 @@ for pattern         = 1 : length(odour_sequences)
         
     end
     clear i mems_trial
-    
+    disp(p.pattern_order)
 end
 clear C ca3_ensembles input J n_trials odour_sequences p pattern reward_outcome
 
