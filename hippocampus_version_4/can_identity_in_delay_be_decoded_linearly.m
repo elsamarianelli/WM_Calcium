@@ -38,7 +38,7 @@ stim{2}                 = ca3_ensembles{second}; clear second
 
 % simulate dynamics
 M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
-output_plot             = get_output_plot(M,p.pattern_order, p, stim, C, ca3_ensembles, ca1_ensembles);
+output_plot             = get_output_plot(M,p);
 
 %%  Simulate hippocampal dynamics  over many trials with simplest version of task (only 2 odours)
 time_1              = input.simulation(2);

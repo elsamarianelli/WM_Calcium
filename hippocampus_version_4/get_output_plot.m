@@ -1,10 +1,10 @@
-function [fig] = get_output_plot(M,pattern_order, p, mems, C)
+function[fig] = get_output_plot(M, p)
 
 figure
 fs = 10;
 ns = 4; 
 n = 0;
-
+pattern_order = p.pattern_order;
 % plotting synaptic parameters u an x for synapses potentiated by first
 % odour which are reactivated during second odour presentation
 ax1 = subplot(ns,1,n+1);
