@@ -8,7 +8,7 @@ p.start_time            = 200;            % Time at which the first odour is pre
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
 p.delay_time            = 700;            % Delay between odour presentations (ms)
 p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
-p.scaleF                = 0.848;           % Constant by which to scale random currents (to modulate baseline activity levels)
+p.scaleF                = 0.84;           % Constant by which to scale random currents (to modulate baseline activity levels)
 p.SimLength             = 1500;
 p                       = get_params_hipp(p);
 
@@ -44,8 +44,8 @@ time4 = time3+100;
 [spikeCounts,~]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
 [spikeCounts_test, ~]	= get_train_data_db(C, J, 20, p, ca3_ensembles, time3, time4);
 % Train and test multilayer perceptron
-[~, error, w1, w2] = run_multilayer_perceptron(data);
-[performance_test_multi] = test_multilayer_perceptron_output(data_test, w1, w2);
+[~, error, w1, w2] = run_multilayer_perceptron(spikeCounts);
+[performance_test_multi] = test_multilayer_perceptron_output(spikeCounts_test, w1, w2);
 disp(performance_test_multi)
 
 %% Save data and settings info to current working directory

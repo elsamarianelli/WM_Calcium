@@ -5,7 +5,7 @@ n_trials                = 100;
 p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
-p.delay_time            = 1000;           % delay time
+p.delay_time            = 500;           % delay time
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
 p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
 p.scaleF                = 0.848;           % Constant by which to scale random currents (to modulate baseline activity levels)
@@ -26,7 +26,7 @@ if ~exist(main_folder, 'dir')
 end
 
 % Define the range of contrast factors
-scaleF_list = (0.7:0.05:1);
+scaleF_list = (0.84:0.0025:0.86);
 
 parfor index = 1:length(scaleF_list)
     scaleF = scaleF_list(index);
