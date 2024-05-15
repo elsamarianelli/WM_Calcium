@@ -49,7 +49,6 @@ for pattern         = 1 : length(odour_sequences)
         
     end
     clear i mems_trial
-    disp(p.pattern_order)
 end
 clear C ca3_ensembles input J n_trials odour_sequences p pattern reward_outcome
 

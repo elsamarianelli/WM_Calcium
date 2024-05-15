@@ -6,10 +6,10 @@ p.degree_overlap_CA1    = 0.0;
 p.pattern_order         = 'AC';           % Order in which the odours should be presented
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
-p.delay_time            = 2000;            % Delay between odour presentations (ms)
+p.delay_time            = 700;            % Delay between odour presentations (ms)
 p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
 p.scaleF                = 0.848;           % Constant by which to scale random currents (to modulate baseline activity levels)
-p.SimLength             = 3000;
+p.SimLength             = 1500;
 p                       = get_params_hipp(p);
 
 %  Randomly assign CA3 and CA1 cells to each odour representation
@@ -40,7 +40,8 @@ output_plot             = get_output_plot(M,p,ca3_ensembles, C);
 time3 = input.reactivation(1);
 time4 = time3+100; 
 
-[spikeCounts,~]	        = get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
+% %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
+[spikeCounts,~]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
 [spikeCounts_test, ~]	= get_train_data_db(C, J, 20, p, ca3_ensembles, time3, time4);
 % Train and test multilayer perceptron
 [~, error, w1, w2] = run_multilayer_perceptron(data);

@@ -4,7 +4,6 @@
 n_trials                = 100;
 p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
-p.pattern_order         = 'AC';           % Order in which the odours should be presented
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
 p.delay_time            = 1000;           % delay time
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)

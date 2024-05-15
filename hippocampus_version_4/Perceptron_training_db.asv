@@ -36,6 +36,18 @@ stim{2}                 = ca3_ensembles{second}; clear second
 M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
 output_plot             = get_output_plot(M,p,ca3_ensembles, C);
 
+%% looking at performance for a single setting
+time3 = input.reactivation(1);
+time4 = time3+100; 
+
+% %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
+[spikeCounts,~]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
+[spikeCounts_test, ~]	= get_train_data_db(C, J, 10, p, ca3_ensembles, time3, time4);
+% Train and test multilayer perceptron
+[~, error, w1, w2] = run_multilayer_perceptron(data);
+[performance_test_multi] = test_multilayer_perceptron_output(data_test, w1, w2);
+disp(performance_test_multi)
+
 %% Save data and settings info to current working directory
 folderName = 'fixIn_true_100_after_odour_2000_delay';
 
@@ -94,11 +106,11 @@ delay_performance = plot_performance_across_variable_change(delays, main_folder,
 delay_perceptron_training = plot_examples_of_perceptron_training(delays, main_folder, cmap, 'delay');
 
 %% plotting perceptron training and mean performance with varying scale factors  
-scaleFs = (0.84:0.002:0.86);
+scaleFs = (0.84:0.002:0.858);
 
 main_folder = 'FixIn_true_delay_2000_CA3overlap_0.2_trials_100_1st_100_secs_CF_varied';
 cmap = spring(64); 
 
-cf_performance = plot_performance_across_variable_change(scaleFs, main_folder, cmap, 'delay');
-cf_perceptron_training = plot_examples_of_perceptron_training(scaleFs, main_folder, cmap, 'delay');
+cf_performance = plot_performance_across_variable_change(scaleFs, main_folder, cmap, 'contrast factor');
+cf_perceptron_training = plot_examples_of_perceptron_training(scaleFs, main_folder, cmap, 'contrast factor');
 
