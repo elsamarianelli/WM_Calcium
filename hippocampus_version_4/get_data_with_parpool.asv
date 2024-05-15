@@ -26,7 +26,7 @@ if ~exist(main_folder, 'dir')
 end
 
 % Define the range of contrast factors
-scaleF_list = (0.7:0.025:1);
+scaleF_list = (0.84:0.0025:0.86);
 
 parfor index = 1:length(scaleF_list)
     scaleF = scaleF_list(index);

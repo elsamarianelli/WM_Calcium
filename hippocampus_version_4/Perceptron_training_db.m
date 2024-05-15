@@ -103,7 +103,7 @@ main_folder = 'FixIn_true_CF_0.848_CA3overlap_0.2_trials_100_1st_100_secs';
 cmap = winter(64); 
 
 delay_performance = plot_performance_across_variable_change(delays, main_folder, cmap, 'delay');
-delay_perceptron_training = plot_examples_of_perceptron_training(delays, main_folder, cmap, 'delay');
+% delay_perceptron_training = plot_examples_of_perceptron_training(delays, main_folder, cmap, 'delay');
 
 %% plotting perceptron training and mean performance with varying scale factors  
 scaleFs = (0.84:0.002:0.858);
@@ -112,5 +112,5 @@ main_folder = 'FixIn_true_delay_2000_CA3overlap_0.2_trials_100_1st_100_secs_CF_v
 cmap = spring(64); 
 
 cf_performance = plot_performance_across_variable_change(scaleFs, main_folder, cmap, 'contrast factor');
-cf_perceptron_training = plot_examples_of_perceptron_training(scaleFs, main_folder, cmap, 'contrast factor');
+% cf_perceptron_training = plot_examples_of_perceptron_training(scaleFs, main_folder, cmap, 'contrast factor');
 
