@@ -21,10 +21,9 @@ ca1_ensembles           = get_odours_hipp(p.in+(1:p.out), p.f_o, p.degree_overla
 %  Generate connectivity and synaptic efficacy matrix
 [C, J]                  = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
 
-%% check dynamics over single trial 
+%% check dynamics and performance over single trial 
 
 % set extra paramaters for single trial
-p.pattern_order         = 'AB';
 input.simulation        = [p.start_time p.start_time+p.length_first];
 input.reactivation      = [p.start_time+p.length_first+p.delay_time p.start_time+p.length_first+p.delay_time+p.length_second];
 M                       = get_memory_hipp(p);
@@ -39,6 +38,8 @@ stim{2}                 = ca3_ensembles{second}; clear second
 % simulate dynamics
 M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
 output_plot             = get_output_plot(M,p,ca3_ensembles, C);
+
+
 
 %%  Simulate hippocampal dynamics  over many trials with simplest version of task (only 2 odours)
 time_1              = input.simulation(2);

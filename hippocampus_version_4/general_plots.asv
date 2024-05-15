@@ -1,6 +1,5 @@
 %% general plots 
-% plots firing rate during odour 1, delay period, and beginning of odour 2,
-% for populations of interest
+
 %% Set parameters for the simulation
 p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
@@ -9,7 +8,7 @@ p.start_time            = 200;            % Time at which the first odour is pre
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
 p.delay_time            = 500;            % Delay between odour presentations (ms)
 p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
-p.scaleF                = 0.847;           % Constant by which to scale random currents (to modulate baseline activity levels)
+p.scaleF                = 0.848;           % Constant by which to scale random currents (to modulate baseline activity levels)
 p.SimLength             = 1500;
 p                       = get_params_hipp(p);
 
@@ -189,3 +188,6 @@ for subplotIdx = 1:totalSubplots
     ylim([0 25])
     hold off;
 end
+
+
+% clear

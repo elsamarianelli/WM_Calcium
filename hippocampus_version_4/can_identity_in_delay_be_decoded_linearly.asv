@@ -21,7 +21,7 @@ ca1_ensembles           = get_odours_hipp(p.in+(1:p.out), p.f_o, p.degree_overla
 %  Generate connectivity and synaptic efficacy matrix
 [C, J]                  = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
 
-%% check dynamics over single trial 
+%% check dynamics and performance over single trial 
 
 % set extra paramaters for single trial
 p.pattern_order         = 'AB';
@@ -38,7 +38,18 @@ stim{2}                 = ca3_ensembles{second}; clear second
 
 % simulate dynamics
 M                       = simulate_dynamics_hipp(p, C, J, input, M, stim);
-output_plot             = get_output_plot(M,p.pattern_order, p, stim, C, ca3_ensembles, ca1_ensembles);
+output_plot             = get_output_plot(M,p,ca3_ensembles, C);
+
+% get times to use to train perceptorn 
+time3 = input.reactivation(1);
+time4 = time3+100; 
+
+% %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
+[spikeCounts,~]	        = get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
+[spikeCounts_test, ~]	= get_train_data_db(C, J, 20, p, ca3_ensembles, time3, time4);
+[~, ~, w]               = run_perceptron_db(spikeCounts);
+[performance_test]      = test_perceptron_output(spikeCounts_test, w);
+disp(performance_test)
 
 %%  Simulate hippocampal dynamics  over many trials with simplest version of task (only 2 odours)
 time_1              = input.simulation(2);
@@ -64,7 +75,7 @@ xlabel('Trial Number','FontSize',24), ylabel('Moving Average Error','FontSize',2
 %% run for different levels of background input to see how performance changes
 
 % scaleF_list = (0.82:0.002:0.87);
-scaleF_list = (0.85:0.002:0.86);
+scaleF_list = (0.84:0.002:0.86);
 performance_log = zeros(length(scaleF_list), 1:20);
 
 % Create the folder for data storage it doesn't already exist
@@ -108,16 +119,16 @@ for i = 1:length(scaleF_list)
     
     performance = performance_log(i, 1:20);
     performance_mean = mean(performance);
-    
+
     save(fullfile(folderName, sub_folderName, 'train_data.mat'), 'spikeCounts');
     save(fullfile(folderName, sub_folderName, 'test_data.mat'), 'spikeCounts_test');
     save(fullfile(folderName, sub_folderName, 'performance.mat'), 'performance');
-
+    save(fullfile(folderName, sub_folderName, 'performance_mean.mat'), 'performance_mean');
 end
 
 
 %% plot perceptron performance across delay times
-
+figure;
 folderName = 'Linear_decoding_delay_period';
 scaleF_list = (0.82:0.002:0.87);  % Ensure this matches the scaleF_list used during saving
 performance_log_reloaded = zeros(1, length(scaleF_list));
