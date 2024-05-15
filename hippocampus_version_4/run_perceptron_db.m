@@ -22,6 +22,6 @@ for i       = 1 : iterations
         error((i-1)*n_trials+t)     = d; clear d    % Record error
     end
     clear t
-    disp(['iteration ', num2str(i)])
+    % disp(['iteration ', num2str(i)])
 end
 clear i

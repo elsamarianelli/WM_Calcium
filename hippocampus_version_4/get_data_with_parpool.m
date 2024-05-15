@@ -28,7 +28,7 @@ end
 % Define the range of contrast factors
 scaleF_list = (0.7:0.025:1);
 
-parfor index = 1:length(scaleF_list)
+for index = 1:length(scaleF_list)
     scaleF = scaleF_list(index);
     disp(scaleF)                        
     save_data_varying_delay_times(C, J, p, ca3_ensembles, p.delay_time, scaleF, n_trials, main_folder);

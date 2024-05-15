@@ -15,10 +15,12 @@ multiPerf = zeros(size(variable_range, 2), numTests);
 
 % Loop through each scenario
 for idx = 1:size(variable_range, 2)
-
+    
     variable = variable_range(idx);
     folderName = num2str(variable);
 
+    disp(variable)
+    
     % Full path for the new folder
     fullFolderPath = fullfile(main_folder, folderName);   
 
@@ -34,6 +36,7 @@ for idx = 1:size(variable_range, 2)
         % Train and test multilayer perceptron
         [~, ~, w1, w2] = run_multilayer_perceptron(data);
         multiPerf(idx, j) = test_multilayer_perceptron_output(data_test, w1, w2);
+        disp(j)
     end
 end
 

@@ -8,7 +8,7 @@ p.start_time            = 200;            % Time at which the first odour is pre
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
 p.delay_time            = 700;            % Delay between odour presentations (ms)
 p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
-p.scaleF                = 0.84;           % Constant by which to scale random currents (to modulate baseline activity levels)
+p.scaleF                = 0.75;           % Constant by which to scale random currents (to modulate baseline activity levels)
 p.SimLength             = 1500;
 p                       = get_params_hipp(p);
 
