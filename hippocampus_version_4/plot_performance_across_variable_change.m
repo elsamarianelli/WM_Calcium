@@ -1,5 +1,6 @@
 function[fig_handle] = plot_performance_across_variable_change(variable_range, main_folder, cmap, variable_type)
 
+
 % Number of colors needed
 ncols = length(variable_range);
 indices = linspace(1, 64, ncols);
@@ -7,7 +8,7 @@ colors = cmap(ceil(indices), :);
 
 %% multiple runs and plot mean and SD of performance
 
-numTests = 5;
+numTests = 10;
 
 % Initialize containers for performance metrics
 singlePerf = zeros(size(variable_range, 2), numTests);
@@ -18,9 +19,8 @@ for idx = 1:size(variable_range, 2)
     
     variable = variable_range(idx);
     folderName = num2str(variable);
+    % folderName = variable{1};
 
-    disp(variable)
-    
     % Full path for the new folder
     fullFolderPath = fullfile(main_folder, folderName);   
 
@@ -68,7 +68,6 @@ end
 set(gca, 'FontSize', 12);
 xticks(1:length(labels));
 xticklabels(labels);
-ylim([0 1])
 ylabel('Performance', 'FontSize', 12);
 xlabel(variable_type, 'FontSize', 12)
 title(['Multilayer Perceptron performance at different ', variable_type]);

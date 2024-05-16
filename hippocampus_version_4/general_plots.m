@@ -4,7 +4,7 @@
 %% Set parameters for the simulation
 p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
-p.pattern_order         = 'AC';           % Order in which the odours should be presented
+p.pattern_order         = 'AB';
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
 p.delay_time            = 500;            % Delay between odour presentations (ms)
@@ -60,7 +60,7 @@ CA1_A = ca1_ensembles{first};
 CA1_A = CA1_A(not_ind);
 
 % Memory
-number_of_trials = 30;
+number_of_trials = 3;
 
 firing_rate_data = cell(2, 9);
 
@@ -155,20 +155,20 @@ for subplotIdx = 1:totalSubplots
     subplot(1, totalSubplots, subplotIdx); % Arrange in 1 row, with totalSubplots columns
     
     % Loop through each category within a subplot
-    for time_frame = 1:3
+    for subpop = 1:3
 
         % Calculate index for data 
-        dataIndex = (subplotIdx - 1) * 3 + time_frame;
+        dataIndex = (subplotIdx - 1) * 3 + subpop;
   
         if dataIndex > length(data)
             continue; % Skip if dataIndex exceeds the data length
         end
         
         % Generate jittering for axes to simulate the swarm effect
-        xJitterValues = 0.1 * rand(1, numel(data{dataIndex})) - 0.05 + time_frame;
+        xJitterValues = 0.1 * rand(1, numel(data{dataIndex})) - 0.05 + subpop;
         yJitterValues = data{dataIndex} + (0.05 * rand(1, numel(data{dataIndex})) - 0.025); % Adjust the magnitude of jittering as needed
         
-        scatter(xJitterValues, yJitterValues, colors{time_frame});
+        scatter(xJitterValues, yJitterValues, colors{subpop});
         hold on;
             
         % Calculate mean and SD (Standard Deviation)
@@ -176,10 +176,10 @@ for subplotIdx = 1:totalSubplots
         sd_value = std(data{dataIndex}); % SD calculation
         
         % mean bar
-        plot([time_frame-0.1, time_frame+0.1], [mean_value, mean_value], '-k', 'LineWidth', 2);
+        plot([subpop-0.1, subpop+0.1], [mean_value, mean_value], '-k', 'LineWidth', 2);
         
         % error bar for SD
-        errorbar(time_frame, mean_value, sd_value, 'k', 'LineWidth', 2, 'CapSize', 10);
+        errorbar(subpop, mean_value, sd_value, 'k', 'LineWidth', 2, 'CapSize', 10);
     end
     
     xticks(1:3);
@@ -187,5 +187,4 @@ for subplotIdx = 1:totalSubplots
     ylabel('Hz');
     title([group_names{subplotIdx}]);
     ylim([0 25])
-    hold off;
 end

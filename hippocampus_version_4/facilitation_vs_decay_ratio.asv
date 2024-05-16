@@ -33,9 +33,10 @@ if ~exist(main_folder, 'dir')
 end
 
 % Define the range of u and x
-tau_facils          = (200:100:1500);
-tau_decays          = flip(tau_facils);
-
+% tau_facils          = (200:100:1500);
+tau_facils          = (1000:100:3000);
+% tau_decays          = flip(tau_facils);
+tau_decays          = repmat(200, 1, ;emh);                    
 for index = 1:length(tau_facils)
     p.tau_facil = tau_facils(index);
     p.tau_decay = tau_decays(index);
@@ -44,19 +45,33 @@ for index = 1:length(tau_facils)
 end
 
 %% get plots 
-cmap = summer(64); 
+% get correct variable names
+a = arrayfun(@num2str, [tau_facils; tau_decays], 'UniformOutput', false);
+variable_name = strcat(a(1, :), '_', a(2, :));
 
-facil_decay_performance = plot_performance_across_variable_change(tau_facils, main_folder, cmap, 'synaptic variables');
-facil_decay_perceptron_training = plot_examples_of_perceptron_training(tau_facils, main_folder, cmap, 'synaptic variables');
+% run perceptron and plot
+cmap = spring(64); 
+
+facil_decay_performance = plot_performance_across_variable_change(variable_name, main_folder, cmap, 'synaptic variables');
+facil_decay_perceptron_training = plot_examples_of_perceptron_training(variable_name, main_folder, cmap, 'synaptic variables');
+
 
 %% adding second axis in with decay and facil/decay line
-figure(facil_decay_performance);
+figure(facil_decay_performance)
 
+hold on;
 % line to show where synapses cross from being facilitatory to depressing
-xline(850, '--k'); 
+xline(7.5, '--k'); 
+
+% or alternatively shade in
+hold on;
+x_fill = [0, 7.5, 7.5, 0];
+y_limits = ylim;  
+y_fill = [y_limits(1), y_limits(1), y_limits(2), y_limits(2)];
+fill(x_fill, y_fill, [0.8 0.8 0.8], 'EdgeColor', 'none', 'FaceAlpha', 0.2);
 
 % Get the current axes from the figure, assuming there is only one
-ax1 = findobj(cf_performance, 'Type', 'axes');
+ax1 = findobj(facil_decay_performance, 'Type', 'axes');
 
 % Create the second axes that shares the x-axis with the original
 ax2 = axes('Position', ax1.Position, ...
@@ -70,13 +85,22 @@ ax2 = axes('Position', ax1.Position, ...
 % Link the x-axes of the two axes
 linkaxes([ax1, ax2], 'x');
 
-% Set additional x-ticks on the top axis
+% rename axis to tau facil and tau decay
 % Define `extraXTicks` as needed for your plot
+% Set additional x-ticks for ax2 and label them
 extraXTicks = 1:length(tau_decays); 
 ax2.XTick = extraXTicks; 
 ax2.XTickLabel = tau_decays;
+ax2.FontSize = 10; % Set font size of tick labels to 10
 
-% relable axis 
-xlabel(ax1, 'tau facil');
-xlabel(ax2, 'tau decay');
+% Set additional x-ticks for ax1 and label them
+extraXTicks = 1:length(tau_facils); 
+ax1.XTick = extraXTicks; 
+ax1.XTickLabel = tau_facils;
+ax1.FontSize = 10; % Set font size of tick labels to 10% relable axis 
+
+xlabel(ax1, 'tau facil', FontSize=12);
+xlabel(ax2, 'tau decay', FontSize=12);
 title(ax1, '');
+
+xlim([0 15])
