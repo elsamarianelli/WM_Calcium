@@ -28,16 +28,16 @@ end
 % Define the range of contrast factors
 scaleF_list = (0.82:0.005:0.88);
 
-for index = 1:length(scaleF_list)
-    scaleF = scaleF_list(index);
-    disp(scaleF)             
-    p.scaleF = scaleF; 
-    p = get_params_hipp(p);     % this is needed because sf is used to          calculate p. values not used itself
-    save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, scaleF, main_folder);
-end
+% for index = 1:length(scaleF_list)
+%     scaleF = scaleF_list(index);
+%     disp(scaleF)             
+%     p.scaleF = scaleF; 
+%     p = get_params_hipp(p);     % this is needed because sf is used to          calculate p. values not used itself
+%     save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, scaleF, main_folder);
+% end
 
 %% plotting perceptron training and mean performance with varying scale factors  
-cmap = spring(64); 
+cmap = summer(64); 
 
-main_folder = 'FixIn_true_delay_500_CA3overlap_0.2_trials_100_1st_100_secs_ux_varied';
-cf_performance = plot_performance_across_variable_change(scaleF_list, main_folder, cmap, 'ux ratio');
+main_folder = 'FixIn_true_delay_2000_CA3overlap_0.2_trials_100_1st_100_secs_SF_varied';
+cf_performance = plot_performance_across_variable_change(scaleF_list, main_folder, cmap, 'scale factor');

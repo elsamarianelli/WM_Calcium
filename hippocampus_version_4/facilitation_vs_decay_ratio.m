@@ -34,7 +34,7 @@ end
 
 % Define the range of u and x
 % tau_facils          = (200:100:1500);
-tau_facils          = (200:200:2000);
+tau_facils          = (600:200:2000);
 % tau_decays          = flip(tau_facils);
 tau_decays          = repmat(200, 1, length(tau_facils));           
 

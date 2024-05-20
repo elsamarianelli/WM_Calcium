@@ -1,48 +1,52 @@
-function [output, error, w1, w2] = run_multilayer_perceptron(data)
+function [output, error, w1, w2, plateau_iter] = run_multilayer_perceptron(data)
     % Function to iteratively train a perceptron with one hidden layer
 
     % Parameters
     iterations = 1000;                               % Number of training iterations
-    alpha = 0.1;                                   % Learning rate
-    n_trials = size(data,1);                        % Number of trials
-    n_ca1 = size(data,2) - 1;                       % Number of CA1 inputs
-    n_hidden = 6;                                   % Number of neurons in the hidden layer
-    bias = 0.5;                                     % Bias term for weights
-    momentum = 0.9;                                 % momentum term for w1 updates (to try to prevent getting stuck in local minima)
-    delta_w1 = 0;                                   % initial change in w1                                                                                                               
-    % Initialize weights
-    w1 = rand(n_ca1, n_hidden) - bias;              % Weights from input to hidden layer
-    %w2 = rand(n_hidden, 1) - bias;                  % Weights from hidden to output layer
+    alpha = 0.1;                                     % Learning rate
+    n_trials = size(data, 1);                        % Number of trials
+    n_ca1 = size(data, 2) - 1;                       % Number of CA1 inputs
+    n_hidden = 6;                                    % Number of neurons in the hidden layer
+    bias = 0.5;                                      % Bias term for weights
+    momentum = 0.9;                                  % Momentum term for w1 updates
+    delta_w1 = 0;                                    % Initial change in w1
 
-    % what if i already know what my second layer weights should look like
-    % --> makes the performance better
+    % Initialize weights
+    w1 = rand(n_ca1, n_hidden) - bias;               % Weights from input to hidden layer
+
+    % Pre-defined weights for the second layer
     no_reward_weights = -1 + 0.2 * randn(1, 3);
     reward_weights = 1 + 0.2 * randn(1, 3);
     w2 = [no_reward_weights, reward_weights]';
 
-    output = nan(1, n_trials * iterations);         % Network output
-    error = nan(1, n_trials * iterations);          % Error tracking
+    output = nan(1, n_trials * iterations);          % Network output
+    error = nan(1, n_trials * iterations);           % Error tracking
 
     % Sigmoid activation function
     sigmoid = @(x) 1 ./ (1 + exp(-x));
+
+    % Parameters for detecting error plateau
+    consecutive_zero_period = 20;                    % Number of consecutive zero-error iterations to consider plateau
+    zero_error_count = 0;                            % Counter for consecutive zero errors
+    plateau_iter = iterations;                       % Initialize plateau iteration
 
     for i = 1:iterations
         for t = 1:n_trials
 
             % [1] Forward pass
 
-            % input to hidden
+            % Input to hidden
             hidden_input = data(t, 1:n_ca1) * w1;
             hidden_output = sigmoid(hidden_input);
 
-            % hidden to output
+            % Hidden to output
             final_input = hidden_output * w2;
             o = double(final_input >= 0);            % Binary threshold (reward/no reward)
 
             % Error calculation
-            d = data(t, n_ca1+1) - o;
+            d = data(t, n_ca1 + 1) - o;
 
-            %[2] Backward pass
+            % [2] Backward pass
 
             % Update output layer weights
             delta_w2 = alpha * d * hidden_output';
@@ -61,8 +65,18 @@ function [output, error, w1, w2] = run_multilayer_perceptron(data)
             output((i - 1) * n_trials + t) = o;
             error((i - 1) * n_trials + t) = d;
 
+            % Check for consecutive zero errors
+            if d == 0
+                zero_error_count = zero_error_count + 1;
+                if zero_error_count >= consecutive_zero_period
+                    plateau_iter = i;
+                end
+            else
+                zero_error_count = 0;
+            end
+
         end
-        disp(['iteration ', num2str(i)])
+        % disp(['iteration ', num2str(i)])
     end
 end
 
