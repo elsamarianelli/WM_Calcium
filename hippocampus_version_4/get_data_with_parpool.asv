@@ -94,7 +94,7 @@ if ~exist(main_folder, 'dir')
 end
 
 % Define the range of delays
-variable_list = 0.05 : 0.01 : 0.15;
+variable_list = 0 : 0.04 : 0.4;
 
 for index = 1:length(variable_list)
 
