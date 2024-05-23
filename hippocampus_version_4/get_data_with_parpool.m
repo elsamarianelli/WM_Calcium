@@ -39,7 +39,7 @@ for index = 1:length(variable_list)
     % parameters (and contents of variable list)
     p.CF = variable;
    
-    save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, 'Contrast_factor', main_folder)
+    save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, variable, main_folder)
     
 end
 
@@ -72,7 +72,7 @@ for index = 1:length(variable_list)
     % parameters (and contents of variable list)
     p.degree_overlap_CA1 = variable;
    
-    save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, 'CA3_overlap', main_folder)
+    save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, variable, main_folder)
     
 end
 
@@ -105,7 +105,7 @@ for index = 1:length(variable_list)
     % parameters (and contents of variable list)
     p.c = variable;
    
-    save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, 'connectivity', main_folder)
+    save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, variable, main_folder)
     
 end
 
