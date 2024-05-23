@@ -16,7 +16,6 @@ function[] = save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, var
     [spikeCounts,~]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
     [spikeCounts_test, ~]	= get_train_data_db(C, J, 1, p, ca3_ensembles, time3, time4);
     
-    
     %% Save data and settings info to current working directory
     % folderName = ([num2str(p.tau_facil) '_' num2str(p.tau_decay)]);
     folderName = num2str(variable);

@@ -1,6 +1,9 @@
-function [data, data_test] = loadData(folderName)
+function [data, data_test] = loadData(folderName, main_folder)
+
     load(fullfile(folderName, 'spikeCounts.mat'));  % Loads 'spikeCounts'
     load(fullfile(folderName, 'spikeCounts_test.mat'));  % Loads 'spikeCounts_test'
     data = spikeCounts;
     data_test = spikeCounts_test; 
+
 end
+

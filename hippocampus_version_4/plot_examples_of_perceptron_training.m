@@ -8,7 +8,7 @@ selectedColors = cmap(ceil(indices), :);
 figure;
 
 % Loop through each scenario
-for idx = 1:4:size(variable_range, 2)
+for idx = 1%:4:size(variable_range, 2)
 
     variable = variable_range(idx);
     folderName = num2str(variable);

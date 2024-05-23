@@ -20,8 +20,8 @@ scatter(3, 2, marker_size, 'filled', 'MarkerFaceColor', colour_no_reward, 'Displ
 
 xlabel('Active odour populations');
 ylabel('Active overlapping populations');
-labels_x = {'Ano', 'Bno', 'Cno'};
-labels_y = {'1', '2', '3'};
+labels_x = {'A', 'B', 'C'};
+labels_y = {'AB', 'BC', 'CA'};
 set(gca, 'XTick', 1:3, 'XTickLabel', labels_x, 'YTick', 1:3, 'YTickLabel', labels_y);
 ylim([0 4]); xlim([0 4])
 title('subpopulation activity');

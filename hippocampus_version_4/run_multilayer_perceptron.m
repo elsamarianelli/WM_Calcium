@@ -2,7 +2,7 @@ function [output, error, w1, w2, plateau_iter] = run_multilayer_perceptron(data)
     % Function to iteratively train a perceptron with one hidden layer
 
     % Parameters
-    iterations = 1000;                               % Number of training iterations
+    iterations = 1500;                               % Number of training iterations
     alpha = 0.1;                                     % Learning rate
     n_trials = size(data, 1);                        % Number of trials
     n_ca1 = size(data, 2) - 1;                       % Number of CA1 inputs
@@ -26,8 +26,8 @@ function [output, error, w1, w2, plateau_iter] = run_multilayer_perceptron(data)
     sigmoid = @(x) 1 ./ (1 + exp(-x));
 
     % Parameters for detecting error plateau
-    consecutive_zero_period = 20;                    % Number of consecutive zero-error iterations to consider plateau
-    zero_error_count = 0;                            % Counter for consecutive zero errors
+    window_size = 20;                                % Size of the moving window
+    std_threshold = 0.1;                            % Threshold for standard deviation
     plateau_iter = iterations;                       % Initialize plateau iteration
 
     for i = 1:iterations
@@ -65,18 +65,16 @@ function [output, error, w1, w2, plateau_iter] = run_multilayer_perceptron(data)
             output((i - 1) * n_trials + t) = o;
             error((i - 1) * n_trials + t) = d;
 
-            % Check for consecutive zero errors
-            if d == 0
-                zero_error_count = zero_error_count + 1;
-                if zero_error_count >= consecutive_zero_period
-                    plateau_iter = i;
-                end
-            else
-                zero_error_count = 0;
-            end
-
         end
-        % disp(['iteration ', num2str(i)])
+
+        % Check for plateau in error variation
+        if i > window_size
+            recent_errors = error((i - window_size) * n_trials + 1 : i * n_trials);
+            if std(recent_errors) < std_threshold
+                plateau_iter = i;
+                break;
+            end
+        end
+
     end
 end
-
