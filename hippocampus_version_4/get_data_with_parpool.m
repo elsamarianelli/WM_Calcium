@@ -26,12 +26,19 @@ if ~exist(main_folder, 'dir')
 end
 
 % Define the range of delays
-CFs = 1 : 0.05 : 1.15;
+variable_list = 1 : 0.01 : 1.15;
+
 for index = 1:length(CFs)
-    cf = CFs(index);
-    disp(cf)
-    p.CF = cf;
+
+    variable = variable_list(index);
+    disp(variable)
+
+    % this is the line that needs to be changed to check different
+    % parameters (and contents of variable list)
+    p.CF = variable;
+
     save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, 'contrast_factor', main_folder)
+    
 end
 
 %% plotting perceptron training and mean performance with varying scale factors  
