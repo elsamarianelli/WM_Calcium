@@ -52,6 +52,15 @@ fileFormat = 'fig';
 saveas(plot, fileName, fileFormat);
 
 %% generate data and plot CA3 overlap affect on performance 
+% Set parameters for the simulation
+p                       = get_params_hipp(p);
+
+%  Randomly assign CA3 and CA1 cells to each odour representation
+ca3_ensembles           = get_odours_hipp(1:p.in, p.f, p.degree_overlap_CA3);
+ca1_ensembles           = get_odours_hipp(p.in+(1:p.out), p.f_o, p.degree_overlap_CA1);
+
+%  Generate connectivity and synaptic efficacy matrix
+[C, J]                  = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
 
 % Create the folder if it doesn't already exist
 main_folder = 'FixIn_true_CF_0.848_CA3overlap_0.2_trials_100_1st_100_secs_CA3_overlap_varied';
@@ -61,7 +70,8 @@ if ~exist(main_folder, 'dir')
 end
 
 % Define the range of delays
-variable_list = 0 : 0.04 : 0.4;
+% variable_list = 0 : 0.04 : 0.4;
+variable_list = 0:0.1:0.3;
 
 for index = 1:length(variable_list)
 
@@ -85,6 +95,8 @@ fileFormat = 'fig';
 saveas(plot, fileName, fileFormat);
 
 %% generate data and plot CA3 overlap affect on performance 
+p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
+p                       = get_params_hipp(p);
 
 % Create the folder if it doesn't already exist
 main_folder = 'FixIn_true_CF_0.848_CA3overlap_0.2_trials_100_1st_100_secs_connectivity_varied';
