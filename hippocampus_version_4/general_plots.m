@@ -60,7 +60,7 @@ CA1_A = ca1_ensembles{first};
 CA1_A = CA1_A(not_ind);
 
 % Memory
-number_of_trials = 10;
+number_of_trials = 50;
 
 firing_rate_data = cell(2, 9);
 
