@@ -44,12 +44,12 @@ for index = 1:length(variable_list)
 end
 
 % plotting perceptron training and mean performance with varying scale factors  
-plot = plot_performance_across_variable_change(variable_list, main_folder, 'Contrast factor');
+plot_handle = plot_performance_across_variable_change(variable_list, main_folder, 'Contrast factor');
 
 % saving fig
 fileName = 'CF_varied';
 fileFormat = 'fig'; 
-saveas(plot, fileName, fileFormat);
+saveas(plot_handle, fileName, fileFormat);
 
 %% generate data and plot CA3 overlap affect on performance 
 % Set parameters for the simulation
@@ -70,8 +70,7 @@ if ~exist(main_folder, 'dir')
 end
 
 % Define the range of delays
-% variable_list = 0 : 0.04 : 0.4;
-variable_list = 0:0.1:0.3;
+variable_list = 0 : 0.04 : 0.4;
 
 for index = 1:length(variable_list)
 
@@ -87,12 +86,12 @@ for index = 1:length(variable_list)
 end
 
 % plotting perceptron training and mean performance with varying scale factors  
-plot = plot_performance_across_variable_change(variable_list, main_folder, 'CA3 overlap');
+plot_handle = plot_performance_across_variable_change(variable_list, main_folder, 'CA3 overlap');
 
 % saving fig
 fileName = 'CA3_overlap';
 fileFormat = 'fig'; 
-saveas(plot, fileName, fileFormat);
+saveas(plot_handle, fileName, fileFormat);
 
 %% generate data and plot CA3 overlap affect on performance 
 p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
@@ -122,9 +121,9 @@ for index = 1:length(variable_list)
 end
 
 % plotting perceptron training and mean performance with varying scale factors  
-plot = plot_performance_across_variable_change(variable_list, main_folder, 'connectivity');
+plot_handle = plot_performance_across_variable_change(variable_list, main_folder, 'connectivity');
 
 % saving fig
 fileName = 'connectivity';
 fileFormat = 'fig'; 
-saveas(plot, fileName, fileFormat);
+saveas(plot_handle, fileName, fileFormat);
