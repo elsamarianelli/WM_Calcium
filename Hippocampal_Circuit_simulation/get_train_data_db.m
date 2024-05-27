@@ -1,9 +1,7 @@
 function[shuffled_spikes_x_trials,sequenceID] = get_train_data(C, J, n_trials, p, ca3_ensembles, time_1, time_2)
 % at present this code is being used to get input to perceptron, the output
 % is a mean firing rate (Hz) for each CA1 cell during the second
-% odour presentation. Code to run an SVM instead of using a perceptron, as
-% well as code to run multiple delay times is at the bottom, commented out.
-
+% odour presentation.
 
 %% Assign some parameters and memory for the output
 odour_sequences     = {'CB'; 'BA'; 'AC'; 'AB'; 'CA'; 'BC'};
