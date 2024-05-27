@@ -1,4 +1,1 @@
-Code modelling working memory as a  property of calcium-mediated short term synaptic facilitation, in a recurrent network of integrate-and-fire neurones. Different 'odours' (partially overlapping patterns of activation) can be presented sequentially. Based off of Mongillo et al's. 2008 Synaptic Theory of Working Memory Paper.
-
-Version 2 
-(Elsa Marianelli, contactable at zcbtetm@ucl.ac.uk)
+Code aiming to replicate Figs 1 and 2 of Mongillo 2008 a Synaptic theory of Working Memory Paper: Upon spiking Calcuim increases, and decays at a slower rate than the synaptic materials which have been depleted replenish. This allows for a Calcium mediated facilitatory period, in which a trace of previuos input can be held within a neural network without sustained spiking.
