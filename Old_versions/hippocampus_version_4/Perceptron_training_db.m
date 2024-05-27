@@ -6,10 +6,10 @@ p.degree_overlap_CA1    = 0.0;
 p.pattern_order         = 'AC';           % Order in which the odours should be presented
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
 p.length_first          = 250;            % Length of time for which the first odour is presented (ms)
-p.delay_time            = 200;            % Delay between odour presentations (ms)
+p.delay_time            = 500;            % Delay between odour presentations (ms)
 p.length_second         = 250;            % Length of time for which the second odour is presented (ms)
 p.scaleF                = 0.848;           % Constant by which to scale random currents (to modulate baseline activity levels)
-p.SimLength             = 2000;
+p.SimLength             = 1500;
 p                       = get_params_hipp(p);
 
 
@@ -41,13 +41,16 @@ output_plot             = get_output_plot(M,p,ca3_ensembles, C);
 time3 = input.reactivation(1);
 time4 = time3+100; 
 % 
-% % %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
-% [spikeCounts,~]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
-% [spikeCounts_test, ~]	= get_train_data_db(C, J, 20, p, ca3_ensembles, time3, time4);
-% % Train and test multilayer perceptron
-% [~, error, w1, w2] = run_multilayer_perceptron(spikeCounts);
-% [performance_test_multi] = test_multilayer_perceptron_output(spikeCounts_test, w1, w2);
-% disp(performance_test_multi)
+% %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
+% %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
+n_trials = 100;
+[spikeCounts,~]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
+[spikeCounts_test, ~]	= get_train_data_db(C, J, 10, p, ca3_ensembles, time3, time4);
+
+% Train and test multilayer perceptron
+[~, error, w1, w2, plateau_iter] = run_multilayer_perceptron(spikeCounts);
+[performance_test_multi] = test_multilayer_perceptron_output(spikeCounts_test, w1, w2);
+disp(performance_test_multi)
 
 %% Save data and settings info to current working directory
 folderName = 'fixIn_true_100_after_odour_2000_delay';

@@ -1,7 +1,7 @@
 function[fig_handle] = plot_performance_across_variable_change(variable_range, main_folder, variable_type)
 %% multiple runs and plot mean and SD of performance
 
-numTests = 1;
+numTests = 50;
 
 % Initialize containers for performance metrics
 % singlePerf = zeros(size(variable_range, 2), numTests);
@@ -13,8 +13,12 @@ for idx = 1:size(variable_range, 2)
     
     variable = variable_range(idx);
 
-    if strcmp(folderName, )
-    folderName = num2str(variable);
+    if strcmp(main_folder, 'FixIn_true_delay_500_CA3overlap_0.2_trials_100_1st_100_secs_ux_varied')
+        folderName = variable;
+        folderName = folderName{1};
+    else
+        folderName = num2str(variable);
+    end
 
 
     % Full path for the new folder
@@ -44,7 +48,7 @@ figure;
 
 % Colors
 perf_color = [0 0 0]; % Dark for performance
-learn_color = [.5 .5 .5]; % Lighter for learning time
+learn_color = [.6 .6 .6]; % Lighter for learning time
 
 % [1] plot STD and means for performance
 % Calculate means and standard deviations for the performance

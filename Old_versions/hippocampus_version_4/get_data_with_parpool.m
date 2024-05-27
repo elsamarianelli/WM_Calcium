@@ -140,12 +140,14 @@ ca1_ensembles           = get_odours_hipp(p.in+(1:p.out), p.f_o, p.degree_overla
 [C, J]                  = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
 
 variable_list_big = 500 : 500 : 3000;
+
 for index = 1:length(variable_list_big)
 
     variable = variable_list_big(index);
-    
+
+    p.tau_facil = variable;
     % Create the folder if it doesn't already exist
-    main_folder = ['FixIn_true_CF_0.848_CA3overlap_0.2_trials_100_1st_100_' num2str(variable)];
+    main_folder = ['FixIn_true_CF_0.848_CA3overlap_0.2_trials_100_1st_100_' num2str(variable) '_tau_facil'];
     
     if ~exist(main_folder, 'dir')
         mkdir(main_folder);

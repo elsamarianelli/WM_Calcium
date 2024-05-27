@@ -144,7 +144,7 @@ variable_list_big = 500 : 500 : 3000;
 for index = 1:length(variable_list_big)
 
     variable = variable_list_big(index);
-    
+
     p.tau_facil = variable;
     % Create the folder if it doesn't already exist
     main_folder = ['FixIn_true_CF_0.848_CA3overlap_0.2_trials_100_1st_100_' num2str(variable) '_tau_facil'];
