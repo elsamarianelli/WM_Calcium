@@ -1,6 +1,5 @@
-Code aiming to replicate Figs 1 and 2 of Mongillo 2008 a Synaptic theory of Working Memory Paper: 
-Upon spiking Calcuim increases, and decays at a slower rate than the synaptic materials which have been depleted replenish. 
-This allows for a Calcium mediated facilitatory period, in which a trace of previuos input can be held within a neural network without sustained spiking. 
+It has been suggested that the memory trace required in Working-memory could be maintained by Calcium-mediated synaptic facilitation - whereby the initial stimulus produces short-term increases in synaptic efficacy that shape the network response to subsequent stimuli. Here, we aim to establish whether this mechanism could support the role of hippocampus in sequential learning. Specifically, we model short-term synaptic plasticity at the CA3-CA1 Schaffer collaterals within the hippocampus during a sequential learning task. 
 
-This basic model has been replicated here, and addapted to a network of CA3 input to CA1, the output of which is used is the input layer to a 
-perceptron, with a single ouput neuron with binary activation, representing either "reward" or "no-reward".
+In this task, the agent must learn to discriminate the sequential presentation of stimuli A and B, separated by a delay of several seconds, with reward; while the sequential presentation of stimuli A and then B is not rewarded. A multi-layer perceptron is trained on CA1 network activity during presentation of the second stimulus, and demonstrate that short-term plasticity at the CA3 inputs leads to a differential response according to stimulus order. 
+
+(Elsa Marianelli, contactable at zcbtetm@ucl.ac.uk)
