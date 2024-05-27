@@ -14,7 +14,7 @@ function[] = save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, var
     
     % %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
     [spikeCounts,~]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
-    [spikeCounts_test, ~]	= get_train_data_db(C, J, 10, p, ca3_ensembles, time3, time4);
+    [spikeCounts_test, ~]	= get_train_data_db(C, J, 1, p, ca3_ensembles, time3, time4);
     
     %% Save data and settings info to current working directory
     % folderName = ([num2str(p.tau_facil) '_' num2str(p.tau_decay)]);
@@ -32,7 +32,5 @@ function[] = save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, var
     save(fullfile(fullFolderPath, 'spikeCounts.mat'), 'spikeCounts');
     save(fullfile(fullFolderPath, 'spikeCounts_test.mat'), 'spikeCounts_test');
     save(fullfile(fullFolderPath, 'myStruct.mat'), 'p');
-    save(fullfile(fullFolderPath, 'Con_matrix.mat'), 'C');
-    save(fullfile(fullFolderPath, 'Ca3_ensembles.mat'), 'ca3_ensembles');
-
+    save(fullfile(fullFolderPath, 'myStruct.mat'), 'p');
 end

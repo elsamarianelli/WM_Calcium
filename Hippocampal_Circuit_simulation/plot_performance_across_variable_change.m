@@ -114,6 +114,7 @@ ylabel('Learning Time', 'FontSize', 12);
 xlabel(variable_type, 'FontSize', 12);
 title(['Multilayer Perceptron performance at different ', variable_type]);
 
+xlim([0 length(variable_range)+1]);
 % get figure handle 
 fig_handle = gcf;
 
