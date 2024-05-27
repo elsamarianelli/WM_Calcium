@@ -1,4 +1,4 @@
-%% what is the effect of CA3 and CA1 odour coding and connectivity on performance 
+%% what is the effect of CA3 and CA1 odour overlap and connectivity on performance 
 % (overlap of odour sensitive subpopulations in both layers) and
 % connectivity between the two layers) on multilayer perceptron
 % performance?
@@ -72,7 +72,10 @@ full_file_path = fullfile(figure_folder, [fileName, '.', fileFormat]);
 % Save the figure to the specified folder
 saveas(performance_variable_figure, full_file_path);
 
-%% Coding level of CA3 layer
+%% overlap of CA3 layer
+
+%reset params
+p                       = get_params_hipp(p);
 
 % Create the folder if it doesn't already exist
 % Define the main folder name
@@ -128,7 +131,8 @@ full_file_path = fullfile(figure_folder, [fileName, '.', fileFormat]);
 % Save the figure to the specified folder
 saveas(performance_variable_figure, full_file_path);
 
-%% Coding level of CA1 layer
+%% overlap of CA1 layer
+p                       = get_params_hipp(p);
 
 % Create the folder if it doesn't already exist
 % Define the main folder name
