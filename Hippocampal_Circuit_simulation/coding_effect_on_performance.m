@@ -95,7 +95,7 @@ end
 % Define the range of connectivity levels
 p.degree_overlap_CA1 = 0;
 
-variable_list = 0:0.025:0.3;
+variable_list = 0:0.05:0.3;
 for index = 1:length(variable_list)
 
     % change p to correct current variable 
@@ -109,7 +109,7 @@ for index = 1:length(variable_list)
 
     %  Generate connectivity and synaptic efficacy matrix
     [C, J] = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
-    
+
     %save data for training and testing of perceptron
     save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, variable, main_folder_path)
 
@@ -152,7 +152,7 @@ end
 % Define the range of connectivity levels
 p.degree_overlap_CA3 = 0;
 
-variable_list = 0:0.025:0.3;
+variable_list = 0:0.05:0.3;
 for index = 1:length(variable_list)
 
     % change p to correct current variable 
@@ -166,7 +166,7 @@ for index = 1:length(variable_list)
 
     %  Generate connectivity and synaptic efficacy matrix
     [C, J] = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
-    
+
     %save data for training and testing of perceptron
     save_data_varying_delay_times(C, J, p, ca3_ensembles, n_trials, variable, main_folder_path)
 
@@ -187,3 +187,4 @@ full_file_path = fullfile(figure_folder, [fileName, '.', fileFormat]);
 
 % Save the figure to the specified folder
 saveas(performance_variable_figure, full_file_path);
+

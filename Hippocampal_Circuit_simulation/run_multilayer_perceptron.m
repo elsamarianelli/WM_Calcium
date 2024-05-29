@@ -12,13 +12,13 @@ function [output, error, w1, w2, plateau_iter] = run_multilayer_perceptron(data)
     delta_w1 = 0;                                    % Initial change in w1
 
     % Initialize weights
-    w1 = rand(n_ca1, n_hidden) - bias;               % Weights from input to hidden layer
+    w1 = rand(n_ca1, n_hidden) - bias;               % Random weights from input to hidden layer
 
-    % Pre-defined weights for the second layer
-    no_reward_weights = -1 + 0.2 * randn(1, 3);
+    no_reward_weights = -1 + 0.2 * randn(1, 3);      % Pre-defined weights from hidden to output layer
     reward_weights = 1 + 0.2 * randn(1, 3);
     w2 = [no_reward_weights, reward_weights]';
 
+    % Memory
     output = nan(1, n_trials * iterations);          % Network output
     error = nan(1, n_trials * iterations);           % Error tracking
 
@@ -27,7 +27,7 @@ function [output, error, w1, w2, plateau_iter] = run_multilayer_perceptron(data)
 
     % Parameters for detecting error plateau
     window_size = 20;                                % Size of the moving window
-    std_threshold = 0.1;                            % Threshold for standard deviation
+    std_threshold = 0.1;                             % Threshold for standard deviation
     plateau_iter = iterations;                       % Initialize plateau iteration
 
     for i = 1:iterations

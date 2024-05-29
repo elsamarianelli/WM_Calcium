@@ -8,10 +8,9 @@ p.start_time            = 200;            % Time at which the first odour is pre
 p.length_first          = 250;            % Length of time for which the first odour is presented (ms)
 p.delay_time            = 500;            % Delay between odour presentations (ms)
 p.length_second         = 250;            % Length of time for which the second odour is presented (ms)
-p.scaleF                = 0.848;           % Constant by which to scale random currents (to modulate baseline activity levels)
+p.scaleF                = 0.848;          % Constant by which to scale random currents (to modulate baseline activity levels)
 p.SimLength             = 1500;
 p                       = get_params_hipp(p);
-
 
 %  Randomly assign CA3 and CA1 cells to each odour representation
 ca3_ensembles           = get_odours_hipp(1:p.in, p.f, p.degree_overlap_CA3);
@@ -111,6 +110,29 @@ delay_performance = plot_performance_across_variable_change(delays, main_folder,
 
 % saving fig
 fileName = 'delay_plot';
+fileFormat = 'fig'; 
+saveas(delay_performance, fileName, fileFormat);
+
+%% plotting perceptron training and mean performance with varying delay times where trained perceptron is kept CONSTANT and only testig data changes delay length
+parent_dir = fileparts(pwd);
+main_folder = 'FixIn_true_CF_0.848_CA3overlap_0.2_trials_100_1st_100_secs_delay_varied';
+
+% Construct the path to the Simulated_data folder
+simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
+
+% Construct the path to the main folder within the Simulated_data folder
+main_folder_path = fullfile(simulated_data_folder, main_folder);
+
+delays = [250:250:2500 3000];
+
+delay_performance = plot_performance_across_variable_change_pretrained_perceptron(delays, main_folder_path, 'delay');
+% Switch to the right y-axis
+yyaxis right
+
+% Set the limits of the second y-axis
+ylim([-500 2000]); % Replace ymin and ymax with your desired limits
+% saving fig
+fileName = 'delay_plot_fixed_training';
 fileFormat = 'fig'; 
 saveas(delay_performance, fileName, fileFormat);
 
