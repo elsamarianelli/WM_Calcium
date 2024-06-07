@@ -40,7 +40,7 @@ end
 
 % Define the range of connectivity levels
 
-variable_list = 0:0.025:0.4;
+variable_list = 0:0.025:0.2;
 for index = 1:length(variable_list)
 
     % change p to correct current variable 

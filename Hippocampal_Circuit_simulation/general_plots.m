@@ -7,10 +7,10 @@ p.degree_overlap_CA1    = 0.0;
 p.pattern_order         = 'AB';
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
-p.delay_time            = 500;            % Delay between odour presentations (ms)
+p.delay_time            = 1000;            % Delay between odour presentations (ms)
 p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
-p.scaleF                = 0.875;           % Constant by which to scale random currents (to modulate baseline activity levels)
-p.SimLength             = 1500;
+p.scaleF                = 0.848;           % Constant by which to scale random currents (to modulate baseline activity levels)
+p.SimLength             = 2000;
 p                       = get_params_hipp(p);
 
 %  Assign CA3 and CA1 cells to each odour representation

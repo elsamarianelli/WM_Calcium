@@ -7,12 +7,12 @@ function [output, error, w1, w2, plateau_iter] = run_multilayer_perceptron(data)
     n_trials = size(data, 1);                        % Number of trials
     n_ca1 = size(data, 2) - 1;                       % Number of CA1 inputs
     n_hidden = 6;                                    % Number of neurons in the hidden layer
-    bias = 0.5;                                      % Bias term for weights
+    % bias = 0.5;                                      % Bias term for weights
     momentum = 0.9;                                  % Momentum term for w1 updates
     delta_w1 = 0;                                    % Initial change in w1
 
     % Initialize weights
-    w1 = rand(n_ca1, n_hidden) - bias;               % Random weights from input to hidden layer
+    w1 = randn(n_ca1, n_hidden); % - bias;               % Random weights from input to hidden layer
 
     no_reward_weights = -1 + 0.2 * randn(1, 3);      % Pre-defined weights from hidden to output layer
     reward_weights = 1 + 0.2 * randn(1, 3);
