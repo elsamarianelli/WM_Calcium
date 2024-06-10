@@ -191,13 +191,13 @@ linkaxes([ax1, ax2], 'x');
 % rename axis to tau facil and tau decay
 % Define `extraXTicks` as needed for your plot
 % Set additional x-ticks for ax2 and label them
-extraXTicks = 1:length(tau_decays); 
+extraXTicks = 1:length(tau_decays)+1; 
 ax2.XTick = extraXTicks; 
 ax2.XTickLabel = tau_decays;
 ax2.FontSize = 10; % Set font size of tick labels to 10
 
 % Set additional x-ticks for ax1 and label them
-extraXTicks = 1:length(tau_facils); 
+extraXTicks = 1:length(tau_facils)+1; 
 ax1.XTick = extraXTicks; 
 ax1.XTickLabel = tau_facils;
 ax1.FontSize = 10; % Set font size of tick labels to 10% relable axis 
