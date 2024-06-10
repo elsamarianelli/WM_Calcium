@@ -6,14 +6,16 @@ simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
 figure_folder = fullfile(parent_dir, 'figures_new');
 fileFormat = 'fig'; 
 
+
 % [1] Background excitation strength (p.CF varied)
 file_name = 'CF_varied';
 main_folder = fullfile(simulated_data_folder, file_name);
 CFs = 1 : 0.01 : 1.08;
-CF_performance = plot_performance_across_variable_change(CFs, main_folder, 'Background excitation strength');
+CF_performance = plot_performance_across_variable_change(CFs, main_folder, 'background excitation strength');
 
 full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
 saveas(CF_performance, full_file_path);
+
 
 % [2] Odour strength (p.SF varied)
 file_name = 'SF_varied';
@@ -24,6 +26,7 @@ SF_performance = plot_performance_across_variable_change(SFs, main_folder, 'Odou
 full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
 saveas(SF_performance, full_file_path);
 
+
 % [3] Delay time between odours (p.delay_time varied)
 file_name = 'delay_varied';
 main_folder = fullfile(simulated_data_folder, file_name);
@@ -32,6 +35,7 @@ delay_performance = plot_performance_across_variable_change(delay_times, main_fo
 
 full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
 saveas(delay_performance, full_file_path);
+
 
 % [4] STSF vs STSD (p.tau_decay and p.tau_facil varied) 
 % do tau decay manually for now untill i manage to fix it)
@@ -56,6 +60,7 @@ ax1 = findobj(facil_decay_performance, 'Type', 'axes');
 ax1.XTickLabel = arrayfun(@num2str, tau_facils, 'UniformOutput', false);
 saveas(facil_decay_performance, fileName, fileFormat);
 
+
 % [5] Connectivity (p.c varied)
 file_name = 'connectivity_varied';
 main_folder = fullfile(simulated_data_folder, file_name);
@@ -64,6 +69,7 @@ connectivity_performance = plot_performance_across_variable_change(cs, main_fold
 
 full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
 saveas(connectivity_performance, full_file_path);
+
 
 % [6] CA1 overlap (p.degree_overlap_CA1 varied) 
 file_name = 'CA1_overlap_varied';
@@ -74,6 +80,7 @@ overlap_CA1_performance = plot_performance_across_variable_change(CA1s, main_fol
 full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
 saveas(overlap_CA1_performance, full_file_path);
 
+
 % [7] CA3 overlap (p.degree_overlap_CA3 varied) 
 file_name = 'CA3_overlap_varied';
 main_folder = fullfile(simulated_data_folder, file_name);
@@ -83,37 +90,116 @@ overlap_CA3_performance = plot_performance_across_variable_change(CA3s, main_fol
 full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
 saveas(overlap_CA3_performance, full_file_path);
 
-% % [8] Just calcium decay longer (p.tau_facil, p.tau_decay fixed at 100ms)
-% 
-% % plot the initial facl varied plot using function
-% % need to run this data again 
-% file_name = 'varying_tau_facil';
-% 
-% facils = 500:500:3000;
-% facils = arrayfun(@(v) sprintf('100_%d_tau_facil', v), facils, 'UniformOutput', false);
-% 
-% delays = 250:250:3000;
-% 
-% facil = facils(1); facil = facil{1};
-% main_folder = fullfile(simulated_data_folder, file_name, facil);
-% first_plot = plot_performance_across_variable_change(delays, main_folder, 'delay time');
-% hold on;
-% 
-% for i = 2:length(facils)
-%     facil = facils(i); facil = facil{1};
-%     main_folder = fullfile(simulated_data_folder, file_name, facil);
-%     plot_performance_across_variable_change(delays, main_folder, 'delay time');
-%     hold on; 
-% end
-% hold off
-% % needs to be done a bit differently 
 
+% [8] Just calcium decay longer (p.tau_facil, p.tau_decay fixed at 100ms)
+% Define colors for performance and learning time
+initial_color = [0 0 0.5]; % Dark blue for performance
+final_color = [0.5 1 0.5]; % Pale green for performance
+
+file_name = 'varying_tau_facil';
+facils = 500:500:3000;
+facils = arrayfun(@(v) sprintf('100_%d_tau_facil', v), facils, 'UniformOutput', false);
+
+% Delays variable should be defined in your workspace
+delays = 250:250:3000;
+variable_range = delays;
+% Get the number of facil values
+num_facils = length(facils);
+
+% Function to interpolate colors between initial and final color
+interpolate_color = @(fraction) initial_color + fraction * (final_color - initial_color);
+
+% Create a new figure for the plot
+facil = facils{1};
+main_folder = fullfile(simulated_data_folder, file_name, facil);
+[figure, ~, ~] = plot_performance_across_variable_change(delays, main_folder, 'delay time');
+hold on;
+
+% Loop through each facil value
+for i = 2:3%num_facils
+    % Calculate the color for the current loop
+    current_color = interpolate_color((i - 1) / (num_facils - 1));
+    
+    % Update facil and main folder path
+    facil = facils{i};
+    main_folder = fullfile(simulated_data_folder, file_name, facil);
+    
+    % Retrieve performance data
+    
+    numTests = 1;
+    
+    % Initialize containers for performance metrics
+    % singlePerf = zeros(size(variable_range, 2), numTests);
+    multiPerf = zeros(size(variable_range, 2), numTests);
+    pleateau_iter_log =  zeros(size(variable_range, 2), numTests);
+    
+    % Loop through each scenario
+    for idx = 1:size(variable_range, 2)
+        
+        variable = variable_range(idx);
+    
+        if contains(main_folder, 'ux_varied')
+            folderName = variable;
+            folderName = folderName{1};
+        else
+            folderName = num2str(variable);
+        end
+    
+    
+        % Full path for the new folder
+        fullFolderPath = fullfile(main_folder, folderName);   
+    
+    
+        % Load data
+        [data, data_test] = loadData(fullFolderPath, main_folder);
+        disp(variable)
+        % Repeat tests
+        for j = 1:numTests
+            % % Train and test single layer perceptron
+            % [~, ~, w] = run_perceptron_db(data);
+            % singlePerf(idx, j) = test_perceptron_output(data_test, w);
+    
+            % Train and test multilayer perceptron
+            [~, ~, w1, w2, plateau_iter] = run_multilayer_perceptron(data);
+            pleateau_iter_log(idx, j)    = plateau_iter;
+            multiPerf(idx, j) = test_multilayer_perceptron_output(data_test, w1, w2);
+            disp(j)
+        end
+        
+    end
+    
+    means_perf = mean(multiPerf, 2);
+    stds_perf = std(multiPerf, 0, 2);
+    % Plot the means with connecting lines
+    for m = 1:length(means_perf) - 1
+        plot([m, m+1], means_perf(m:m+1), '-', 'Color', current_color, 'LineWidth', 2);
+    end
+    ylim([0 1])
+
+    % Plot error bars and means
+    for m = 1:length(means_perf)
+        errorbar(m, means_perf(m), stds_perf(m), 'o', 'Color', current_color, 'MarkerSize', 10, 'MarkerFaceColor', current_color);
+    end
+    
+    % Add an entry to the legend
+    % legend_entries{i} = sprintf('Facil %d', str2double(facil(5:end-9)));
+    hold on
+end
+
+% Add legend to the plot
+legend(legend_entries, 'Location', 'best');
+
+% Final plot adjustments
+hold off;
+
+
+%% 
 % Get the current figure and axes
 fig = gcf;
 ax = gca;
 
 % Change the size of the figure (Width x Height in pixels)
-fig.Position = [100, 100, 550, 450]; % Adjust these values as needed
+fig.Position = [100, 100, 350, 450]; % Adjust these values as needed
 
 % Change the left y-axis limits
 yyaxis left;

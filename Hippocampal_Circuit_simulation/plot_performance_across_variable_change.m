@@ -1,7 +1,7 @@
-function[fig_handle] = plot_performance_across_variable_change(variable_range, main_folder, variable_type)
+function[fig_handle ,means_perf, stds_perf] = plot_performance_across_variable_change(variable_range, main_folder, variable_type)
 %% multiple runs and plot mean and SD of performance
 
-numTests = 50;
+numTests = 3;
 
 % Initialize containers for performance metrics
 % singlePerf = zeros(size(variable_range, 2), numTests);
