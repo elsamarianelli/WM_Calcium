@@ -4,7 +4,7 @@ parent_dir = fileparts(pwd);
 simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
 
 % Set parameters for the simulation
-n_trials                = 100;
+n_trials                = 1;
 p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
@@ -23,7 +23,7 @@ ca1_ensembles           = get_odours_hipp(p.in+(1:p.out), p.f_o, p.degree_overla
 
 
 file_name = 'varying_tau_facil';
-facils = 500:500:3000;
+facils = 1500:500:4500;
 facils_names = arrayfun(@(v) sprintf('100_%d_tau_facil', v), facils, 'UniformOutput', false);
 
 % Delays variable should be defined in your workspace
