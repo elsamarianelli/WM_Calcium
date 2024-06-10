@@ -23,7 +23,7 @@ ca1_ensembles           = get_odours_hipp(p.in+(1:p.out), p.f_o, p.degree_overla
 
 
 file_name = 'varying_tau_facil';
-facils = 1500:500:4500;
+facils = 500:1000:4500;
 facils_names = arrayfun(@(v) sprintf('100_%d_tau_facil', v), facils, 'UniformOutput', false);
 
 % Delays variable should be defined in your workspace
