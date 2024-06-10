@@ -4,7 +4,7 @@ parent_dir = fileparts(pwd);
 simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
 
 % Set parameters for the simulation
-n_trials                = 1;
+n_trials                = 100;
 p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
