@@ -116,7 +116,7 @@ main_folder = fullfile(simulated_data_folder, file_name, facil);
 hold on;
 
 % Loop through each facil value
-for i = 2:3%num_facils
+for i = 2:num_facils
     % Calculate the color for the current loop
     current_color = interpolate_color((i - 1) / (num_facils - 1));
     
