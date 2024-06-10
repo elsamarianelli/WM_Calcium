@@ -1,6 +1,7 @@
 % generating different facil and delay time figures
 
 parent_dir = fileparts(pwd);
+simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
 
 % Set parameters for the simulation
 n_trials                = 100;
@@ -16,6 +17,10 @@ p                       = get_params_hipp(p);
 %  Randomly assign CA3 and CA1 cells to each odour representation
 ca3_ensembles           = get_odours_hipp(1:p.in, p.f, p.degree_overlap_CA3);
 ca1_ensembles           = get_odours_hipp(p.in+(1:p.out), p.f_o, p.degree_overlap_CA1);
+
+
+[C, J] = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
+
 
 file_name = 'varying_tau_facil';
 facils = 500:500:3000;
