@@ -1,5 +1,7 @@
-% Generating different facil and delay time figures
-
+%% Generating different facil and delay time data
+% code to generate simulate data for performance means
+% and SDs for increasing delay times, for a range if increasing
+% facilitation time constants (to replicate some sort of 
 parent_dir = fileparts(pwd);
 simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
 
