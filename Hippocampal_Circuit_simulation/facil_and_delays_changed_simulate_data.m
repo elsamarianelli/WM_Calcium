@@ -1,4 +1,5 @@
-% Set up the environment
+% Generating different facil and delay time figures
+
 parent_dir = fileparts(pwd);
 simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
 
@@ -9,42 +10,40 @@ end
 
 % Set parameters for the simulation
 n_trials = 100;
-p.degree_overlap_CA3 = 0.2;    % Overlap between neural representations of each odor
+p.degree_overlap_CA3 = 0.2;    % Overlap between neural representations of each odour
 p.degree_overlap_CA1 = 0.0;
-p.start_time = 200;            % Time at which the first odor is presented (ms)
-p.length_first = 250;          % Length of time for which the first odor is presented (ms)
-p.length_second = 250;         % Length of time for which the second odor is presented (ms)
+p.start_time = 200;            % Time at which the first odour is presented (ms)
+p.length_first = 250;          % Length of time for which the first odour is presented (ms)
+p.length_second = 250;         % Length of time for which the second odour is presented (ms)
 p.delay_time = 500;
 p.scaleF = 0.848;              % Constant by which to scale random currents (to modulate baseline activity levels)
 p = get_params_hipp(p);
 
-% Randomly assign CA3 and CA1 cells to each odor representation
+% Randomly assign CA3 and CA1 cells to each odour representation
 ca3_ensembles = get_odours_hipp(1:p.in, p.f, p.degree_overlap_CA3);
 ca1_ensembles = get_odours_hipp(p.in + (1:p.out), p.f_o, p.degree_overlap_CA1);
 
 [C, J] = connectivity_matrix_hipp(p, ca3_ensembles, ca1_ensembles);
 
-% Set parameters for the varying tau facil
 file_name = 'varying_tau_facil';
 facils = 500:1000:4500;
 facils_names = arrayfun(@(v) sprintf('100_%d_tau_facil', v), facils, 'UniformOutput', false);
 
-% Define delays
+% Delays variable should be defined in your workspace
 delays = 250:250:3000;
 
-% Generate data for each facil value and delay time
 for i = 1:length(facils)
-    facil_name = facils_names{i};
-    main_folder = fullfile(simulated_data_folder, file_name, facil_name);
-    
+    facils_name = facils_names{i};
+    main_folder = fullfile(simulated_data_folder, file_name, facils_name);
+
     % Create the main folder if it does not exist
     if ~exist(main_folder, 'dir')
         mkdir(main_folder);
     end
-    
+
     p.facil = facils(i);
     disp(['Processing facil: ', num2str(facils(i))]);
-    
+
     for d = 1:length(delays)
         variable = delays(d);
         p.delay_time = delays(d);
@@ -53,48 +52,3 @@ for i = 1:length(facils)
     end
 end
 
-% Plotting the results
-initial_color = [0 0 0.5];  % Dark blue for performance
-final_color = [0.5 1 0.5];  % Pale green for performance
-
-% Get the number of facil values
-num_facils = length(facils);
-
-% Function to interpolate colors between initial and final color
-interpolate_color = @(fraction) initial_color + fraction * (final_color - initial_color);
-
-% Create a new figure for the plot
-figure;
-hold on;
-
-% Initialize legend entries
-legend_entries = cell(1, num_facils);
-
-% Loop through each facil value
-for i = 1:num_facils
-    % Calculate the color for the current loop
-    current_color = interpolate_color((i - 1) / (num_facils - 1));
-    
-    % Update facil and main folder path
-    facil = facils_names{i};
-    main_folder = fullfile(simulated_data_folder, file_name, facil);
-    
-    % Retrieve performance data
-    [~, means_perf, stds_perf] = plot_performance_across_variable_change(delays, main_folder, 'delay time');
-    
-    % Plot the means with connecting lines
-    for m = 1:length(means_perf) - 1
-        plot([m, m + 1], means_perf(m:m + 1), '-', 'Color', current_color, 'LineWidth', 2);
-    end
-    
-    % Plot error bars and means
-    for m = 1:length(means_perf)
-        errorbar(m, means_perf(m), stds_perf(m), 'o', 'Color', current_color, 'MarkerSize', 10, 'MarkerFaceColor', current_color);
-    end
-    
-    % Extract numerical facil value for legend entry
-    facil_value = sscanf(facil, '100_%d_tau_facil');
-    legend_entries{i} = sprintf('Facil %d', facil_value);
-end
-
-%
