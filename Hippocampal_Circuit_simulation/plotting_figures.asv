@@ -1,5 +1,14 @@
 %% plotting MLP figures 
 
+% [1] Background excitation strength (p.CF varied)
+% [2] Odour strength (p.SF varied)
+% [3] Delay time between odours (p.delay_time varied)
+% [4] STSF vs STSD (p.tau_decay and p.tau_facil varied) 
+% [5] Connectivity (p.c varied)
+% [6] CA1 overlap (p.degree_overlap_CA1 varied) 
+% [7] CA3 overlap (p.degree_overlap_CA3 varied) 
+% [8] Just calcium decay longer (p.tau_facil, p.tau_decay fixed at 100ms)
+
 % get pathways to relevant folders
 parent_dir = fileparts(pwd);
 simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
@@ -116,7 +125,7 @@ main_folder = fullfile(simulated_data_folder, file_name, facil);
 hold on;
 
 % Loop through each facil value
-for i = 2:3%num_facils
+for i = 2:num_facils
     % Calculate the color for the current loop
     current_color = interpolate_color((i - 1) / (num_facils - 1));
     
@@ -191,10 +200,6 @@ legend(legend_entries, 'Location', 'best');
 
 % Final plot adjustments
 hold off;
-title('Performance Across Variable Change');
-xlabel('Delay Time');
-ylabel('Performance');
-
 
 
 %% 

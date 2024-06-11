@@ -1,11 +1,19 @@
-%% plotting MLP figures 
+%% plotting MLP performances and iterations for learning figures 
+% [1] Background excitation strength (p.CF varied)
+% [2] Odour strength (p.SF varied)
+% [3] Delay time between odours (p.delay_time varied)
+% [4] STSF vs STSD (p.tau_decay and p.tau_facil varied) 
+% [5] Connectivity (p.c varied)
+% [6] CA1 overlap (p.degree_overlap_CA1 varied) 
+% [7] CA3 overlap (p.degree_overlap_CA3 varied) 
+% [8] Just calcium decay longer (p.tau_facil, p.tau_decay fixed at 100ms)
+
 
 % get pathways to relevant folders
 parent_dir = fileparts(pwd);
 simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
 figure_folder = fullfile(parent_dir, 'figures_new');
 fileFormat = 'fig'; 
-
 
 % [1] Background excitation strength (p.CF varied)
 file_name = 'CF_varied';
