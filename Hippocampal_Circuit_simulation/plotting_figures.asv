@@ -1,5 +1,4 @@
-%% plotting MLP figures 
-
+%% plotting MLP performances and iterations for learning figures 
 % [1] Background excitation strength (p.CF varied)
 % [2] Odour strength (p.SF varied)
 % [3] Delay time between odours (p.delay_time varied)
@@ -9,31 +8,34 @@
 % [7] CA3 overlap (p.degree_overlap_CA3 varied) 
 % [8] Just calcium decay longer (p.tau_facil, p.tau_decay fixed at 100ms)
 
+
 % get pathways to relevant folders
 parent_dir = fileparts(pwd);
 simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
 figure_folder = fullfile(parent_dir, 'figures_new');
 fileFormat = 'fig'; 
 
+% [1]  Odour strength (p.CF varied)
 
-% [1] Background excitation strength (p.CF varied)
 file_name = 'CF_varied';
 main_folder = fullfile(simulated_data_folder, file_name);
 CFs = 1 : 0.01 : 1.08;
-CF_performance = plot_performance_across_variable_change(CFs, main_folder, 'background excitation strength');
+CF_performance = plot_performance_across_variable_change(CFs, main_folder, 'Odour strength');
 
 full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
 saveas(CF_performance, full_file_path);
 
 
-% [2] Odour strength (p.SF varied)
+% [2] Background excitation strength (p.SF varied)
+
 file_name = 'SF_varied';
 main_folder = fullfile(simulated_data_folder, file_name);
 SFs = 0.82:0.005:0.88;
-SF_performance = plot_performance_across_variable_change(SFs, main_folder, 'Odour strength');
+SF_performance = plot_performance_across_variable_change(SFs, main_folder, 'background excitation strength');
 
 full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
 saveas(SF_performance, full_file_path);
+
 
 
 % [3] Delay time between odours (p.delay_time varied)
@@ -208,11 +210,20 @@ fig = gcf;
 ax = gca;
 
 % Change the size of the figure (Width x Height in pixels)
-fig.Position = [100, 100, 350, 450]; % Adjust these values as needed
+% fig.Position = [100, 100, 750, 600]; % Adjust these values as needed
+
+% for sf to ac backgroudn excitation
+SFs = 0.82:0.005:0.88;
+new_ticks = SFs * 23.1;
+% Format the new ticks to two decimal places
+new_tick_labels = arrayfun(@(x) sprintf('%.2f', x), new_ticks, 'UniformOutput', false);
+set(ax, 'XTickLabel', new_tick_labels); % Update the tick labels to the formatted values
+
+xlabel('Background Excitation Strength mean (Hz 2dp)')
 
 % Change the left y-axis limits
 yyaxis left;
-ylim([0.4 1.05]);
+ylim([0.2 1.]);
 
 % Change the right y-axis limits
 yyaxis right;

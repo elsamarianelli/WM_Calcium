@@ -1,7 +1,7 @@
 function[fig_handle ,means_perf, stds_perf] = plot_performance_across_variable_change(variable_range, main_folder, variable_type)
 %% multiple runs and plot mean and SD of performance
 
-numTests = 3;
+numTests = 50;
 
 % Initialize containers for performance metrics
 % singlePerf = zeros(size(variable_range, 2), numTests);
@@ -36,6 +36,8 @@ for idx = 1:size(variable_range, 2)
 
         % Train and test multilayer perceptron
         [~, ~, w1, w2, plateau_iter] = run_multilayer_perceptron(data);
+        % [~,~, w] = run_perceptron_db(data);
+        % multiPerf(idx, j) = test_perceptron_output(data_test, w);
         pleateau_iter_log(idx, j)    = plateau_iter;
         multiPerf(idx, j) = test_multilayer_perceptron_output(data_test, w1, w2);
         disp(j)
@@ -77,25 +79,25 @@ end
 ax = gca;
 ax.YColor = perf_color;
 
-% [2] plot mean and STD for learning time
-% Calculate means and standard deviations for the learning times
-means_learn = mean(pleateau_iter_log, 2);
-stds_learn = std(pleateau_iter_log, 0, 2);
-
-% Adding a line connecting the means
-yyaxis right; % Right y-axis for learning time
-for i = 1:length(means_learn)-1
-    % taking average color between two points
-    plot([i, i+1], means_learn(i:i+1), '-', 'Color', learn_color, 'LineWidth', 2);
-    hold on
-end
-ylim([0 3000]);
-
-% plotting error bars and means
-for i = 1:length(means_learn)
-    errorbar(i, means_learn(i), stds_learn(i), 'o', 'Color', learn_color, 'MarkerSize', 10, 'MarkerFaceColor', learn_color);
-    hold on
-end
+% % [2] plot mean and STD for learning time
+% % Calculate means and standard deviations for the learning times
+% means_learn = mean(pleateau_iter_log, 2);
+% stds_learn = std(pleateau_iter_log, 0, 2);
+% 
+% % Adding a line connecting the means
+% yyaxis right; % Right y-axis for learning time
+% for i = 1:length(means_learn)-1
+%     % taking average color between two points
+%     plot([i, i+1], means_learn(i:i+1), '-', 'Color', learn_color, 'LineWidth', 2);
+%     hold on
+% end
+% ylim([0 3000]);
+% 
+% % plotting error bars and means
+% for i = 1:length(means_learn)
+%     errorbar(i, means_learn(i), stds_learn(i), 'o', 'Color', learn_color, 'MarkerSize', 10, 'MarkerFaceColor', learn_color);
+%     hold on
+% end
 
 % Set right y-axis color and limits
 ax.YColor = learn_color;

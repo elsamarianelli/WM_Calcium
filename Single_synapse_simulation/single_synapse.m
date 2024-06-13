@@ -3,13 +3,13 @@
 % synaptic parameters
 
 SimLength = 500;   %simulation length
-tau_decay = 200;    %recovery of synaptic resources 
-tau_facil = 1500;   %recovery time of utilisation factor 
+tau_decay = 1500;    %recovery of synaptic resources 
+tau_facil = 200;   %recovery time of utilisation factor 
 tau_m   =  15;
 U = 0.2;            %Baseline utilisation factor 
 x_init = 1; 
 Input = zeros(1,SimLength);                      
-tps = [50; 80; 110; 140; 170; 200; 230; 260; 460];
+tps = [50; 80; 110; 140; 170; 200; 230; 260; 430];
 Input(tps) = 1; 
 
 U_log = zeros(1, SimLength);
@@ -40,21 +40,23 @@ for t = 1:SimLength
     x = x + (((1-x)/tau_decay) - (u.*x.*Input(t)));
 end
 
+figure;
 subplot(3,1,1)
-plot(1:SimLength,V_log,'k')
-ylabel('Post Vm','FontSize',18)
-xlabel('Time (ms)','FontSize',18)
-
-subplot(3,1,2)
 plot(1:SimLength,U_log,'b')
-ylabel('synaptic varibales','FontSize',18)
+ylabel('u/x','FontSize',9)
 hold on
 plot(1:SimLength,X_log,'r')
-legend('u', 'x' ,'Location','north')
+% legend('u', 'x' ,'Location','southeast')
 
-subplot(3, 1, 3)
+subplot(3, 1, 2)
 plot(1:SimLength,Input,'k')
-ylabel('Pre Vm','FontSize',18)
+ylabel('Pre Vm','FontSize',9)
 ylim([-0.25 1.25])
 
-
+subplot(3,1,3)
+plot(1:SimLength,V_log,'k')
+ylim([-0.005 0.035])
+ylabel('Post Vm','FontSize',9)
+xlabel('Time (ms)','FontSize',9)
+figure = gcf;
+figure.Position = [100, 100, 300, 300];

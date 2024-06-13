@@ -15,24 +15,27 @@ simulated_data_folder = fullfile(parent_dir, 'Simulated_data');
 figure_folder = fullfile(parent_dir, 'figures_new');
 fileFormat = 'fig'; 
 
-% [1] Background excitation strength (p.CF varied)
+% [1]  Odour strength (p.CF varied)
+
 file_name = 'CF_varied';
 main_folder = fullfile(simulated_data_folder, file_name);
 CFs = 1 : 0.01 : 1.08;
-CF_performance = plot_performance_across_variable_change(CFs, main_folder, 'background excitation strength');
+CF_performance = plot_performance_across_variable_change(CFs, main_folder, 'Odour strength');
 
 full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
 saveas(CF_performance, full_file_path);
 
 
-% [2] Odour strength (p.SF varied)
+% [2] Background excitation strength (p.SF varied)
+
 file_name = 'SF_varied';
 main_folder = fullfile(simulated_data_folder, file_name);
 SFs = 0.82:0.005:0.88;
-SF_performance = plot_performance_across_variable_change(SFs, main_folder, 'Odour strength');
+SF_performance = plot_performance_across_variable_change(SFs, main_folder, 'background excitation strength');
 
 full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
 saveas(SF_performance, full_file_path);
+
 
 
 % [3] Delay time between odours (p.delay_time varied)
@@ -105,7 +108,7 @@ initial_color = [0 0 0.5]; % Dark blue for performance
 final_color = [0.5 1 0.5]; % Pale green for performance
 
 file_name = 'varying_tau_facil';
-facils = 500:500:3000;
+facils = 500:1000:4500;
 facils = arrayfun(@(v) sprintf('100_%d_tau_facil', v), facils, 'UniformOutput', false);
 
 % Delays variable should be defined in your workspace
@@ -121,10 +124,13 @@ interpolate_color = @(fraction) initial_color + fraction * (final_color - initia
 facil = facils{1};
 main_folder = fullfile(simulated_data_folder, file_name, facil);
 [figure, ~, ~] = plot_performance_across_variable_change(delays, main_folder, 'delay time');
+yyaxis right;
+ax.YAxis(2).Visible = 'off'; % Hide the right y-axis
+ax.YColor = 'none'; % Remove color from the right y-axis to make it invisible
 hold on;
-
+yyaxis left;
 % Loop through each facil value
-for i = 2:num_facils
+for i = 2:3%num_facils
     % Calculate the color for the current loop
     current_color = interpolate_color((i - 1) / (num_facils - 1));
     
@@ -134,7 +140,7 @@ for i = 2:num_facils
     
     % Retrieve performance data
     
-    numTests = 1;
+    numTests = 50;
     
     % Initialize containers for performance metrics
     % singlePerf = zeros(size(variable_range, 2), numTests);
@@ -200,6 +206,11 @@ legend(legend_entries, 'Location', 'best');
 % Final plot adjustments
 hold off;
 
+%save plot
+full_file_path = fullfile(figure_folder, [file_name, '.', fileFormat]);
+saveas(figure, full_file_path);
+
+
 
 %% 
 % Get the current figure and axes
@@ -207,11 +218,20 @@ fig = gcf;
 ax = gca;
 
 % Change the size of the figure (Width x Height in pixels)
-fig.Position = [100, 100, 350, 450]; % Adjust these values as needed
+% fig.Position = [100, 100, 750, 600]; % Adjust these values as needed
+
+% for sf to ac backgroudn excitation
+SFs = 0.82:0.005:0.88;
+new_ticks = SFs * 23.1;
+% Format the new ticks to two decimal places
+new_tick_labels = arrayfun(@(x) sprintf('%.2f', x), new_ticks, 'UniformOutput', false);
+set(ax, 'XTickLabel', new_tick_labels); % Update the tick labels to the formatted values
+
+xlabel('Background Excitation Strength mean (Hz 2dp)')
 
 % Change the left y-axis limits
 yyaxis left;
-ylim([0.4 1.05]);
+ylim([0.2 1.]);
 
 % Change the right y-axis limits
 yyaxis right;

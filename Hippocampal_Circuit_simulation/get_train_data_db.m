@@ -1,4 +1,4 @@
-function[shuffled_spikes_x_trials,sequenceID] = get_train_data(C, J, n_trials, p, ca3_ensembles, time_1, time_2)
+function[shuffled_spikes_x_trials,sequenceID] = get_train_data_db(C, J, n_trials, p, ca3_ensembles, time_1, time_2)
 % at present this code is being used to get input to perceptron, the output
 % is a mean firing rate (Hz) for each CA1 cell during the second
 % odour presentation.
