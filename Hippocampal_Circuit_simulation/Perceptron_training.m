@@ -42,12 +42,14 @@ time4 = time3+100;
 % 
 % %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
 % %%  Simulate hippocampal dynamics  over many trials labelling with reward/no reward
-n_trials = 100;
-[spikeCounts,~]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
-[spikeCounts_test, ~]	= get_train_data_db(C, J, 10, p, ca3_ensembles, time3, time4);
+n_trials = 50;
+[spikeCounts,sequenceID]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
+[spikeCounts_test, sequenceID]	= get_train_data_db(C, J, 10, p, ca3_ensembles, time3, time4);
+
 
 % Train and test multilayer perceptron
-[~, error, w1, w2, plateau_iter] = run_multilayer_perceptron(spikeCounts);
+
+[~, error, w1, w2, plateau_iter] = run_multilayer_perceptron(spikeCounts, n_hidden);
 [performance_test_multi] = test_multilayer_perceptron_output(spikeCounts_test, w1, w2);
 disp(performance_test_multi)
 

@@ -112,7 +112,8 @@ facils = 500:1000:4500;
 facils = arrayfun(@(v) sprintf('100_%d_tau_facil', v), facils, 'UniformOutput', false);
 
 % Delays variable should be defined in your workspace
-delays = 250:250:3000;
+% delays = 250:250:3000;
+delays = 250:500:3000;
 variable_range = delays;
 % Get the number of facil values
 num_facils = length(facils);
@@ -121,7 +122,7 @@ num_facils = length(facils);
 interpolate_color = @(fraction) initial_color + fraction * (final_color - initial_color);
 
 % Create a new figure for the plot
-facil = facils{1};
+facil = facils{2};
 main_folder = fullfile(simulated_data_folder, file_name, facil);
 [figure, ~, ~] = plot_performance_across_variable_change(delays, main_folder, 'delay time');
 yyaxis right;
@@ -130,7 +131,7 @@ ax.YColor = 'none'; % Remove color from the right y-axis to make it invisible
 hold on;
 yyaxis left;
 % Loop through each facil value
-for i = 2:3%num_facils
+for i = 4:4
     % Calculate the color for the current loop
     current_color = interpolate_color((i - 1) / (num_facils - 1));
     
@@ -218,7 +219,7 @@ fig = gcf;
 ax = gca;
 
 % Change the size of the figure (Width x Height in pixels)
-% fig.Position = [100, 100, 750, 600]; % Adjust these values as needed
+ fig.Position = [100, 100, 650, 550]; % Adjust these values as needed
 
 % for sf to ac backgroudn excitation
 SFs = 0.82:0.005:0.88;
@@ -227,7 +228,7 @@ new_ticks = SFs * 23.1;
 new_tick_labels = arrayfun(@(x) sprintf('%.2f', x), new_ticks, 'UniformOutput', false);
 set(ax, 'XTickLabel', new_tick_labels); % Update the tick labels to the formatted values
 
-xlabel('Background Excitation Strength mean (Hz 2dp)')
+xlabel('Background Excitation Strength mV')
 
 % Change the left y-axis limits
 yyaxis left;

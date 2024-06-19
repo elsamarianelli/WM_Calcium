@@ -12,7 +12,7 @@ p.start_time            = 200;            % Time at which the first odour is pre
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
 p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
 p.delay_time            = 500;
-p.scaleF                =0.82;
+p.scaleF                = 0.82;
 p                       = get_params_hipp(p);
 
 %  Randomly assign CA3 and CA1 cells to each odour representation
@@ -36,6 +36,7 @@ end
 % Define the range of connectivity levels
 
 variable_list = 0.82:0.005:0.9;
+variabel_list = 0.82:0.01:0.9;
 for index = 1:length(variable_list)
 
     % change p to correct current variable 
@@ -54,14 +55,14 @@ end
 performance_variable_figure = plot_performance_across_variable_change(variable_list, main_folder_path, 'delay_decoding');
 
 % % Define the file name and format
-% fileName = 'connectivity_plot';
-% fileFormat = 'fig';
-% 
-% % Construct the path to the figure folder within the parent directory
-% figure_folder = fullfile(parent_dir, 'Figures');
-% 
-% % Construct the full path for the file to be saved
-% full_file_path = fullfile(figure_folder, [fileName, '.', fileFormat]);
-% 
-% % Save the figure to the specified folder
-% saveas(performance_variable_figure, full_file_path);
+fileName = 'delay_decoding';
+fileFormat = 'fig';
+
+% Construct the path to the figure folder within the parent directory
+figure_folder = fullfile(parent_dir, 'Figures');
+
+% Construct the full path for the file to be saved
+full_file_path = fullfile(figure_folder, [fileName, '.', fileFormat]);
+
+% Save the figure to the specified folder
+saveas(performance_variable_figure, full_file_path);

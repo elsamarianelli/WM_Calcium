@@ -1,7 +1,7 @@
 function[fig_handle ,means_perf, stds_perf] = plot_performance_across_variable_change(variable_range, main_folder, variable_type)
 %% multiple runs and plot mean and SD of performance
 
-numTests = 50;
+numTests = 10;
 
 % Initialize containers for performance metrics
 % singlePerf = zeros(size(variable_range, 2), numTests);
@@ -35,11 +35,11 @@ for idx = 1:size(variable_range, 2)
         % singlePerf(idx, j) = test_perceptron_output(data_test, w);
 
         % Train and test multilayer perceptron
-        [~, ~, w1, w2, plateau_iter] = run_multilayer_perceptron(data);
-        % [~,~, w] = run_perceptron_db(data);
-        % multiPerf(idx, j) = test_perceptron_output(data_test, w);
-        pleateau_iter_log(idx, j)    = plateau_iter;
-        multiPerf(idx, j) = test_multilayer_perceptron_output(data_test, w1, w2);
+        % [~, ~, w1, w2, plateau_iter] = run_multilayer_perceptron(data);
+        [~,~, w] = run_perceptron_db(data);
+        multiPerf(idx, j) = test_perceptron_output(data_test, w);
+        % pleateau_iter_log(idx, j)    = plateau_iter;
+        % multiPerf(idx, j) = test_multilayer_perceptron_output(data_test, w1, w2);
         disp(j)
     end
     

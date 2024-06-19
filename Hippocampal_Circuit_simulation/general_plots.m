@@ -7,10 +7,10 @@ p.degree_overlap_CA1    = 0.0;
 p.pattern_order         = 'AB';
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
 p.length_first          = 250;             % Length of time for which the first odour is presented (ms)
-p.delay_time            = 1000;            % Delay between odour presentations (ms)
+p.delay_time            = 500;            % Delay between odour presentations (ms)
 p.length_second         = 250;             % Length of time for which the second odour is presented (ms)
 p.scaleF                = 0.848;           % Constant by which to scale random currents (to modulate baseline activity levels)
-p.SimLength             = 2000;
+p.SimLength             = 1500;
 p                       = get_params_hipp(p);
 
 %  Assign CA3 and CA1 cells to each odour representation
@@ -49,7 +49,11 @@ time4 = time3+100; %input.reactivation(2);
 CA3_overlap = intersect(ca3_ensembles{first}, ca3_ensembles{second});
 ind = find((sum(C(CA3_overlap, :))>3)); 
 CA1_overlap_first = [(intersect(ca1_ensembles{first}, ind+p.in))];
+CA1_nonoverlap_first = setdiff(ca1_ensembles{first}, ind + p.in);
+
 CA1_overlap_second =[(intersect(ca1_ensembles{second}, ind+p.in))];
+CA1_nonoverlap_second = setdiff(ca1_ensembles{second}, ind + p.in);
+
 
 not_ind = ~ismember(ca1_ensembles{second}, ind+p.in);
 CA1_B = ca1_ensembles{second};
@@ -60,7 +64,7 @@ CA1_A = ca1_ensembles{first};
 CA1_A = CA1_A(not_ind);
 
 % Memory
-number_of_trials = 50;
+number_of_trials = 40;
 
 firing_rate_data = cell(2, 9);
 
@@ -82,10 +86,10 @@ A       = CA1_A;
 overlap_first = CA1_overlap_first;
 overlap_second = CA1_overlap_second;
 B       = CA1_B;
-%         % CA3
-% A       = ca3_ensembles{first};
-% overlap = CA3_overlap;
-% B       = ca3_ensembles{second};
+% %         % CA3
+% A       = CA1_nonoverlap_first;
+% overlap = ind+p.in;
+% B       = CA1_nonoverlap_second;
 
 for i = 1:number_of_trials
         
@@ -186,5 +190,6 @@ for subplotIdx = 1:totalSubplots
     xticklabels({'A unique', 'A overlap B', 'B unique'});
     ylabel('Hz');
     title([group_names{subplotIdx}]);
-    % ylim([0 20])
+    ylim([0 20])
 end
+
