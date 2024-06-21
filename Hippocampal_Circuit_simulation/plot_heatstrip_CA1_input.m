@@ -30,7 +30,7 @@ colour = [0.9*ones(1, length(CA1_overlap_second)), 0.7*ones(1, length(find(only_
     0.6*ones(1, length(CA1_overlap_first)), 0.4*ones(1, length(find(only_first_CA1))), zeros(1, length(all_other))];
 
 % get colour map
-colormap(flipud(gray)); % Use 'gray' colormap and flip it for dark to light mapping
+colormap(flipud(gray));
 cmap = colormap;
 
 % % sort input 
@@ -39,7 +39,7 @@ cmap = colormap;
 % only_second_CA1_sorted = only_second_CA1(sortIdx);
 spikes = pair_spikes(sortIdx);
 
-% heat_subplot = figure; % Make the figure invisible
+% heat_subplot = figure; 
 
 % Function to plot color strip with second odour as sorting priority
 plot_color_strip = @(values, y_position) arrayfun(@(i) ...

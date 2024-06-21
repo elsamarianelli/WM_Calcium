@@ -79,9 +79,6 @@ for i = 1:length(uniqueIDs)
     spike_mean_log(i, 1:200) = mean(spikes_for_trial);
 end
 
-% stringList     = {'CB'; 'BA'; 'AC'; 'AB'; 'CA'; 'BC'};
-
-% Create a figure
 figure;
 % Loop through each string in the list
 hold on
@@ -104,23 +101,18 @@ for i = 1:length(stringList)
 end
 
 %% 
-% Example data
 data = sorted_spikes;
-% Define vertical offset
-offset = 2;  % Adjust this value to control the spacing between the lines
+offset = 2;  
 
-% Create a figure
 figure;
 
-% Hold on to plot multiple lines on the same axes
 hold on;
 
 % Plot each row of the matrix with vertical offset
 for i = 1:size(data, 1)
-    plot(data(i, :) + (i-1) * offset, 'k');  % 'k' specifies black color for the lines
+    plot(data(i, :) + (i-1) * offset, 'k');  
 end
 
-% Customize y-axis to show row labels
 yticks((0:size(data, 1)-1) * offset);
 yticklabels(arrayfun(@(x) sprintf('Row %d', x), 1:size(data, 1), 'UniformOutput', false));
 
@@ -129,10 +121,8 @@ xlabel('Columns');
 ylabel('Rows');
 title('Matrix Rows Plotted as Separate Lines with Offset');
 
-% Adjust y-axis limits to fit all lines
 ylim([-offset, size(data, 1) * offset]);
 
-% Hold off to stop adding to the current plot
 hold off;
 
 %% looking at CA1 populations 
