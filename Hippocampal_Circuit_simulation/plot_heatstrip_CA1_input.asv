@@ -1,4 +1,4 @@
-function[sortIdx] = plot_heatstrip_CA1_input(input_1, input_2, pair_spikes, C, ca3_ensembles)
+function[sortIdx] = plot_heatstrip_CA1_input(input_1, input_2, input_label, pair_spikes, C, ca3_ensembles)
 
 % divide CA1 cells into ones which get only second selective population
 % input, and those from this population which also get overlap input
@@ -9,7 +9,6 @@ only_second = setdiff(ca3_ensembles{input_2}, overlap);
 overlap_CA1 = sum(C(overlap, :),1);
 only_first_CA1 = sum(C(only_first, :),1);
 only_second_CA1 = sum(C(only_second, :),1);
-
 
 % second odour population in CA1 which also recieves overlap input
 CA1_overlap_second = intersect(find(overlap_CA1), find(only_second_CA1));
@@ -22,12 +21,12 @@ CA1_overlap_first = intersect(find(overlap_CA1), find(only_first_CA1));
 % first odour populaiton in CA1 which doesnt receive any input
 CA1_only_first = setdiff(find(only_first_CA1), CA1_overlap_first);
 
-sortIdx = [CA1_overlap_second, find(only_second_CA1), CA1_overlap_first, find(only_first_CA1)];
+sortIdx = [CA1_overlap_second, CA1_only_second, CA1_overlap_first, CA1_only_first];
 all_other = setdiff(1:200, sortIdx);
 sortIdx = [sortIdx,all_other];
 
-colour = [0.9*ones(1, length(CA1_overlap_second)), 0.7*ones(1, length(find(only_second_CA1))),...
-    0.6*ones(1, length(CA1_overlap_first)), 0.4*ones(1, length(find(only_first_CA1))), zeros(1, length(all_other))];
+colour = [0.9*ones(1, length(CA1_overlap_second)), 0.7*ones(1, length(CA1_overlap_second)),...
+    0.6*ones(1, length(CA1_overlap_first)), 0.4*ones(1, length(CA1_only_first)), zeros(1, length(all_other))];
 
 % get colour map
 colormap(flipud(gray)); % Use 'gray' colormap and flip it for dark to light mapping
@@ -39,7 +38,7 @@ cmap = colormap;
 % only_second_CA1_sorted = only_second_CA1(sortIdx);
 spikes = pair_spikes(sortIdx);
 
-% heat_subplot = figure; % Make the figure invisible
+heat_subplot = figure; % Make the figure invisible
 
 % Function to plot color strip with second odour as sorting priority
 plot_color_strip = @(values, y_position) arrayfun(@(i) ...
@@ -55,12 +54,12 @@ plot_color_strip(colour, 1)
 
 % Set x-axis limits and customize y-axis
 set(gca, 'ytick', [1.5,2.5], 'yticklabel', {'cell populations','spikes'});
-set(gca, 'xtick', [20,70,140,200, 270], 'xticklabel', {'overlap/second','second only','overlap/first', 'first only' 'others'});
+set(gca, 'xtick', [20,60,100,140, 250], 'xticklabel', {'B+AB','B only','A+AB', 'A only' 'others'});
 
 hold on
 % plot spikes smoothed and normalised
 normalized_data = (spikes) / (max(spikes) - min(spikes));
-windowSize =1; 
+windowSize = 5; 
 smoothed_data = movmean(normalized_data, windowSize);
 plot(1:length(smoothed_data), smoothed_data + 2, 'k'); % Adjust scaling as needed
 % ylim([1 6])

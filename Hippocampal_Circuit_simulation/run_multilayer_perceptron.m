@@ -16,8 +16,8 @@ function [output, error, w1, w2, plateau_iter] = run_multilayer_perceptron(data,
     % 
     no_reward_weights = -1 + 0.2 * randn(1, 3);      % Pre-defined weights from hidden to output layer
     reward_weights = 1 + 0.2 * randn(1, 3);
-    % w2 = [no_reward_weights, reward_weights]';
-    w2 = randn(1,n_hidden)';
+    w2 = [no_reward_weights, reward_weights]';
+    % w2 = randn(1,n_hidden)';
     % Memory
     output = nan(1, n_trials * iterations);          % Network output
     error = nan(1, n_trials * iterations);           % Error tracking

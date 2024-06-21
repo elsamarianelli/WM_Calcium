@@ -1,7 +1,7 @@
 %% looking into MLP behaviour
 
 % check dynamics over a single trial
-p.degree_overlap_CA3    = 0.2;            % Overlap between neural representations of each odour
+p.degree_overlap_CA3    = 0.20;            % Overlap between neural representations of each odour
 p.degree_overlap_CA1    = 0.0;
 p.pattern_order         = 'AC';           % Order in which the odours should be presented
 p.start_time            = 200;            % Time at which the first odour is presented (ms)
@@ -43,7 +43,7 @@ time4 = time3+100;
 %% simulate data
 n_trials = 50;
 [spikeCounts,sequenceID]	= get_train_data_db(C, J, n_trials, p, ca3_ensembles, time3, time4);
-[spikeCounts_test, sequenceID_test]	= get_train_data_db(C, J, 10, p, ca3_ensembles, time3, time4);
+[spikeCounts_test, sequenceID_test]	= get_train_data_db(C, J, 30, p, ca3_ensembles, time3, time4);
 parent_dir = fileparts(pwd);
     
 % Full path for the new folder
@@ -61,7 +61,10 @@ save(fullfile(fullFolderPath, 'sequenceID.mat'), 'sequenceID');
 save(fullfile(fullFolderPath, 'sequenceID_test.mat'), 'sequenceID_test');
 
 %%  how does CA1 activity during second odour correlate with CA1 input
+
+
 %%  from selective CA3 populaions for each odour combination?
+stringList = {'AB'; 'AC'; 'BA'; 'BC'; 'CA'; 'CB'};
 
 spikes = spikeCounts_test;
 IDs = sequenceID_test;
@@ -76,16 +79,8 @@ for i = 1:length(uniqueIDs)
     spike_mean_log(i, 1:200) = mean(spikes_for_trial);
 end
 
-% get CA1 populaitons which receive input from each CA3 group
-A = C(ca3_ensembles{1}, :);
-CA1_A = sum(A,1);
-B = C(ca3_ensembles{2}, :);
-CA1_B = sum(B,1);
-C_ = C(ca3_ensembles{3}, :);
-CA1_C = sum(C_,1);
-
 % stringList     = {'CB'; 'BA'; 'AC'; 'AB'; 'CA'; 'BC'};
-stringList = {'AB'; 'AC'; 'BA'; 'BC'; 'CA'; 'CB'};
+
 % Create a figure
 figure;
 % Loop through each string in the list
@@ -93,18 +88,20 @@ hold on
 for i = 1:length(stringList)
     str = stringList{i};
     
-    % Generate the inputs dynamically
-    first_input = eval(['CA1_', str(1)]);
-    second_input = eval(['CA1_', str(2)]);
+    % Map characters to corresponding numbers
+    first_input = map_char_to_number(str(1));
+    second_input = map_char_to_number(str(2));
+
     input_label = str;
     pair_spikes = spike_mean_log(i, :);
+
     % plot
     subplot(3, 2, i);
-    [sortIdx] = plot_heatstrip_CA1_input(first_input, second_input, input_label, pair_spikes);
+    [sortIdx] = plot_heatstrip_CA1_input(first_input, second_input, pair_spikes, C, ca3_ensembles);
+    subtitle(input_label)
     hold on;
+
 end
-
-
 
 %% 
 % Example data
